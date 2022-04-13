@@ -14,12 +14,19 @@ class CustomAppBar extends StatefulWidget with PreferredSizeWidget {
   static const APP_BAR_WITH_ICONS = 0;
   static const APP_BAR_WITHOUT_ICONS = 1;
 
+  CustomAppBarLayout customAppBarLayout = CustomAppBarLayout();
+
   CustomAppBar ({Key? key})
       : preferredSize = Size.fromHeight(70.0),
         super(key: key);
 
   @override
-  State<StatefulWidget> createState() => CustomAppBarLayout();
+  State<StatefulWidget> createState() => customAppBarLayout;
+
+  void update(int index){
+    customAppBarLayout.changeIndex(index);
+  }
+
 }
 class CustomAppBarLayout extends State<CustomAppBar>{
 

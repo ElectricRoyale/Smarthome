@@ -15,6 +15,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   late Widget dashboard, network, settings;
+  CustomAppBar customAppBar = CustomAppBar();
   
   List<Widget> _pages = <Widget>[
     Dashboard(),
@@ -25,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void onItemTap(int index) {
     setState(() {
       _selectedIndex = index;
-      //CustomAppBarLayout
+      customAppBar.update(index);
     });
   }
 
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: CustomAppBar(),
+        appBar: customAppBar,
         extendBody: true,
         body: SafeArea(
           bottom: false,
