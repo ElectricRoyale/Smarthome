@@ -10,7 +10,16 @@ class Settings extends StatefulWidget {
 class Settingslayout extends State<Settings> {
 
   List<Widget> _settings = [
-    Container(),
+    Container(
+      decoration: BoxDecoration(
+        color: Color(0x12ffffff),
+      ),
+      child: Row(
+        children: [
+          //Image.memory(),
+        ],
+      ),
+    ),
   ];
 
   @override

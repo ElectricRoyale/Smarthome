@@ -1,22 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
+const pageParams = [
+  {'name':'Rooms', 'icon':'assets/house_app_icon.svg', 'layout': CustomAppBar.APP_BAR_WITH_ICONS},
+  {'name':'Network', 'icon':'assets/refresh.svg', 'layout': CustomAppBar.APP_BAR_WITH_ICONS},
+  {'name':'Settings', 'con':'', 'layout': CustomAppBar.APP_BAR_WITHOUT_ICONS},
+];
+
+class CustomAppBar extends StatefulWidget with PreferredSizeWidget {
   @override
   final Size preferredSize;
 
-  final String title, svgIcon;
-  final int appBar;
-  static int APP_BAR_WITH_ICONS = 0;
-  static int APP_BAR_WITHOUT_ICONS = 1;
+  static const APP_BAR_WITH_ICONS = 0;
+  static const APP_BAR_WITHOUT_ICONS = 1;
 
-  CustomAppBar(this.title, this.svgIcon, this.appBar, {Key? key})
+  CustomAppBar ({Key? key})
       : preferredSize = Size.fromHeight(70.0),
         super(key: key);
 
   @override
+  State<StatefulWidget> createState() => CustomAppBarLayout();
+}
+class CustomAppBarLayout extends State<CustomAppBar>{
+
+  int index = 0;
+
+  void changeIndex(int index){
+    setState(() {
+      this.index = index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    switch (appBar) {
+    switch (pageParams.elementAt(index)['layout']) {
       case 0:
         return AppBar(
           backgroundColor: Colors.transparent,
@@ -25,13 +42,13 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
           leading: Transform.translate(
               offset: Offset(15, 8),
               child: IconButton(
-                  icon: SvgPicture.asset(svgIcon,
+                  icon: SvgPicture.asset('${pageParams.elementAt(index)['icon']}',
                       height: 30, width: 30, fit: BoxFit.scaleDown),
                   onPressed: () {})),
           titleSpacing: 0,
           title: Padding(
             padding: EdgeInsets.only(top: 20),
-            child: Text(title,
+            child: Text('${pageParams.elementAt(index)['name']}',
                 style:
                     TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
                 textScaleFactor: 1.3),
@@ -51,7 +68,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
           centerTitle: true,
           title: Padding(
             padding: EdgeInsets.only(top: 20),
-            child: Text(title,
+            child: Text('${pageParams.elementAt(index)['name']}',
                 style:
                     TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
                 textScaleFactor: 1.3),

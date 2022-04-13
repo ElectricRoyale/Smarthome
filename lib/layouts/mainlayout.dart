@@ -14,24 +14,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-
-  static const List<String> _pageNames = <String>[
-    "Rooms",
-    "Network devices",
-    "Settings",
-  ];
-  static const List<String> _pageIcons = <String>[
-    "assets/house_app_icon.svg",
-    "assets/refresh.svg",
-    "assets/",
-  ];
-  static List<int> _pageAppBar = <int>[
-    CustomAppBar.APP_BAR_WITH_ICONS,
-    CustomAppBar.APP_BAR_WITH_ICONS,
-    CustomAppBar.APP_BAR_WITHOUT_ICONS,
-  ];
+  late Widget dashboard, network, settings;
   
-  static List<Widget> _pages = <Widget>[
+  List<Widget> _pages = <Widget>[
     Dashboard(),
     Network(),
     Settings(),
@@ -40,6 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void onItemTap(int index) {
     setState(() {
       _selectedIndex = index;
+      //CustomAppBarLayout
     });
   }
 
@@ -58,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: CustomAppBar( _pageNames.elementAt(_selectedIndex), _pageIcons.elementAt(_selectedIndex), _pageAppBar.elementAt(_selectedIndex)),
+        appBar: CustomAppBar(),
         extendBody: true,
         body: SafeArea(
           bottom: false,

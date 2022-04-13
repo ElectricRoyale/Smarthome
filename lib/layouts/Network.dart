@@ -1,5 +1,12 @@
+import 'dart:io';
+
+import 'package:dart_ping/dart_ping.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
-import 'package:format/format.dart';
+import 'package:network_info_plus/network_info_plus.dart';
+import 'package:sprintf/sprintf.dart';
+//import 'package:internet_speed_test/callbacks_enum.dart';
+//import 'package:internet_speed_test/internet_speed_test.dart';
 
 class Network extends StatefulWidget {
   const Network({Key? key}) : super(key: key);
@@ -9,35 +16,89 @@ class Network extends StatefulWidget {
 }
 
 class NetworkLayout extends State<Network> {
-  List<Map<String, String>> devices = [
-    {'name': 'FritzBox', 'ip': '192.168.0.3'},
-    {'name': 'DeviceName', 'ip': '192.168.0.2'},
-    {'name': 'FritzBox', 'ip': '192.168.0.3'},
-    {'name': 'DeviceName', 'ip': '192.168.0.2'},
-    {'name': 'FritzBox', 'ip': '192.168.0.3'},
-    {'name': 'DeviceName', 'ip': '192.168.0.2'},
-    {'name': 'FritzBox', 'ip': '192.168.0.3'},
-    {'name': 'DeviceName', 'ip': '192.168.0.2'},
-    {'name': 'FritzBox', 'ip': '192.168.0.3'},
-    {'name': 'DeviceName', 'ip': '192.168.0.2'},
-    {'name': 'FritzBox', 'ip': '192.168.0.3'},
-    {'name': 'DeviceName', 'ip': '192.168.0.2'},
-    {'name': 'FritzBox', 'ip': '192.168.0.3'},
-    {'name': 'DeviceName', 'ip': '192.168.0.2'}
-  ];
+  List<Map<String, String>> devices = [];
 
-  void addNetworkDevice(Map<String, String> devicesData) {
-    setState(() {
-      devices.add(devicesData);
-      devices.sort((s1, s2) {
-        List<String> ips1 = s1['ip']!.split("\\.");
-        String updatedIp1 =
-            format("%3s.%3s.%3s.%3s", ips1[0], ips1[1], ips1[2], ips1[3]);
-        List<String> ips2 = s2['ip']!.split("\\.");
-        String updatedIp2 =
-            format("%3s.%3s.%3s.%3s", ips2[0], ips2[1], ips2[2], ips2[3]);
-        return updatedIp1.compareTo(updatedIp2);
+  //final internetSpeedTest = InternetSpeedTest();
+
+  double donwloadRate = 0;
+  double uploadRate = 0;
+  String unitText = 'Mb/s';
+  int pingTime = 0;
+
+  /*void ping() async{
+    while (true) {
+      var ping = await Ping('192.168.0.1');
+
+      ping.stream.listen((result) {
+        setState(() {
+          pingTime = result.response!.time!.inMilliseconds;
+        });
       });
+    }
+  }
+
+  void speedTestDown() async{
+    internetSpeedTest.startDownloadTesting(
+        onDone: (double transferRate, SpeedUnit unit) {},
+        onProgress: ((percent, transferRate, unit) {
+          setState(() {
+            donwloadRate = transferRate;
+            unitText = unitText == SpeedUnit.Kbps ? 'Kb/s' : 'Mb/s';
+          });
+        }),
+        onError: ((errorMessage, speedTestError) {
+          print(
+              'the errorMessage $errorMessage, the speedTestError $speedTestError');
+        }),
+    fileSize: 20000000);
+  }
+
+  void speedTestUp() async{
+    internetSpeedTest.startUploadTesting(
+        onDone: (double transferRate, SpeedUnit unit) {},
+        onProgress: ((percent, transferRate, unit) {
+          setState(() {
+            uploadRate = transferRate;
+            unitText = unitText == SpeedUnit.Kbps ? 'Kb/s' : 'Mb/s';
+          });
+        }),
+        onError: ((errorMessage, speedTestError) {
+          print(
+              'the errorMessage $errorMessage, the speedTestError $speedTestError');
+        }),
+        fileSize: 20000000);
+  }*/
+
+  Future<void> addNetworkDevice() async {
+    await NetworkInfo().getWifiIP().then((ip) async{
+      String subnet = ip!.substring(0, ip.lastIndexOf('.'));
+      for (int i = 1; i <= 250; i++) {
+        await Socket.connect('$subnet.$i', 80, timeout: Duration(milliseconds: 100)).then(
+                (socket) async{
+          await InternetAddress(socket.address.address).reverse().then((value) {
+            Map<String, String> deviceData = {
+              'name': '${value.host.substring(0, value.host.indexOf('.'))}',
+              'ip': '${socket.address.address}'
+            };
+            setState(() {
+              devices.add(deviceData);
+              devices.removeDuplicates();
+              devices.sort((s1, s2) {
+                List<String> ips1 = s1['ip']!.split(".");
+                String updatedIp1 = sprintf(
+                    "%3s.%3s.%3s.%3s", [ips1[0], ips1[1], ips1[2], ips1[3]]);
+                List<String> ips2 = s2['ip']!.split(".");
+                String updatedIp2 = sprintf(
+                    "%3s.%3s.%3s.%3s", [ips2[0], ips2[1], ips2[2], ips2[3]]);
+                return updatedIp1.compareTo(updatedIp2);
+              });
+            });
+          });
+          socket.destroy();
+        }).catchError((error) {
+          devices.removeWhere((element) => element.containsValue('$subnet.$i'));
+        });
+      }
     });
   }
 
@@ -93,16 +154,26 @@ class NetworkLayout extends State<Network> {
                     child: Column(
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(top: 35, bottom: 8),
+                          padding: EdgeInsets.only(top: 21, bottom: 8),
                           child: Text(
                             'Speed',
                             style: TextStyle(color: Colors.white, fontSize: 14),
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(bottom: 35),
+                          padding: EdgeInsets.only(bottom: 10),
                           child: Text(
-                            '400 MB/S',
+                            '$donwloadRate $unitText',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 20),
+                          child: Text(
+                            '$uploadRate $unitText',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -133,7 +204,7 @@ class NetworkLayout extends State<Network> {
                         Padding(
                           padding: EdgeInsets.only(bottom: 35),
                           child: Text(
-                            '38',
+                            '$pingTime',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -182,5 +253,11 @@ class NetworkLayout extends State<Network> {
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    addNetworkDevice();
   }
 }
