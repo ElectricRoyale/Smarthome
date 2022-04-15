@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_ping/dart_ping.dart';
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_nsd/flutter_nsd.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:smarthome/layouts/customAppBar.dart';
 import 'package:sprintf/sprintf.dart';
 //import 'package:internet_speed_test/callbacks_enum.dart';
 //import 'package:internet_speed_test/internet_speed_test.dart';
@@ -11,12 +14,14 @@ import 'package:sprintf/sprintf.dart';
 class Network extends StatefulWidget {
   const Network({Key? key}) : super(key: key);
 
+  static late NetworkLayout networkLayout;
+
   @override
-  State<StatefulWidget> createState() => NetworkLayout();
+  State<StatefulWidget> createState() => networkLayout = NetworkLayout();
 }
 
 class NetworkLayout extends State<Network> {
-  List<Map<String, String>> devices = [];
+  List<dynamic> devices = [];
 
   //final internetSpeedTest = InternetSpeedTest();
 
@@ -69,37 +74,54 @@ class NetworkLayout extends State<Network> {
         fileSize: 20000000);
   }*/
 
+  String ssid = '-';
+
+  void getSSID()async {
+    await Permission.location.request().isGranted;
+    await NetworkInfo().getWifiName().then((value) => setState(() {
+      ssid = value!;
+    }));
+  }
+
+  int i = 0;
+
   Future<void> addNetworkDevice() async {
-    await NetworkInfo().getWifiIP().then((ip) async{
+    await NetworkInfo().getWifiIP().then((ip) async {
       String subnet = ip!.substring(0, ip.lastIndexOf('.'));
-      for (int i = 1; i <= 250; i++) {
-        await Socket.connect('$subnet.$i', 80, timeout: Duration(milliseconds: 100)).then(
-                (socket) async{
-          await InternetAddress(socket.address.address).reverse().then((value) {
-            Map<String, String> deviceData = {
-              'name': '${value.host.substring(0, value.host.indexOf('.'))}',
-              'ip': '${socket.address.address}'
-            };
-            setState(() {
-              devices.add(deviceData);
-              devices.removeDuplicates();
-              devices.sort((s1, s2) {
-                List<String> ips1 = s1['ip']!.split(".");
-                String updatedIp1 = sprintf(
-                    "%3s.%3s.%3s.%3s", [ips1[0], ips1[1], ips1[2], ips1[3]]);
-                List<String> ips2 = s2['ip']!.split(".");
-                String updatedIp2 = sprintf(
-                    "%3s.%3s.%3s.%3s", [ips2[0], ips2[1], ips2[2], ips2[3]]);
-                return updatedIp1.compareTo(updatedIp2);
+      for (i = 1; i <= 255; i++) {
+        await Socket.connect(
+            '$subnet.$i', 80, timeout: Duration(milliseconds: 100)).then(
+                (socket) async {
+              await InternetAddress(socket.address.address).reverse().then((
+                  value) {
+                Map<String, String> deviceData = {
+                  'name': '${value.host.substring(0, value.host.indexOf('.'))}',
+                  'ip': '${socket.address.address}'
+                };
+                setState(() {
+                  devices.add(deviceData);
+                  devices = devices.map((item) => jsonEncode(item)).toList();
+                  devices = devices.toSet().toList();
+                  devices = devices.map((item) => jsonDecode(item)).toList();
+                  devices.sort((s1, s2) {
+                    List<String> ips1 = s1['ip']!.split(".");
+                    String updatedIp1 = sprintf(
+                        "%3s.%3s.%3s.%3s",
+                        [ips1[0], ips1[1], ips1[2], ips1[3]]);
+                    List<String> ips2 = s2['ip']!.split(".");
+                    String updatedIp2 = sprintf(
+                        "%3s.%3s.%3s.%3s",
+                        [ips2[0], ips2[1], ips2[2], ips2[3]]);
+                    return updatedIp1.compareTo(updatedIp2);
+                  });
+                });
               });
-            });
-          });
-          socket.destroy();
-        }).catchError((error) {
+              socket.destroy();
+            }).catchError((error) {
           devices.removeWhere((element) => element.containsValue('$subnet.$i'));
         });
       }
-    });
+    }).then((value) => CustomAppBarLayout.stopAnimation());
   }
 
   @override
@@ -132,7 +154,7 @@ class NetworkLayout extends State<Network> {
                         Padding(
                           padding: EdgeInsets.only(bottom: 35),
                           child: Text(
-                            'ReinWLAN5G',
+                            ssid,
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -258,6 +280,7 @@ class NetworkLayout extends State<Network> {
   @override
   void initState() {
     super.initState();
+    getSSID();
     addNetworkDevice();
   }
 }
