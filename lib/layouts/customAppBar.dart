@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smarthome/layouts/Network.dart';
+import 'package:smarthome/layouts/statistics.dart';
 
 const pageParams = [
   {'name':'Rooms', 'icon':'assets/house_app_icon.svg', 'layout': CustomAppBar.APP_BAR_WITH_ICONS},
@@ -28,14 +30,20 @@ class CustomAppBar extends StatefulWidget with PreferredSizeWidget {
   }
 
 }
-class CustomAppBarLayout extends State<CustomAppBar>{
+class CustomAppBarLayout extends State<CustomAppBar> with SingleTickerProviderStateMixin{
 
   int index = 0;
+  static late AnimationController _animationController;
 
   void changeIndex(int index){
     setState(() {
       this.index = index;
+      index == 1 ? _animationController.forward().then((value) => _animationController.repeat()):_animationController.reset();
     });
+  }
+
+  static void stopAnimation(){
+    _animationController.animateTo(1);
   }
 
   @override
@@ -48,10 +56,25 @@ class CustomAppBarLayout extends State<CustomAppBar>{
           centerTitle: true,
           leading: Transform.translate(
               offset: Offset(15, 8),
-              child: IconButton(
+              child: RotationTransition(
+                  turns: Tween(begin: 0.0, end: 1.0).animate(_animationController),
+                  child:IconButton(
                   icon: SvgPicture.asset('${pageParams.elementAt(index)['icon']}',
                       height: 30, width: 30, fit: BoxFit.scaleDown),
-                  onPressed: () {})),
+                  onPressed: () {
+                    switch(index){
+                      case 0:
+                        Statistics();
+                        break;
+                      case 1:
+                        if (_animationController.isAnimating){
+                          Network.networkLayout.i = 250;
+                        }else {
+                          if(!_animationController.isAnimating) _animationController.forward().then((value) => _animationController.repeat());
+                          Network.networkLayout.i <= 250 ? Network.networkLayout.i = 0 : Network.networkLayout.addNetworkDevice();
+                        }
+                        break;
+                  }}))),
           titleSpacing: 0,
           title: Padding(
             padding: EdgeInsets.only(top: 20),
@@ -87,5 +110,20 @@ class CustomAppBarLayout extends State<CustomAppBar>{
           elevation: 0,
         );
     }
+  }
+
+  @override
+  void initState() {
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 }
