@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 
 class Statistics extends StatelessWidget {
-  Statistics({Key? key}) : super(key: key);
+  const Statistics({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +17,9 @@ class Statistics extends StatelessWidget {
             BACKGROUND_END,
           ],
         ),
+      ),
+      child: const Scaffold(
+
       ),
     );
   }
