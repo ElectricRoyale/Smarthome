@@ -10,16 +10,16 @@ const pageParams = [
 ];
 
 class CustomAppBar extends StatefulWidget with PreferredSizeWidget {
+
   @override
   final Size preferredSize;
-
   static const APP_BAR_WITH_ICONS = 0;
   static const APP_BAR_WITHOUT_ICONS = 1;
 
   CustomAppBarLayout customAppBarLayout = CustomAppBarLayout();
 
   CustomAppBar ({Key? key})
-      : preferredSize = Size.fromHeight(70.0),
+      : preferredSize = const Size.fromHeight(70.0),
         super(key: key);
 
   @override
@@ -28,7 +28,6 @@ class CustomAppBar extends StatefulWidget with PreferredSizeWidget {
   void update(int index){
     customAppBarLayout.changeIndex(index);
   }
-
 }
 class CustomAppBarLayout extends State<CustomAppBar> with SingleTickerProviderStateMixin{
 
@@ -55,7 +54,7 @@ class CustomAppBarLayout extends State<CustomAppBar> with SingleTickerProviderSt
           elevation: 0,
           centerTitle: true,
           leading: Transform.translate(
-              offset: Offset(15, 8),
+              offset: const Offset(15, 8),
               child: RotationTransition(
                   turns: Tween(begin: 0.0, end: 1.0).animate(_animationController),
                   child:IconButton(
@@ -64,28 +63,28 @@ class CustomAppBarLayout extends State<CustomAppBar> with SingleTickerProviderSt
                   onPressed: () {
                     switch(index){
                       case 0:
-                        Statistics();
+                        const Statistics();
                         break;
                       case 1:
                         if (_animationController.isAnimating){
-                          Network.networkLayout.i = 250;
+                          Network.networkLayout.ipNumber = 250;
                         }else {
                           if(!_animationController.isAnimating) _animationController.forward().then((value) => _animationController.repeat());
-                          Network.networkLayout.i <= 250 ? Network.networkLayout.i = 0 : Network.networkLayout.addNetworkDevice();
+                          Network.networkLayout.ipNumber <= 250 ? Network.networkLayout.ipNumber = 0 : Network.networkLayout.addNetworkDevice();
                         }
                         break;
                   }}))),
           titleSpacing: 0,
           title: Padding(
-            padding: EdgeInsets.only(top: 20),
+            padding: const EdgeInsets.only(top: 20),
             child: Text('${pageParams.elementAt(index)['name']}',
                 style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+                    const TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
                 textScaleFactor: 1.3),
           ),
           actions: [
             Transform.translate(
-                offset: Offset(-15, 13),
+                offset: const Offset(-15, 13),
                 child: IconButton(
                     icon: SvgPicture.asset('assets/full_signal.svg'),
                     onPressed: () {})),
@@ -97,10 +96,10 @@ class CustomAppBarLayout extends State<CustomAppBar> with SingleTickerProviderSt
           elevation: 0,
           centerTitle: true,
           title: Padding(
-            padding: EdgeInsets.only(top: 20),
+            padding: const EdgeInsets.only(top: 20),
             child: Text('${pageParams.elementAt(index)['name']}',
                 style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+                    const TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
                 textScaleFactor: 1.3),
           ),
         );

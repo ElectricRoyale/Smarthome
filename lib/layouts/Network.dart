@@ -1,15 +1,16 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dart_ping/dart_ping.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_nsd/flutter_nsd.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:smarthome/layouts/customAppBar.dart';
 import 'package:sprintf/sprintf.dart';
-//import 'package:internet_speed_test/callbacks_enum.dart';
-//import 'package:internet_speed_test/internet_speed_test.dart';
+import 'package:internet_speed_test/callbacks_enum.dart';
+import 'package:internet_speed_test/internet_speed_test.dart';
 
 class Network extends StatefulWidget {
   const Network({Key? key}) : super(key: key);
@@ -22,119 +23,131 @@ class Network extends StatefulWidget {
 
 class NetworkLayout extends State<Network> {
   List<dynamic> devices = [];
+  late StreamSubscription<void> internetSpeedTestStream, listOfWifiDevices;
 
-  //final internetSpeedTest = InternetSpeedTest();
-
-  double donwloadRate = 0;
-  double uploadRate = 0;
-  String unitText = 'Mb/s';
-  int pingTime = 0;
-
-  /*void ping() async{
-    while (true) {
-      var ping = await Ping('192.168.0.1');
-
-      ping.stream.listen((result) {
-        setState(() {
-          pingTime = result.response!.time!.inMilliseconds;
-        });
-      });
-    }
-  }
-
-  void speedTestDown() async{
-    internetSpeedTest.startDownloadTesting(
-        onDone: (double transferRate, SpeedUnit unit) {},
-        onProgress: ((percent, transferRate, unit) {
-          setState(() {
-            donwloadRate = transferRate;
-            unitText = unitText == SpeedUnit.Kbps ? 'Kb/s' : 'Mb/s';
-          });
-        }),
-        onError: ((errorMessage, speedTestError) {
-          print(
-              'the errorMessage $errorMessage, the speedTestError $speedTestError');
-        }),
-    fileSize: 20000000);
-  }
-
-  void speedTestUp() async{
-    internetSpeedTest.startUploadTesting(
-        onDone: (double transferRate, SpeedUnit unit) {},
-        onProgress: ((percent, transferRate, unit) {
-          setState(() {
-            uploadRate = transferRate;
-            unitText = unitText == SpeedUnit.Kbps ? 'Kb/s' : 'Mb/s';
-          });
-        }),
-        onError: ((errorMessage, speedTestError) {
-          print(
-              'the errorMessage $errorMessage, the speedTestError $speedTestError');
-        }),
-        fileSize: 20000000);
-  }*/
+  final internetSpeedTest = InternetSpeedTest();
+  final _ping = Ping('google.com');
+  var networkInfo = NetworkInfo();
 
   String ssid = '-';
+  double donwloadRate = 0;
+  double uploadRate = 0;
+  var unitText = 'Mb/s';
+  int pingTime = 0, ipNumber = 0;
+  late BuildContext context;
 
-  void getSSID()async {
-    await Permission.location.request().isGranted;
-    await NetworkInfo().getWifiName().then((value) => setState(() {
-      ssid = value!;
-    }));
+  void setData(
+      String ssid, double download, double upload, String unitText, int ping) {
+    setState(() {
+      this.ssid = ssid;
+      donwloadRate = download;
+      uploadRate = upload;
+      this.unitText = unitText;
+      pingTime = ping;
+    });
   }
 
-  int i = 0;
+  Future<void> ping() async {
+    _ping.stream.listen((result) {
+      setData(ssid, donwloadRate, uploadRate, unitText,
+          result.response!.time!.inMilliseconds);
+    });
+  }
+
+  Future<void> speedTestDown() async {
+    internetSpeedTest.startDownloadTesting(
+        onDone: (double transferRate, SpeedUnit unit) {
+          setData(ssid, transferRate, uploadRate,
+              unitText == SpeedUnit.Kbps ? 'Kb/s' : 'Mb/s', pingTime);
+          internetSpeedTestStream = speedTestUp().asStream().listen((event) {});
+        },
+        onProgress: ((percent, transferRate, unit) {
+          if (donwloadRate == 0) {
+            setData(ssid, transferRate, uploadRate,
+                unitText == SpeedUnit.Kbps ? 'Kb/s' : 'Mb/s', pingTime);
+          }
+        }),
+        onError: ((errorMessage, speedTestError) => log(
+            'the errorMessage $errorMessage, the speedTestError $speedTestError')),
+        fileSize: 1);
+  }
+
+  Future<void> speedTestUp() async {
+    internetSpeedTest
+        .startUploadTesting(
+            onDone: (double transferRate, SpeedUnit unit) {
+              setData(ssid, donwloadRate, transferRate,
+                  unitText == SpeedUnit.Kbps ? 'Kb/s' : 'Mb/s', pingTime);
+              internetSpeedTestStream =
+                  speedTestDown().asStream().listen((event) {});
+            },
+            onProgress: ((percent, transferRate, unit) {}),
+            onError: ((errorMessage, speedTestError) => log(
+                'the errorMessage $errorMessage, the speedTestError $speedTestError')),
+            fileSize: 1)
+        .asStream();
+  }
+
+  void getSSID() async {
+    await Permission.location.request().isGranted;
+    await networkInfo.getWifiName().then((value) =>
+        setData(value!, donwloadRate, uploadRate, unitText, pingTime));
+  }
 
   Future<void> addNetworkDevice() async {
-    await NetworkInfo().getWifiIP().then((ip) async {
+    await networkInfo.getWifiIP().then((ip) async {
       String subnet = ip!.substring(0, ip.lastIndexOf('.'));
-      for (i = 1; i <= 255; i++) {
-        await Socket.connect(
-            '$subnet.$i', 80, timeout: Duration(milliseconds: 100)).then(
-                (socket) async {
-              await InternetAddress(socket.address.address).reverse().then((
-                  value) {
-                Map<String, String> deviceData = {
-                  'name': '${value.host.substring(0, value.host.indexOf('.'))}',
-                  'ip': '${socket.address.address}'
-                };
-                setState(() {
-                  devices.add(deviceData);
-                  devices = devices.map((item) => jsonEncode(item)).toList();
-                  devices = devices.toSet().toList();
-                  devices = devices.map((item) => jsonDecode(item)).toList();
-                  devices.sort((s1, s2) {
-                    List<String> ips1 = s1['ip']!.split(".");
-                    String updatedIp1 = sprintf(
-                        "%3s.%3s.%3s.%3s",
-                        [ips1[0], ips1[1], ips1[2], ips1[3]]);
-                    List<String> ips2 = s2['ip']!.split(".");
-                    String updatedIp2 = sprintf(
-                        "%3s.%3s.%3s.%3s",
-                        [ips2[0], ips2[1], ips2[2], ips2[3]]);
-                    return updatedIp1.compareTo(updatedIp2);
-                  });
-                });
+      for (ipNumber; ipNumber <= 255; ipNumber++) {
+        await Socket.connect('$subnet.$ipNumber', 80,
+                timeout: const Duration(milliseconds: 100))
+            .then((socket) async {
+          await InternetAddress(socket.address.address).reverse().then((value) {
+            Map<String, String> deviceData = {
+              'name': value.host.substring(0, value.host.indexOf('.')),
+              'ip': socket.address.address
+            };
+            setState(() {
+              devices.add(deviceData);
+              devices = devices.map((item) => jsonEncode(item)).toList();
+              devices = devices.toSet().toList();
+              devices = devices.map((item) => jsonDecode(item)).toList();
+              devices.sort((s1, s2) {
+                List<String> ips1 = s1['ip']!.split(".");
+                String updatedIp1 = sprintf(
+                    "%3s.%3s.%3s.%3s", [ips1[0], ips1[1], ips1[2], ips1[3]]);
+                List<String> ips2 = s2['ip']!.split(".");
+                String updatedIp2 = sprintf(
+                    "%3s.%3s.%3s.%3s", [ips2[0], ips2[1], ips2[2], ips2[3]]);
+                return updatedIp1.compareTo(updatedIp2);
               });
-              socket.destroy();
-            }).catchError((error) {
-          devices.removeWhere((element) => element.containsValue('$subnet.$i'));
+            });
+          });
+          socket.destroy();
+        }).catchError((error) {
+          //setState(() {
+          devices.removeWhere(
+              (element) => element.containsValue('$subnet.$ipNumber'));
+          // });
         });
       }
-    }).then((value) => CustomAppBarLayout.stopAnimation());
+    }).then((value) {
+      CustomAppBarLayout.stopAnimation();
+      ipNumber = 0;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    this.context = context;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
           Container(
             decoration: BoxDecoration(
-                color: Color(0x12ffffff),
+                color: const Color(0x12ffffff),
                 borderRadius: BorderRadius.circular(20.0)),
-            margin: EdgeInsets.only(left: 5, right: 5, top: 10),
+            margin: const EdgeInsets.only(left: 5, right: 5, top: 10),
             child: IntrinsicHeight(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -144,7 +157,7 @@ class NetworkLayout extends State<Network> {
                     flex: 3,
                     child: Column(
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.only(top: 35, bottom: 8),
                           child: Text(
                             'ssid',
@@ -152,10 +165,10 @@ class NetworkLayout extends State<Network> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(bottom: 35),
+                          padding: const EdgeInsets.only(bottom: 35),
                           child: Text(
                             ssid,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18),
@@ -164,7 +177,7 @@ class NetworkLayout extends State<Network> {
                       ],
                     ),
                   ),
-                  VerticalDivider(
+                  const VerticalDivider(
                     width: 1.1,
                     color: Colors.white,
                     indent: 10,
@@ -175,7 +188,7 @@ class NetworkLayout extends State<Network> {
                     flex: 3,
                     child: Column(
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.only(top: 21, bottom: 8),
                           child: Text(
                             'Speed',
@@ -183,20 +196,20 @@ class NetworkLayout extends State<Network> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.only(bottom: 10),
                           child: Text(
-                            '$donwloadRate $unitText',
-                            style: TextStyle(
+                            '${donwloadRate.round()} $unitText',
+                            style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18),
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(bottom: 20),
+                          padding: const EdgeInsets.only(bottom: 20),
                           child: Text(
-                            '$uploadRate $unitText',
-                            style: TextStyle(
+                            '${uploadRate.round()} $unitText',
+                            style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18),
@@ -205,7 +218,7 @@ class NetworkLayout extends State<Network> {
                       ],
                     ),
                   ),
-                  VerticalDivider(
+                  const VerticalDivider(
                     width: 1.1,
                     color: Colors.white,
                     indent: 10,
@@ -216,7 +229,7 @@ class NetworkLayout extends State<Network> {
                     flex: 3,
                     child: Column(
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.only(top: 35, bottom: 8),
                           child: Text(
                             'Ping',
@@ -224,10 +237,10 @@ class NetworkLayout extends State<Network> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(bottom: 35),
+                          padding: const EdgeInsets.only(bottom: 35),
                           child: Text(
                             '$pingTime',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18),
@@ -242,30 +255,30 @@ class NetworkLayout extends State<Network> {
           ),
           Expanded(
             child: ListView.separated(
-              separatorBuilder: (context, index) => Divider(
+              separatorBuilder: (context, index) => const Divider(
                 color: Colors.white,
                 indent: 10,
                 endIndent: 10,
                 thickness: 1.1,
               ),
-              physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.only(top: 20, bottom: 60),
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.only(top: 20, bottom: 60),
               itemCount: devices.length,
               itemBuilder: (context, index) => Container(
-                margin: EdgeInsets.only(left: 15),
+                margin: const EdgeInsets.only(left: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       '${devices.elementAt(index)['name']}',
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 16),
                     ),
                     Text(
                       '${devices.elementAt(index)['ip']}',
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
@@ -280,7 +293,31 @@ class NetworkLayout extends State<Network> {
   @override
   void initState() {
     super.initState();
+    ping();
+    internetSpeedTestStream = speedTestDown().asStream().listen((event) {});
     getSSID();
-    addNetworkDevice();
+    listOfWifiDevices = addNetworkDevice().asStream().listen((event) {});
+  }
+
+  @override
+  void dispose() {
+    _ping.stop();
+    internetSpeedTestStream.cancel();
+    listOfWifiDevices.cancel();
+    super.dispose();
+  }
+
+  void resume() {
+    ping();
+    internetSpeedTestStream = speedTestDown().asStream().listen((event) {});
+    getSSID();
+    listOfWifiDevices = addNetworkDevice().asStream().listen((event) {});
+  }
+
+  void stop() {
+    _ping.stop();
+    internetSpeedTestStream.cancel();
+    listOfWifiDevices.cancel();
+    setData('-', 0, 0, '', 0);
   }
 }

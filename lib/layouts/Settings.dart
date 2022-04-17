@@ -9,13 +9,13 @@ class Settings extends StatefulWidget {
 
 class Settingslayout extends State<Settings> {
 
-  List<Widget> _settings = [
+  final List<Widget> _settings = [
     Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Color(0x12ffffff),
       ),
       child: Row(
-        children: [
+        children: const [
           //Image.memory(),
         ],
       ),
@@ -27,7 +27,7 @@ class Settingslayout extends State<Settings> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: ListView.separated(
-        separatorBuilder: (context, index) => Divider(
+        separatorBuilder: (context, index) => const Divider(
           color: Colors.white,
           indent: 10,
           endIndent: 10,
