@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -14,7 +16,7 @@ void main() async{
   runApp(const MyApp());
 }
 
-void setUserData(Box userData){
+void setUserData(Box<UserData> userData) async{
   var settings = ConnectionSettings(
       host: '192.168.0.51',
       port: 3308,
@@ -22,11 +24,11 @@ void setUserData(Box userData){
       password: 'Electric Royale',
       db: 'UserData'
   );
-  //var conn = await MySqlConnection.connect(settings);
-  //var results = await conn.query('select * from logindata where Name = \'Pascal Michael Reinmuth\'');
-  final data = UserData(profileImage: , name: 'Pascal Michael Reinmuth', email: 'Pascal.Reinmuth@web.de', birthday: '27.02.2005', handyNumber: '+49 176 42656218', address: 'Wilhelm-Herz-Str. 21');
+  var conn = await MySqlConnection.connect(settings);
+  var results = await conn.query('select Profilbild,Name,EmailAddresse,Birthday,Telephonenumber,Addresse from UserData.logindata where Name = \'Pascal Michael Reinmuth\';');
+  Blob profilbild = results.first.fields['Profilbild'];
+  final data = UserData(profileImage: Uint8List.fromList(profilbild.toBytes()), name: results.first.fields['Name'], email: results.first.fields['EmailAddresse'], birthday: results.first.fields['Birthday'], handyNumber: results.first.fields['Telephonenumber'], address: results.first.fields['Addresse']);
   userData.add(data);
-  print('${userData.values.first} hallo');
 }
 
 class MyApp extends StatelessWidget {
@@ -48,7 +50,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Smarthome',
       theme: ThemeData(),
-      home:  MyHomePage(),
+      home:  const MyHomePage(),
     );
   }
 }

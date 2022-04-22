@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:smarthome/Model/UserData.dart';
@@ -12,51 +14,87 @@ class Settings extends StatefulWidget {
   State<StatefulWidget> createState() => Settingslayout();
 }
 
-class Settingslayout extends State<Settings>{
+class Settingslayout extends State<Settings> {
+  late Uint8List _profileImage;
+  String _name = 'Unknown',
+      _email = 'Unknown',
+      _birthday = 'Unknown',
+      _handynumber = 'Unknown',
+      _address = 'Unknown';
 
-  Image _profileImage = Image.asset('assets/person.png');
-  String _name = 'Unknown', _email = 'Unknown', _birthday = 'Unknown', _handynumber = 'Unknown', _address = 'Unknown';
-
-  void setData () async {
-    var userData = Hive.box<UserData>('UserData');
-    var test = userData.values;
-    print(test);
-    /*setState(() {
-      //_profileImage;
-      _name = userData.;
-      _email = userData.get('Email');
+  void setData() async {
+    var userData = Hive.box<UserData>('UserData').values.first;
+    setState(() {
+      _profileImage = userData.profileImage;
+      _name = userData.name;
+      _email = userData.email;
     });
-    _birthday = userData.get('Birthday');
-    _handynumber = userData.get('HandyNumber');
-    _address = userData.get('Address');*/
+    _birthday = userData.birthday;
+    _handynumber = userData.handyNumber;
+    _address = userData.address;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: ListView(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              color: Color(0x12ffffff),
+        backgroundColor: Colors.transparent,
+        body: ListView(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+              decoration: BoxDecoration(
+                color: const Color(0x12ffffff),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              margin: const EdgeInsets.symmetric(horizontal: 5),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Row(children: [
+                        Container(
+                            width: 62.0,
+                            height: 62.0,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: MemoryImage(_profileImage,)
+                                )
+                            )),
+                        Padding(padding: const EdgeInsets.only(left: 12), child:
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _name,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              _email,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                        ),
+                      ])),
+                  const Align(
+                      alignment: Alignment.centerRight,
+                      child: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 15,
+                        color: Colors.white,
+                      )),
+                ],
+              ),
             ),
-            child: Row(
-              children: [
-                _profileImage,
-                Column(
-                  children: [
-                    Text(_name, style: const TextStyle(color: Colors.white),),
-                    Text(_email, style: const TextStyle(color: Colors.white),),
-                  ],
-                ),
-                IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_forward_ios, size: 10,)),
-              ],
-            ),
-          ),
-        ],
-      )
-    );
+          ],
+        ));
   }
 
   @override
