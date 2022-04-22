@@ -78,9 +78,11 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
     switch (result) {
       case ConnectivityResult.wifi:
+        if (connectionError) {
+          Navigator.pop(errorDialogContext);
+          Network.networkLayout.resume();
+        }
         connectionError = false;
-        Navigator.pop(errorDialogContext);
-        Network.networkLayout.resume();
         break;
       case ConnectivityResult.mobile:
         if (connectionError) {
