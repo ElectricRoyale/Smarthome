@@ -45,6 +45,10 @@ class CustomAppBarLayout extends State<CustomAppBar> with SingleTickerProviderSt
     _animationController.animateTo(1);
   }
 
+  static void startAnimation(){
+    _animationController.forward().then((value) => _animationController.repeat());
+  }
+
   @override
   Widget build(BuildContext context) {
     switch (pageParams.elementAt(index)['layout']) {
@@ -63,7 +67,10 @@ class CustomAppBarLayout extends State<CustomAppBar> with SingleTickerProviderSt
                   onPressed: () {
                     switch(index){
                       case 0:
-                        const Statistics();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Statistics()),
+                        );
                         break;
                       case 1:
                         if (_animationController.isAnimating){

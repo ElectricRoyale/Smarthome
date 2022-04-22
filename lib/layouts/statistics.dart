@@ -19,7 +19,7 @@ class Statistics extends StatelessWidget {
         ),
       ),
       child: const Scaffold(
-
+        backgroundColor: Colors.transparent,
       ),
     );
   }
