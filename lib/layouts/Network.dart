@@ -312,6 +312,7 @@ class NetworkLayout extends State<Network> {
     internetSpeedTestStream = speedTestDown().asStream().listen((event) {});
     getSSID();
     listOfWifiDevices = addNetworkDevice().asStream().listen((event) {});
+    CustomAppBarLayout.startAnimation();
   }
 
   void stop() {
