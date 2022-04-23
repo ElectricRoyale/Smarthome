@@ -12,7 +12,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> with TickerProviderStateMixin {
-  bool _isObscure = true, animate = false;
+  bool _isObscure = true;
 
   late final AnimationController _controller = AnimationController(
       reverseDuration: const Duration(milliseconds: 800),
@@ -53,12 +53,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         backgroundColor: Colors.transparent,
         body: Column(
           children: [
-            DelayedDisplay(
-                delay: const Duration(milliseconds: 1000),
-                child: delayedAnimation(
-                    context,
-                    const Duration(milliseconds: 1000),
-                    const Padding(
+            const DelayedDisplay(
+                delay: Duration(),
+                child: Padding(
                         padding: EdgeInsets.only(top: 130),
                         child: Text(
                           'Login',
@@ -66,13 +63,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                               color: Colors.white,
                               fontWeight: FontWeight.w900,
                               fontSize: 36),
-                        )))),
-            DelayedDisplay(
-                delay: const Duration(milliseconds: 2000),
-                child: delayedAnimation(
-                    context,
-                    const Duration(milliseconds: 800),
-                    const Padding(
+                        ))),
+            const DelayedDisplay(
+                delay: Duration(milliseconds: 1000),
+                child: Padding(
                       padding: EdgeInsets.only(top: 130, left: 28, right: 28),
                       child: TextField(
                         decoration: InputDecoration(
@@ -102,13 +96,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                             fontWeight: FontWeight.bold),
                         cursorColor: Colors.white,
                       ),
-                    ))),
+                    )),
             DelayedDisplay(
-                delay: const Duration(milliseconds: 2200),
-                child: delayedAnimation(
-                    context,
-                    const Duration(milliseconds: 600),
-                    Padding(
+                delay: const Duration(milliseconds: 1200),
+                child: Padding(
                       padding:
                           const EdgeInsets.only(top: 60, left: 28, right: 28),
                       child: TextField(
@@ -155,13 +146,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                             fontWeight: FontWeight.bold),
                         cursorColor: Colors.white,
                       ),
-                    ))),
+                    )),
             DelayedDisplay(
-                delay: const Duration(milliseconds: 2250),
-                child: delayedAnimation(
-                    context,
-                    const Duration(milliseconds: 400),
-                    Padding(
+                delay: const Duration(milliseconds: 1250),
+                child: Padding(
                       padding: const EdgeInsets.only(right: 43, top: 5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -174,13 +162,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           )
                         ],
                       ),
-                    ))),
+                    )),
             DelayedDisplay(
-                delay: const Duration(milliseconds: 2750),
-                child: delayedAnimation(
-                    context,
-                    const Duration(milliseconds: 200),
-                    Padding(
+                delay: const Duration(milliseconds: 1750),
+                child: Padding(
                       padding:
                           const EdgeInsets.only(top: 161, left: 28, right: 28),
                       child: TextButton(
@@ -201,13 +186,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           fixedSize: const Size.fromHeight(45),
                         ),
                       ),
-                    ))),
+                    )),
             DelayedDisplay(
-                delay: const Duration(milliseconds: 2950),
-                child: delayedAnimation(
-                  context,
-                  const Duration(),
-                  Row(
+                delay: const Duration(milliseconds: 1950),
+                child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
@@ -220,8 +202,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           /*setState(() {
                             animate = true;
                           });*/
-                          _controller.reverse(from: 1.0);
-                          Future.delayed(const Duration(milliseconds: 1550), () => Navigator.pushReplacement(
+                          _controller.reverse(from: 1.0).then((value) => Navigator.pushReplacement(
                                         context,
                                         PageRouteBuilder(
                                             pageBuilder: (context, animation,
@@ -243,44 +224,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       )
                     ],
                   ),
-                ))
+                )
           ],
         ),
       ),
     ));
-  }
-
-  Widget delayedAnimation(BuildContext context, Duration delay, Widget child) {
-    late final AnimationController _controller = AnimationController(
-        reverseDuration: const Duration(milliseconds: 500),
-        vsync: this,
-        value: 1.0);
-
-    late final AnimationController _controllerSlide = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-    late final Animation<double> _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.decelerate,
-    );
-    late final Animation<Offset> _offsetAnimation = Tween<Offset>(
-      begin: Offset.zero,
-      end: const Offset(0.0, 0.25),
-    ).animate(CurvedAnimation(
-      parent: _controllerSlide,
-      curve: Curves.decelerate,
-    ));
-
-    if (animate) {
-      Future.delayed(delay, () {
-        _controllerSlide.forward();
-        _controller.reverse(from: 1.0);
-      });
-    }
-
-    return FadeTransition(
-        opacity: _animation,
-        child: child);
   }
 }
