@@ -5,7 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:smarthome/Model/UserData.dart';
+import 'package:smarthome/layouts/Login.dart';
 import 'package:smarthome/layouts/mainlayout.dart';
+
+import 'layouts/Register.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,14 +46,13 @@ class MyApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // transparent status bar
       systemNavigationBarColor: Colors.transparent, // navigation bar color
-      statusBarIconBrightness: Brightness.dark, // status bar icons' color
+      statusBarIconBrightness: Brightness.light, // status bar icons' color
       systemNavigationBarIconBrightness:
       Brightness.dark, //navigation bar icons' color
     ),);
     return MaterialApp(
-      title: 'Smarthome',
       theme: ThemeData(),
-      home:  const MyHomePage(),
+      home:  const Login(),
     );
   }
 }
