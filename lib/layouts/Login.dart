@@ -100,10 +100,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    //checkConnection();
-    /*initConnectivity();
+    checkConnection();
+    initConnectivity();
     _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);*/
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     Future.delayed(const Duration(milliseconds: 2900), () => biometricLogin());
   }
 
@@ -130,7 +130,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
   void checkConnection() {
     Socket.connect('192.168.0.51', 80,
-            timeout: const Duration(milliseconds: 500))
+            timeout: const Duration(milliseconds: 1000))
         .then((value) {
       if (connectionError) {
         Navigator.pop(errorDialogContext);
