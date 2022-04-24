@@ -14,24 +14,8 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(UserDataAdapter());
-  var userData = await Hive.openBox<UserData>('UserData');
-  setUserData(userData);
+  await Hive.openBox<UserData>('UserData');
   runApp(const MyApp());
-}
-
-void setUserData(Box<UserData> userData) async{
-  var settings = ConnectionSettings(
-      host: '192.168.0.51',
-      port: 3308,
-      user: 'Pascal',
-      password: 'Electric Royale',
-      db: 'UserData'
-  );
-  var conn = await MySqlConnection.connect(settings);
-  var results = await conn.query('select Profilbild,Name,EmailAddresse,Birthday,Telephonenumber,Addresse from UserData.logindata where Name = \'Pascal Michael Reinmuth\';');
-  Blob profilbild = results.first.fields['Profilbild'];
-  final data = UserData(profileImage: Uint8List.fromList(profilbild.toBytes()), name: results.first.fields['Name'], email: results.first.fields['EmailAddresse'], birthday: results.first.fields['Birthday'], handyNumber: results.first.fields['Telephonenumber'], address: results.first.fields['Addresse']);
-  userData.add(data);
 }
 
 class MyApp extends StatelessWidget {
