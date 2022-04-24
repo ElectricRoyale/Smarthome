@@ -19,7 +19,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin{
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
   int _selectedIndex = 0;
   late var dashboard, network, settings;
   CustomAppBar customAppBar = CustomAppBar();
@@ -31,6 +31,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+
+  double widget1Opacity = 0.0;
 
   Widget getPage(int index) {
     switch (index) {
@@ -176,7 +178,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           ],
         ),
       ),
-      child: Scaffold(
+      child: AnimatedOpacity(
+        opacity: widget1Opacity,
+        duration: Duration(milliseconds: 1500),
+        child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: customAppBar,
         extendBody: true,
@@ -186,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         ),
         bottomNavigationBar: _bottomNavigationBar(),
       ),
-    );
+    ),);
   }
 
   Widget _bottomNavigationBar() {
@@ -237,6 +242,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+      widget1Opacity = 1;
   }
 
   @override

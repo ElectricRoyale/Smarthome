@@ -29,6 +29,9 @@ class MySQLHelper {
           handyNumber: result.first.fields['Telephonenumber'],
           address: result.first.fields['Addresse']);
       userData.add(data);
+      Box loginData = Hive.box('LoginData');
+      loginData.put('name', result.first.fields['Name']);
+      loginData.put('password', Password);
       return true;
     }else{
       return false;

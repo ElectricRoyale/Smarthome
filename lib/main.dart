@@ -1,20 +1,16 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:mysql1/mysql1.dart';
 import 'package:smarthome/Model/UserData.dart';
 import 'package:smarthome/layouts/Login.dart';
 import 'package:smarthome/layouts/mainlayout.dart';
 
-import 'layouts/Register.dart';
-
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(UserDataAdapter());
   await Hive.openBox<UserData>('UserData');
+  await Hive.openBox('LoginData');
   runApp(const MyApp());
 }
 
@@ -27,16 +23,18 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent, // transparent status bar
-      systemNavigationBarColor: Colors.transparent, // navigation bar color
-      statusBarIconBrightness: Brightness.light, // status bar icons' color
-      systemNavigationBarIconBrightness:
-      Brightness.dark, //navigation bar icons' color
-    ),);
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, // transparent status bar
+        systemNavigationBarColor: Colors.transparent, // navigation bar color
+        statusBarIconBrightness: Brightness.light, // status bar icons' color
+        systemNavigationBarIconBrightness:
+            Brightness.dark, //navigation bar icons' color
+      ),
+    );
     return MaterialApp(
-      theme: ThemeData(),
-      home:  const Login(),
+        theme: ThemeData(),
+        home: const Login(),
     );
   }
 }
