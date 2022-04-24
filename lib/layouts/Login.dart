@@ -2,6 +2,9 @@ import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 
 import 'package:smarthome/layouts/Register.dart';
+import 'package:smarthome/layouts/mainlayout.dart';
+import 'package:smarthome/utils/LoadingScreen.dart';
+import 'package:smarthome/utils/MySQLHelper.dart';
 import '../utils/constants.dart';
 
 class Login extends StatefulWidget {
@@ -13,6 +16,8 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> with TickerProviderStateMixin {
   bool _isObscure = true;
+  final nameController = TextEditingController();
+  final passwordController = TextEditingController();
 
   late final AnimationController _controller = AnimationController(
       reverseDuration: const Duration(milliseconds: 800),
@@ -34,28 +39,55 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  late BuildContext loadingDialog;
+  void login() async{
+    showDialog(context: context,
+        barrierDismissible: false,
+        useRootNavigator: false,
+        builder: (BuildContext context) {
+          loadingDialog = context;
+          return LoadingDialog();
+        }
+        );
+    if (await MySQLHelper().login(nameController.text, passwordController.text)){
+      Navigator.pop(loadingDialog);
+      _controller
+          .reverse(from: 1.0)
+          .then((value) => Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+            pageBuilder: (context, animation,
+                secondaryAnimation) =>
+            const MyHomePage(),
+            transitionsBuilder: (context, animation,
+                secondaryAnimation, child) =>
+            child),
+      ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            BACKGROUND_START,
-            BACKGROUND_END,
-          ],
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              BACKGROUND_START,
+              BACKGROUND_END,
+            ],
+          ),
         ),
-      ),
-      child: FadeTransition(
-        opacity: _animation,
-        child:Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Column(
-          children: [
-            const DelayedDisplay(
-                delay: Duration(),
-                child: Padding(
+        child: FadeTransition(
+          opacity: _animation,
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Column(
+              children: [
+                const DelayedDisplay(
+                    delay: Duration(),
+                    child: Padding(
                         padding: EdgeInsets.only(top: 130),
                         child: Text(
                           'Login',
@@ -64,12 +96,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                               fontWeight: FontWeight.w900,
                               fontSize: 36),
                         ))),
-            const DelayedDisplay(
-                delay: Duration(milliseconds: 1000),
-                child: Padding(
-                      padding: EdgeInsets.only(top: 130, left: 28, right: 28),
+                DelayedDisplay(
+                    delay: const Duration(milliseconds: 1000),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 130, left: 28, right: 28),
                       child: TextField(
-                        decoration: InputDecoration(
+                        controller: nameController,
+                        decoration: const InputDecoration(
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(70)),
                             borderSide:
@@ -90,19 +123,20 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           contentPadding: EdgeInsets.all(0),
                           isDense: true,
                         ),
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold),
                         cursorColor: Colors.white,
                       ),
                     )),
-            DelayedDisplay(
-                delay: const Duration(milliseconds: 1200),
-                child: Padding(
+                DelayedDisplay(
+                    delay: const Duration(milliseconds: 1200),
+                    child: Padding(
                       padding:
                           const EdgeInsets.only(top: 60, left: 28, right: 28),
                       child: TextField(
+                        controller: passwordController,
                         obscureText: _isObscure,
                         enableSuggestions: false,
                         decoration: InputDecoration(
@@ -147,9 +181,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                         cursorColor: Colors.white,
                       ),
                     )),
-            DelayedDisplay(
-                delay: const Duration(milliseconds: 1250),
-                child: Padding(
+                DelayedDisplay(
+                    delay: const Duration(milliseconds: 1250),
+                    child: Padding(
                       padding: const EdgeInsets.only(right: 43, top: 5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -163,13 +197,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                         ],
                       ),
                     )),
-            DelayedDisplay(
-                delay: const Duration(milliseconds: 1750),
-                child: Padding(
+                DelayedDisplay(
+                    delay: const Duration(milliseconds: 1750),
+                    child: Padding(
                       padding:
                           const EdgeInsets.only(top: 161, left: 28, right: 28),
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: () => login(),
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: const [
@@ -187,9 +221,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                         ),
                       ),
                     )),
-            DelayedDisplay(
-                delay: const Duration(milliseconds: 1950),
-                child: Row(
+                DelayedDisplay(
+                  delay: const Duration(milliseconds: 1950),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
@@ -199,21 +233,18 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       ),
                       TextButton(
                         onPressed: () {
-                          /*setState(() {
-                            animate = true;
-                          });*/
-                          _controller.reverse(from: 1.0).then((value) => Navigator.pushReplacement(
-                                        context,
-                                        PageRouteBuilder(
-                                            pageBuilder: (context, animation,
-                                                    secondaryAnimation) =>
-                                                const Register(),
-                                            transitionsBuilder: (context,
-                                                    animation,
-                                                    secondaryAnimation,
-                                                    child) =>
-                                                child),
-                                      ));
+                          _controller
+                              .reverse(from: 1.0)
+                              .then((value) => Navigator.pushReplacement(
+                                    context,
+                                    PageRouteBuilder(
+                                        pageBuilder: (context, animation,
+                                                secondaryAnimation) =>
+                                            const Register(),
+                                        transitionsBuilder: (context, animation,
+                                                secondaryAnimation, child) =>
+                                            child),
+                                  ));
                         },
                         child: const Text(
                           'SingUp',
@@ -225,9 +256,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                     ],
                   ),
                 )
-          ],
-        ),
-      ),
-    ));
+              ],
+            ),
+          ),
+        ));
   }
 }

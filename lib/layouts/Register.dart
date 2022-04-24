@@ -51,7 +51,7 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
         ),
         child: FadeTransition(
           opacity: _animation,
-          child:Scaffold(
+          child: Scaffold(
             backgroundColor: Colors.transparent,
             body: Column(
               children: [
@@ -75,12 +75,12 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(70)),
                             borderSide:
-                            BorderSide(color: Colors.white, width: 2.0),
+                                BorderSide(color: Colors.white, width: 2.0),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(70)),
                             borderSide:
-                            BorderSide(color: Colors.white, width: 2.0),
+                                BorderSide(color: Colors.white, width: 2.0),
                           ),
                           hintText: 'Name',
                           hintStyle: TextStyle(color: Colors.white),
@@ -103,22 +103,22 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                     delay: const Duration(milliseconds: 1200),
                     child: Padding(
                       padding:
-                      const EdgeInsets.only(top: 60, left: 28, right: 28),
+                          const EdgeInsets.only(top: 60, left: 28, right: 28),
                       child: TextField(
                         obscureText: _isObscure,
                         enableSuggestions: false,
                         decoration: InputDecoration(
                             focusedBorder: const OutlineInputBorder(
                               borderRadius:
-                              BorderRadius.all(Radius.circular(70)),
+                                  BorderRadius.all(Radius.circular(70)),
                               borderSide:
-                              BorderSide(color: Colors.white, width: 2.0),
+                                  BorderSide(color: Colors.white, width: 2.0),
                             ),
                             enabledBorder: const OutlineInputBorder(
                               borderRadius:
-                              BorderRadius.all(Radius.circular(70)),
+                                  BorderRadius.all(Radius.circular(70)),
                               borderSide:
-                              BorderSide(color: Colors.white, width: 2.0),
+                                  BorderSide(color: Colors.white, width: 2.0),
                             ),
                             hintText: 'Password',
                             hintStyle: const TextStyle(color: Colors.white),
@@ -169,7 +169,7 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                     delay: const Duration(milliseconds: 1750),
                     child: Padding(
                       padding:
-                      const EdgeInsets.only(top: 161, left: 28, right: 28),
+                          const EdgeInsets.only(top: 161, left: 28, right: 28),
                       child: TextButton(
                         onPressed: () {},
                         child: Row(
@@ -201,21 +201,18 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                       ),
                       TextButton(
                         onPressed: () {
-                          /*setState(() {
-                            animate = true;
-                          });*/
-                          _controller.reverse(from: 1.0).then((value) => Navigator.pushReplacement(
-                            context,
-                            PageRouteBuilder(
-                                pageBuilder: (context, animation,
-                                    secondaryAnimation) =>
-                                const Register(),
-                                transitionsBuilder: (context,
-                                    animation,
-                                    secondaryAnimation,
-                                    child) =>
-                                child),
-                          ));
+                          _controller
+                              .reverse(from: 1.0)
+                              .then((value) => Navigator.pushReplacement(
+                                    context,
+                                    PageRouteBuilder(
+                                        pageBuilder: (context, animation,
+                                                secondaryAnimation) =>
+                                            const Login(),
+                                        transitionsBuilder: (context, animation,
+                                                secondaryAnimation, child) =>
+                                            child),
+                                  ));
                         },
                         child: const Text(
                           'SingUp',
