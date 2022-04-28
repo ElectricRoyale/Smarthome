@@ -1,7 +1,7 @@
-
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sprintf/sprintf.dart';
 
 import '../utils/constants.dart';
@@ -18,7 +18,7 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> with TickerProviderStateMixin {
   bool _isObscure = true;
-  AssetImage _profileImage = const AssetImage('assets/person.png');
+  Image _profileImage = Image.asset('assets/person.png');
   DateTime birthday = DateTime(2000, 1, 1);
 
   late final AnimationController _controller = AnimationController(
@@ -76,16 +76,66 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                     child: Padding(
                         padding:
                             const EdgeInsets.only(top: 30, left: 28, right: 28),
-                        child: Container(
-                            width: 106.0,
-                            height: 106.0,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.white),
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: _profileImage,
-                                ))))),
+                        child: MaterialButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                                context: context,
+                                backgroundColor: Colors.transparent,
+                                builder: (BuildContext context) {
+                                  return Container(
+                                    decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(26)),
+                                      color: Color(0xff292828),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Align(
+                                            alignment: Alignment.centerLeft,
+                                            child:
+                                        Column(
+                                            children: [
+                                          IconButton(
+                                            onPressed: () {},
+                                            icon: SvgPicture.asset(
+                                              "assets/gallery.svg",
+                                              width: 100,
+                                              height: 100,
+                                            ),
+                                            iconSize: 70,
+                                          ),
+                                          const Text(
+                                            'Gallery',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          )
+                                        ])),
+                                        Column(children: [
+                                          IconButton(
+                                              onPressed: () {},
+                                              icon: SvgPicture.asset(
+                                                  "assets/gallery.svg")),
+                                          const Text(
+                                            'Gallery',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          )
+                                        ]),
+                                      ],
+                                    ),
+                                    height: 130,
+                                    clipBehavior: Clip.hardEdge,
+                                  );
+                                });
+                          },
+                          elevation: 0.0,
+                          child: _profileImage,
+                          shape: const CircleBorder(
+                              side:
+                                  BorderSide(color: Colors.white, width: 2.0)),
+                          minWidth: 106.0,
+                          height: 106.0,
+                        ))),
                 const DelayedDisplay(
                     delay: Duration(milliseconds: 1000),
                     child: Padding(
@@ -160,51 +210,80 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                       child: OutlinedButton(
                         onPressed: () {
                           showRoundedDatePicker(
-                            context: context,
-                            initialDate: birthday,
-                            firstDate: DateTime(1800),
-                            lastDate: DateTime(2600),
-                            height: 340,
-                            borderRadius: 16,
-                            imageHeader: const AssetImage('assets/datepickerbackground.png'),
-                            customWeekDays: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
-                            styleDatePicker: MaterialRoundedDatePickerStyle(
-                              textStyleDayButton: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900,
-                                fontSize: 26,),
-                              textStyleYearButton: const TextStyle(
-                                fontSize: 21,
-                                color: Colors.white,
+                              context: context,
+                              initialDate: birthday,
+                              firstDate: DateTime(1800),
+                              lastDate: DateTime(2600),
+                              height: 340,
+                              borderRadius: 16,
+                              imageHeader: const AssetImage(
+                                  'assets/datepickerbackground.png'),
+                              customWeekDays: [
+                                "SUN",
+                                "MON",
+                                "TUE",
+                                "WED",
+                                "THU",
+                                "FRI",
+                                "SAT"
+                              ],
+                              styleDatePicker: MaterialRoundedDatePickerStyle(
+                                textStyleDayButton: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 26,
+                                ),
+                                textStyleYearButton: const TextStyle(
+                                  fontSize: 21,
+                                  color: Colors.white,
+                                ),
+                                textStyleDayHeader: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                                textStyleCurrentDayOnCalendar: const TextStyle(
+                                    color: Color(0xffaf0000),
+                                    fontWeight: FontWeight.bold),
+                                textStyleDayOnCalendar:
+                                    const TextStyle(color: Colors.white),
+                                textStyleDayOnCalendarSelected: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                                textStyleDayOnCalendarDisabled: TextStyle(
+                                    color: Colors.white.withOpacity(0.1)),
+                                textStyleMonthYearHeader: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                                paddingDatePicker: const EdgeInsets.all(0),
+                                paddingMonthHeader: const EdgeInsets.all(16),
+                                paddingDateYearHeader: const EdgeInsets.all(32),
+                                colorArrowNext: Colors.white,
+                                colorArrowPrevious: Colors.white,
+                                textStyleButtonPositive: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                                textStyleButtonNegative: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                                decorationDateSelected: const BoxDecoration(
+                                    color: Color(0xffaf0000),
+                                    shape: BoxShape.circle),
+                                backgroundPicker:
+                                    BACKGROUND_END,
+                                backgroundHeader: const Color(0xffaf0000),
+                                backgroundHeaderMonth:
+                                  BACKGROUND_END,
                               ),
-                              textStyleDayHeader: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold
-                              ),
-                              textStyleCurrentDayOnCalendar:
-                              const TextStyle(color: Color(0xffaf0000), fontWeight: FontWeight.bold),
-                              textStyleDayOnCalendar: const TextStyle(color: Colors.white),
-                              textStyleDayOnCalendarSelected:
-                              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                              textStyleDayOnCalendarDisabled: TextStyle( color: Colors.white.withOpacity(0.1)),
-                              textStyleMonthYearHeader:
-                              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                              paddingDatePicker: const EdgeInsets.all(0),
-                              paddingMonthHeader: const EdgeInsets.all(16),
-                              paddingDateYearHeader: const EdgeInsets.all(32),
-                              colorArrowNext: Colors.white,
-                              colorArrowPrevious: Colors.white,
-                              textStyleButtonPositive: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                              textStyleButtonNegative: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                              decorationDateSelected: const BoxDecoration(color: Color(0xffaf0000), shape: BoxShape.circle),
-                              backgroundPicker: ThemeData.dark().backgroundColor,
-                              backgroundHeader: const Color(0xffaf0000),
-                              backgroundHeaderMonth: ThemeData.dark().backgroundColor,
-                            ),styleYearPicker: MaterialRoundedYearPickerStyle(
-                            textStyleYear: const TextStyle(fontSize: 21, color: Colors.white),
-                            textStyleYearSelected: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
-                            heightYearRow: 32,
-                            backgroundPicker: ThemeData.dark().backgroundColor,
-                          )
-                          ).then((value) {
+                              styleYearPicker: MaterialRoundedYearPickerStyle(
+                                textStyleYear: const TextStyle(
+                                    fontSize: 21, color: Colors.white),
+                                textStyleYearSelected: const TextStyle(
+                                    fontSize: 24,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                                heightYearRow: 32,
+                                backgroundPicker:
+                                    BACKGROUND_END,
+                              )).then((value) {
                             setState(() {
                               if (value != null && value != birthday) {
                                 birthday = value;
