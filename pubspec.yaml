@@ -47,7 +47,9 @@ dependencies:
   permission_handler: ^9.2.0
   delayed_display: ^2.0.0
   local_auth: ^2.0.0
-  intl_phone_number_input: ^0.7.0+2
+  flutter_libphonenumber: ^1.2.4
+  image_cropper: ^1.5.1
+  image_picker: ^0.8.5
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
@@ -78,6 +80,7 @@ flutter:
     - assets/datepickerbackground.png
     - assets/error.svg
     - assets/full_signal.svg
+    - assets/gallery.svg
     - assets/garden.svg
     - assets/heating_system.svg
     - assets/house_app_icon.svg
