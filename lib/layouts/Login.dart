@@ -484,7 +484,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       ),
                       if (retry)
                         TextButton(
-                            onPressed: () {}, child: const Text('Retry')),
+                            onPressed: () => checkConnection(), child: const Text('Retry')),
                     ],
                   ),
                 ]),

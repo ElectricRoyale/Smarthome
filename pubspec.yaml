@@ -75,6 +75,7 @@ flutter:
   assets:
     - assets/Air_conditioner.svg
     - assets/bed.svg
+    - assets/camera.svg
     - assets/coffee_machine.svg
     - assets/computer.svg
     - assets/datepickerbackground.png

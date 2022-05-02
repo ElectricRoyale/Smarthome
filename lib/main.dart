@@ -5,6 +5,8 @@ import 'package:smarthome/Model/UserData.dart';
 import 'package:smarthome/layouts/Login.dart';
 import 'package:smarthome/layouts/mainlayout.dart';
 
+import 'layouts/Register.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
