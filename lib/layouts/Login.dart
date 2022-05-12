@@ -112,7 +112,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   }
 
   void biometricLogin() async {
-    if (loginData.isNotEmpty) {
+    if (loginData.isNotEmpty && !connectionError) {
       nameController.text = loginData.get('name');
       if (await auth.isDeviceSupported() && await auth.canCheckBiometrics) {
         if (await auth.authenticate(
@@ -135,6 +135,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       if (connectionError) {
         Navigator.pop(errorDialogContext);
         connectionError = false;
+        biometricLogin();
       }
     }).catchError((error) {
       if (connectionError) Navigator.pop(errorDialogContext);

@@ -9,7 +9,7 @@ part 'UserData.g.dart';
 class UserData extends HiveObject{
 
   @HiveField(0)
-  late Uint8List profileImage;
+  late Uint8List? profileImage;
 
   @HiveField(1)
   late String name;

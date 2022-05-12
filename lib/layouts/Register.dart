@@ -37,7 +37,9 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
       passwordError = false,
       confirmPasswordError = false,
       connectionError = false;
-  late BuildContext errorDialogContext, registerErrorDialogContext, loadingDialog;
+  late BuildContext errorDialogContext,
+      registerErrorDialogContext,
+      loadingDialog;
 
   String nameErrorText = '',
       emailErrorText = '',
@@ -47,7 +49,8 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
     'assets/person.png',
     fit: BoxFit.cover,
   );
-  late Uint8List _profileImageInster;
+  late XFile _pickedImage;
+  Uint8List? _profileImageInster;
   DateTime birthday = DateTime(2000, 1, 1);
   final _nameController = TextEditingController(),
       _emailController = TextEditingController(),
@@ -112,7 +115,10 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    Future.delayed(const Duration(milliseconds: 300), () => registerErrorDialog('Test', 'This is a test, for design this dialog!'));
+   // Future.delayed(
+        //const Duration(milliseconds: 300),
+        //() => registerErrorDialog(
+          //  'Test', 'This is a test, for design this dialog!'));
     super.initState();
     initConnectivity();
     _connectivitySubscription =
@@ -178,19 +184,17 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceAround,
                                         children: [
-                                          Align(
-                                              alignment: Alignment.centerLeft,
-                                              child: Column(children: [
+                                          Column(children: [
                                                 IconButton(
                                                   onPressed: () async {
-                                                    final image =
-                                                        await ImagePicker()
+                                                    _pickedImage =
+                                                        (await ImagePicker()
                                                             .pickImage(
                                                                 source:
                                                                     ImageSource
-                                                                        .gallery);
+                                                                        .gallery))!;
                                                     _cropImage(
-                                                        File(image!.path),
+                                                        File(_pickedImage.path),
                                                         context);
                                                   },
                                                   icon: SvgPicture.asset(
@@ -205,17 +209,17 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                                                   style: TextStyle(
                                                       color: Colors.white),
                                                 )
-                                              ])),
+                                              ]),
                                           Column(children: [
                                             IconButton(
                                               onPressed: () async {
-                                                final image =
-                                                    await ImagePicker()
+                                                _pickedImage =
+                                                (await ImagePicker()
                                                         .pickImage(
                                                             source: ImageSource
-                                                                .camera);
+                                                                .camera))!;
                                                 _cropImage(
-                                                    File(image!.path), context);
+                                                    File(_pickedImage.path), context);
                                               },
                                               icon: SvgPicture.asset(
                                                 "assets/camera.svg",
@@ -249,7 +253,7 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                                   BorderSide(color: Colors.white, width: 2.0)),
                         ))),
                 DelayedDisplay(
-                    delay: const Duration(milliseconds: 1000),
+                    delay: const Duration(milliseconds: 1200),
                     child: Padding(
                         padding:
                             const EdgeInsets.only(top: 30, left: 28, right: 28),
@@ -299,7 +303,7 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                           },
                         ))),
                 DelayedDisplay(
-                    delay: const Duration(milliseconds: 1000),
+                    delay: const Duration(milliseconds: 1400),
                     child: Padding(
                         padding:
                             const EdgeInsets.only(top: 10, left: 28, right: 28),
@@ -349,7 +353,7 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                           },
                         ))),
                 DelayedDisplay(
-                    delay: const Duration(milliseconds: 1200),
+                    delay: const Duration(milliseconds: 1600),
                     child: Padding(
                       padding:
                           const EdgeInsets.only(top: 10, left: 28, right: 28),
@@ -469,7 +473,7 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                       ),
                     )),
                 DelayedDisplay(
-                    delay: const Duration(milliseconds: 1400),
+                    delay: const Duration(milliseconds: 1800),
                     child: Padding(
                         padding:
                             const EdgeInsets.only(top: 10, left: 28, right: 28),
@@ -537,7 +541,7 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                           },
                         ))),
                 DelayedDisplay(
-                    delay: const Duration(milliseconds: 1600),
+                    delay: const Duration(milliseconds: 2000),
                     child: Padding(
                         padding:
                             const EdgeInsets.only(top: 10, left: 28, right: 28),
@@ -614,7 +618,7 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                           },
                         ))),
                 DelayedDisplay(
-                    delay: const Duration(milliseconds: 2150),
+                    delay: const Duration(milliseconds: 2550),
                     child: Padding(
                       padding:
                           const EdgeInsets.only(top: 70, left: 28, right: 28),
@@ -656,14 +660,19 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                                                     child) =>
                                                 child),
                                       ));
-                            }else{
+                            } else {
                               Navigator.pop(loadingDialog);
                               setState(() {
-                                result == 'failed' ? registerErrorDialog('Registration failed', 'Oops, something went wrong!') : registerErrorDialog('Duplicated user', 'This username already exist! Please, take another Name!');
-                                result == 'isDuplicated' ? nameError = true : null ;
+                                result == 'failed'
+                                    ? registerErrorDialog('Registration failed',
+                                        'Oops, something went wrong!')
+                                    : registerErrorDialog('Duplicated user',
+                                        'This username already exist! Please, take another Name!');
+                                result == 'isDuplicated'
+                                    ? nameError = true
+                                    : null;
                                 nameErrorText = '';
                               });
-
                             }
                           }
                         },
@@ -685,7 +694,7 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                       ),
                     )),
                 DelayedDisplay(
-                  delay: const Duration(milliseconds: 2350),
+                  delay: const Duration(milliseconds: 2750),
                   child: TextButton(
                       onPressed: () {
                         _controller
@@ -782,7 +791,7 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
   void validateEmail() {
     if (_emailController.text.isNotEmpty) {
       if (RegExp(
-          r'^(([^<>()[\]\\.,;:\s@]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])|(([a-zA-Z\-\d]+\.)+[a-zA-Z]{2,}))$')
+              r'^(([^<>()[\]\\.,;:\s@]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])|(([a-zA-Z\-\d]+\.)+[a-zA-Z]{2,}))$')
           .hasMatch(_emailController.text)) {
       } else {
         setState(() {
@@ -803,24 +812,24 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
       if (RegExp(r'^(?=.*[A-Z])').hasMatch(_passwordController.text)) {
         if (RegExp(r'^(?=.*[a-z])').hasMatch(_passwordController.text)) {
           if (RegExp(r'^(?=.*\d)').hasMatch(_passwordController.text)) {
-              if (_passwordController.text.length >= 8) {
-                if (_confirmPasswordController.text.isNotEmpty) {
-                  if (_passwordController.text ==
-                          _confirmPasswordController.text ||
-                      !checkPasswordMatch) {
-                  } else {
-                    setState(() {
-                      passwordError = true;
-                      passwordErrorText = 'Password don\'t be the same!';
-                    });
-                  }
+            if (_passwordController.text.length >= 8) {
+              if (_confirmPasswordController.text.isNotEmpty) {
+                if (_passwordController.text ==
+                        _confirmPasswordController.text ||
+                    !checkPasswordMatch) {
+                } else {
+                  setState(() {
+                    passwordError = true;
+                    passwordErrorText = 'Password don\'t be the same!';
+                  });
                 }
-              } else {
-                setState(() {
-                  passwordError = true;
-                  passwordErrorText = 'Password must be at least 8 characters!';
-                });
               }
+            } else {
+              setState(() {
+                passwordError = true;
+                passwordErrorText = 'Password must be at least 8 characters!';
+              });
+            }
           } else {
             setState(() {
               passwordError = true;
@@ -915,29 +924,39 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
           registerErrorDialogContext = context;
           return Center(
               child: Wrap(children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-            decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(16)), color: ThemeData.dark().backgroundColor),
-            child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18, decoration: TextDecoration.none),
-              ),
-              Padding(padding: const EdgeInsets.only(top: 5), child: Text(
-                error,
-                style: const TextStyle(color: Colors.white, fontSize: 12, decoration: TextDecoration.none),
-                textAlign: TextAlign.center,
-              ),),
-            ],
-          )
-          )]));
+            Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                margin: const EdgeInsets.symmetric(horizontal: 5),
+                decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(16)),
+                    color: ThemeData.dark().backgroundColor),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          decoration: TextDecoration.none),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5),
+                      child: Text(
+                        error,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            decoration: TextDecoration.none),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ))
+          ]));
         });
   }
 }

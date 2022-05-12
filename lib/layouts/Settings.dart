@@ -15,7 +15,7 @@ class Settings extends StatefulWidget {
 }
 
 class Settingslayout extends State<Settings> {
-  late Uint8List _profileImage;
+  Uint8List? _profileImage;
   String _name = 'Unknown',
       _email = 'Unknown',
       _birthday = 'Unknown',
@@ -40,7 +40,7 @@ class Settingslayout extends State<Settings> {
         backgroundColor: Colors.transparent,
         body: ListView(
           children: [
-            Container(
+            MaterialButton(onPressed: (){}, child:Container(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
               decoration: BoxDecoration(
                 color: const Color(0x12ffffff),
@@ -58,9 +58,10 @@ class Settingslayout extends State<Settings> {
                             height: 62.0,
                             decoration: BoxDecoration(
                                 shape: BoxShape.circle,
+                                border: Border.all(color: _profileImage != null ? Colors.transparent : Colors.white),
                                 image: DecorationImage(
                                     fit: BoxFit.cover,
-                                    image: MemoryImage(_profileImage,)
+                                    image: getImage(),
                                 )
                             )),
                         Padding(padding: const EdgeInsets.only(left: 12), child:
@@ -92,9 +93,13 @@ class Settingslayout extends State<Settings> {
                       )),
                 ],
               ),
-            ),
+            )),
           ],
         ));
+  }
+
+  getImage(){
+    return  _profileImage != null ? MemoryImage(_profileImage!,): const AssetImage('assets/person.png');
   }
 
   @override

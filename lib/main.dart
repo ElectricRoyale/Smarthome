@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:smarthome/Model/UserData.dart';
 import 'package:smarthome/layouts/Login.dart';
 import 'package:smarthome/layouts/mainlayout.dart';
+import 'package:smarthome/utils/biometricAuthentication.dart';
 
 import 'layouts/Register.dart';
 
@@ -36,6 +37,9 @@ class MyApp extends StatelessWidget {
     );
     return MaterialApp(
         theme: ThemeData(),
+        routes: {
+          'biometricAuthentication': (BuildContext ctx) => const BiometricAuthentication()
+        },
         home: const Login(),
     );
   }

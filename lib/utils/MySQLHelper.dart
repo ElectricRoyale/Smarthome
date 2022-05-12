@@ -20,13 +20,14 @@ class MySQLHelper {
     var result = await conn.query('select Profilbild,Name,EmailAddresse,Birthday,Telephonenumber,Addresse from UserData.logindata where Name like \'$name%\' and aes_decrypt(Passwort, \'LaK&d;Y+2IT\') = \'$password\';');
     if(result.isNotEmpty) {
       final data = UserData(
-          profileImage: Uint8List.fromList((result.first.fields['Profilbild'] as Blob).toBytes()),
+          profileImage: result.first.fields['Profilbild'] != null ? Uint8List.fromList((result.first.fields['Profilbild'] as Blob).toBytes()) : null,
           name: result.first.fields['Name'],
           email: result.first.fields['EmailAddresse'],
           birthday: result.first.fields['Birthday'],
           handyNumber: result.first.fields['Telephonenumber'],
           address: result.first.fields['Addresse']);
-      Hive.box<UserData>('UserData').putAt(0, data);
+      Box<UserData> userData = Hive.box<UserData>('UserData');
+      userData.isNotEmpty ? userData.putAt(0, data) : userData.add(data);
       Box loginData = Hive.box('LoginData');
       loginData.put('name', result.first.fields['Name']);
       loginData.put('password', password);
@@ -35,7 +36,7 @@ class MySQLHelper {
       return false;
     }
   }
-  Future<String> register(Uint8List profileImage, String name, String email, String birthday, String password)async {
+  Future<String> register(Uint8List? profileImage, String name, String email, String birthday, String password)async {
     conn = await MySqlConnection.connect(settings);
     var rs = await conn.query('select Name from logindata where Name = ?', [name]);
     if (rs.isEmpty) {

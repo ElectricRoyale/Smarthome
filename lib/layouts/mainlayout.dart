@@ -2,15 +2,19 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
-import 'package:smarthome/layouts/customAppBar.dart';
-import 'package:smarthome/utils/constants.dart';
-import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:secure_application/secure_application.dart';
 import 'package:smarthome/layouts/Dashboard.dart';
 import 'package:smarthome/layouts/Network.dart';
 import 'package:smarthome/layouts/Settings.dart';
+import 'package:smarthome/layouts/customAppBar.dart';
+import 'package:smarthome/utils/biometricAuthentication.dart';
+import 'package:smarthome/utils/constants.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -19,15 +23,25 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
+class _MyHomePageState extends State<MyHomePage>
+    with TickerProviderStateMixin, WidgetsBindingObserver{
   int _selectedIndex = 0;
-  late var dashboard, network, settings;
+
+  final LocalAuthentication auth = LocalAuthentication();
+  SecureApplicationController? _secureNotifier;
+
+  AppLifecycleState lastState = AppLifecycleState.resumed;
+
+  //late var dashboard, network, settings;
   CustomAppBar customAppBar = CustomAppBar();
   late BuildContext errorDialogContext;
   bool connectionError = false,
       dashboardIsInit = false,
       networkIsInit = false,
-      settingsIsInit = false;
+      settingsIsInit = false,
+      visible = true;
+
+  AppLifecycleState lastAppState = AppLifecycleState.resumed;
 
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
@@ -37,23 +51,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
   Widget getPage(int index) {
     switch (index) {
       case 0:
-        var page =
+        /*var page =
             dashboardIsInit ? dashboard : (dashboard = const Dashboard());
-        dashboardIsInit = true;
-        return page;
+        dashboardIsInit = true;*/
+        return const Dashboard();
       case 1:
-        var page = networkIsInit ? network : (network = const Network());
-        networkIsInit = true;
-        return page;
+        /*var page = networkIsInit ? network : (network = const Network());
+        networkIsInit = true;*/
+        return const Network();
       case 2:
-        var page = settingsIsInit ? settings : (settings = const Settings());
-        settingsIsInit = true;
-        return page;
+        /*var page = settingsIsInit ? settings : (settings = const Settings());
+        settingsIsInit = true;*/
+        return const Settings();
       default:
-        var page =
+        /*var page =
             dashboardIsInit ? dashboard : (dashboard = const Dashboard());
-        dashboardIsInit = true;
-        return page;
+        dashboardIsInit = true;*/
+        return const Dashboard();
     }
   }
 
@@ -69,7 +83,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
     try {
       result = await _connectivity.checkConnectivity();
     } on PlatformException catch (e) {
-      print(e.toString());
+      if (kDebugMode) {
+        print(e.toString());
+      }
     }
     if (!mounted) {
       return Future.value(null);
@@ -131,13 +147,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
                 child: Stack(children: [
                   Align(
                       child: Padding(
-                        padding: const EdgeInsets.only(bottom: 240),
+                          padding: const EdgeInsets.only(bottom: 240),
                           child: SvgPicture.asset(
-                    'assets/error.svg',
-                    width: 120,
-                    height: 120,
-                    fit: BoxFit.cover,
-                  ))),
+                            'assets/error.svg',
+                            width: 120,
+                            height: 120,
+                            fit: BoxFit.cover,
+                          ))),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -167,7 +183,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SecureApplication(
+        child: SecureGate(
+        lockedBuilder: ((context, secureNotifier) {
+          _secureNotifier = secureNotifier;
+          return const BiometricAuthentication();
+        }),
+        child: Builder(builder: (context) {
+          SecureApplicationProvider.of(context)!.secure();
+          return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -180,18 +204,19 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
       ),
       child: AnimatedOpacity(
         opacity: widget1Opacity,
-        duration: Duration(milliseconds: 1500),
+        duration: const Duration(milliseconds: 1500),
         child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: customAppBar,
-        extendBody: true,
-        body: SafeArea(
-          bottom: false,
-          child: getPage(_selectedIndex),
+          backgroundColor: Colors.transparent,
+          appBar: customAppBar,
+          extendBody: true,
+          body: SafeArea(
+            bottom: false,
+            child: getPage(_selectedIndex),
+          ),
+          bottomNavigationBar: _bottomNavigationBar(),
         ),
-        bottomNavigationBar: _bottomNavigationBar(),
       ),
-    ),);
+        );})));
   }
 
   Widget _bottomNavigationBar() {
@@ -236,19 +261,46 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
     );
   }
 
+  void biometricLogin() async {
+    if (await auth.isDeviceSupported() && await auth.canCheckBiometrics) {
+      if (await auth.authenticate(
+          localizedReason: 'Please complete the biometrics to proceed.',
+          options: const AuthenticationOptions(
+            biometricOnly: true,
+            stickyAuth: true,
+          ))) {
+        _secureNotifier?.authSuccess(unlock: true);
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
-      widget1Opacity = 1;
+    widget1Opacity = 1;
+    WidgetsBinding.instance!.addObserver(this);
   }
 
   @override
   void dispose() {
     _connectivitySubscription.cancel();
+    WidgetsBinding.instance!.removeObserver(this);
     Hive.close();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (lastAppState == AppLifecycleState.paused && state == AppLifecycleState.resumed){
+      biometricLogin();
+      _connectivitySubscription.cancel();
+      _connectivitySubscription =
+          _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    }
+    lastAppState = state;
+    super.didChangeAppLifecycleState(state);
   }
 }
