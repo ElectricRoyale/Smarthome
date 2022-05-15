@@ -8,13 +8,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:secure_application/secure_application.dart';
 import 'package:smarthome/layouts/Dashboard.dart';
 import 'package:smarthome/layouts/Network.dart';
 import 'package:smarthome/layouts/Settings.dart';
 import 'package:smarthome/layouts/customAppBar.dart';
 import 'package:smarthome/utils/biometricAuthentication.dart';
 import 'package:smarthome/utils/constants.dart';
+
+import '../security/secure_application.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -24,7 +25,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage>
-    with TickerProviderStateMixin, WidgetsBindingObserver{
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   int _selectedIndex = 0;
 
   final LocalAuthentication auth = LocalAuthentication();
@@ -98,7 +99,9 @@ class _MyHomePageState extends State<MyHomePage>
       case ConnectivityResult.wifi:
         if (connectionError) {
           Navigator.pop(errorDialogContext);
-          Network.networkLayout.resume();
+          if (_selectedIndex == 1) {
+            Network.networkLayout.resume();
+          }
         }
         connectionError = false;
         break;
@@ -185,38 +188,40 @@ class _MyHomePageState extends State<MyHomePage>
   Widget build(BuildContext context) {
     return SecureApplication(
         child: SecureGate(
-        lockedBuilder: ((context, secureNotifier) {
-          _secureNotifier = secureNotifier;
-          return const BiometricAuthentication();
-        }),
-        child: Builder(builder: (context) {
-          SecureApplicationProvider.of(context)!.secure();
-          return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            BACKGROUND_START,
-            BACKGROUND_END,
-          ],
-        ),
-      ),
-      child: AnimatedOpacity(
-        opacity: widget1Opacity,
-        duration: const Duration(milliseconds: 1500),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: customAppBar,
-          extendBody: true,
-          body: SafeArea(
-            bottom: false,
-            child: getPage(_selectedIndex),
-          ),
-          bottomNavigationBar: _bottomNavigationBar(),
-        ),
-      ),
-        );})));
+            opacity: 0,
+            lockedBuilder: ((context, secureNotifier) {
+              _secureNotifier = secureNotifier;
+              return const BiometricAuthentication();
+            }),
+            child: Builder(builder: (context) {
+              SecureApplicationProvider.of(context)!.secure();
+              return Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      BACKGROUND_START,
+                      BACKGROUND_END,
+                    ],
+                  ),
+                ),
+                child: AnimatedOpacity(
+                  opacity: widget1Opacity,
+                  duration: const Duration(milliseconds: 1500),
+                  child: Scaffold(
+                    backgroundColor: Colors.transparent,
+                    appBar: customAppBar,
+                    extendBody: true,
+                    body: SafeArea(
+                      bottom: false,
+                      child: getPage(_selectedIndex),
+                    ),
+                    bottomNavigationBar: _bottomNavigationBar(),
+                  ),
+                ),
+              );
+            })));
   }
 
   Widget _bottomNavigationBar() {
@@ -281,20 +286,21 @@ class _MyHomePageState extends State<MyHomePage>
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     widget1Opacity = 1;
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     _connectivitySubscription.cancel();
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     Hive.close();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (lastAppState == AppLifecycleState.paused && state == AppLifecycleState.resumed){
+    if (lastAppState == AppLifecycleState.paused &&
+        state == AppLifecycleState.resumed) {
       biometricLogin();
       _connectivitySubscription.cancel();
       _connectivitySubscription =

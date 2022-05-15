@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -115,10 +115,10 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
 
   @override
   void initState() {
-   // Future.delayed(
-        //const Duration(milliseconds: 300),
-        //() => registerErrorDialog(
-          //  'Test', 'This is a test, for design this dialog!'));
+    // Future.delayed(
+    //const Duration(milliseconds: 300),
+    //() => registerErrorDialog(
+    //  'Test', 'This is a test, for design this dialog!'));
     super.initState();
     initConnectivity();
     _connectivitySubscription =
@@ -185,41 +185,41 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                                             MainAxisAlignment.spaceAround,
                                         children: [
                                           Column(children: [
-                                                IconButton(
-                                                  onPressed: () async {
-                                                    _pickedImage =
-                                                        (await ImagePicker()
-                                                            .pickImage(
-                                                                source:
-                                                                    ImageSource
-                                                                        .gallery))!;
-                                                    _cropImage(
-                                                        File(_pickedImage.path),
-                                                        context);
-                                                  },
-                                                  icon: SvgPicture.asset(
-                                                    "assets/gallery.svg",
-                                                    width: 100,
-                                                    height: 100,
-                                                  ),
-                                                  iconSize: 70,
-                                                ),
-                                                const Text(
-                                                  'Gallery',
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                )
-                                              ]),
+                                            IconButton(
+                                              onPressed: () async {
+                                                _pickedImage =
+                                                    (await ImagePicker()
+                                                        .pickImage(
+                                                            source: ImageSource
+                                                                .gallery))!;
+                                                _cropImage(
+                                                    File(_pickedImage.path),
+                                                    context);
+                                              },
+                                              icon: SvgPicture.asset(
+                                                "assets/gallery.svg",
+                                                width: 100,
+                                                height: 100,
+                                              ),
+                                              iconSize: 70,
+                                            ),
+                                            const Text(
+                                              'Gallery',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            )
+                                          ]),
                                           Column(children: [
                                             IconButton(
                                               onPressed: () async {
                                                 _pickedImage =
-                                                (await ImagePicker()
+                                                    (await ImagePicker()
                                                         .pickImage(
                                                             source: ImageSource
                                                                 .camera))!;
                                                 _cropImage(
-                                                    File(_pickedImage.path), context);
+                                                    File(_pickedImage.path),
+                                                    context);
                                               },
                                               icon: SvgPicture.asset(
                                                 "assets/camera.svg",
@@ -745,15 +745,17 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
               CropAspectRatioPreset.ratio16x9
             ],
       cropStyle: CropStyle.circle,
-      androidUiSettings: const AndroidUiSettings(
-          toolbarTitle: 'Cropper',
-          toolbarColor: Colors.deepOrange,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false),
-      iosUiSettings: const IOSUiSettings(
-        title: 'Cropper',
-      ),
+      uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        IOSUiSettings(
+          title: 'Cropper',
+        )
+      ],
       compressQuality: 100,
     );
     _profileImageInster = await imageFile!.readAsBytes();

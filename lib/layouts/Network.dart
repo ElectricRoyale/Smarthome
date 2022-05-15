@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:dart_ping/dart_ping.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:lan_scanner/lan_scanner.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:smarthome/layouts/customAppBar.dart';
+import 'package:speed_test_port/speed_test_port.dart';
 import 'package:sprintf/sprintf.dart';
-import 'package:internet_speed_test/callbacks_enum.dart';
-import 'package:internet_speed_test/internet_speed_test.dart';
+import 'package:wifi_info_plugin_plus/wifi_info_plugin_plus.dart';
 
 class Network extends StatefulWidget {
   const Network({Key? key}) : super(key: key);
@@ -23,116 +24,123 @@ class Network extends StatefulWidget {
 
 class NetworkLayout extends State<Network> {
   List<dynamic> devices = [];
-  late StreamSubscription<void> internetSpeedTestStream, listOfWifiDevices;
+  late StreamSubscription<void> listOfWifiDevices;
 
-  final internetSpeedTest = InternetSpeedTest();
-  final _ping = Ping('google.com');
+  var _ping = Ping('google.com');
   var networkInfo = NetworkInfo();
 
   String ssid = '-';
-  double donwloadRate = 0;
-  double uploadRate = 0;
-  var unitText = 'Mb/s';
-  int pingTime = 0, ipNumber = 0;
+  int donwloadRate = 0;
+  int uploadRate = 0;
+  var unitText = 'MB/s';
+  int pingTime = 0;
+  bool running = true;
+  @override
   late BuildContext context;
 
-  void setData(
-      String ssid, double download, double upload, String unitText, int ping) {
+  SpeedTest tester = SpeedTest();
+
+  void setData(String ssid, int download, int upload, int ping) {
     setState(() {
       this.ssid = ssid;
       donwloadRate = download;
       uploadRate = upload;
-      this.unitText = unitText;
       pingTime = ping;
     });
   }
 
   Future<void> ping() async {
     _ping.stream.listen((result) {
-      setData(ssid, donwloadRate, uploadRate, unitText,
+      setData(ssid, donwloadRate, uploadRate,
           result.response!.time!.inMilliseconds);
     });
   }
 
-  Future<void> speedTestDown() async {
-    internetSpeedTest.startDownloadTesting(
-        onDone: (double transferRate, SpeedUnit unit) {
-          setData(ssid, transferRate, uploadRate,
-              unitText == SpeedUnit.Kbps ? 'Kb/s' : 'Mb/s', pingTime);
-          internetSpeedTestStream = speedTestUp().asStream().listen((event) {});
-        },
-        onProgress: ((percent, transferRate, unit) {
-          if (donwloadRate == 0) {
-            setData(ssid, transferRate, uploadRate,
-                unitText == SpeedUnit.Kbps ? 'Kb/s' : 'Mb/s', pingTime);
-          }
-        }),
-        onError: ((errorMessage, speedTestError) => log(
-            'the errorMessage $errorMessage, the speedTestError $speedTestError')),
-        fileSize: 1);
+  Future<void> getWifiSpeed() async {
+    WifiInfoWrapper? wifiObject;
+
+    while (running) {
+      wifiObject = await WifiInfoPlugin.wifiDetails;
+      setData(ssid, wifiObject!.linkSpeed, uploadRate, pingTime);
+      await Future.delayed(const Duration(seconds: 5));
+    }
   }
 
-  Future<void> speedTestUp() async {
-    internetSpeedTest
-        .startUploadTesting(
-            onDone: (double transferRate, SpeedUnit unit) {
-              setData(ssid, donwloadRate, transferRate,
-                  unitText == SpeedUnit.Kbps ? 'Kb/s' : 'Mb/s', pingTime);
-              internetSpeedTestStream =
-                  speedTestDown().asStream().listen((event) {});
-            },
-            onProgress: ((percent, transferRate, unit) {}),
-            onError: ((errorMessage, speedTestError) => log(
-                'the errorMessage $errorMessage, the speedTestError $speedTestError')),
-            fileSize: 1)
-        .asStream();
+  Future<void> uploadSpeedTest() async {
+    var settings = await tester.GetSettings();
+    var servers = settings.servers;
+
+    for (var server in servers) {
+      server.Latency = await tester.TestServerLatency(server, 3);
+    }
+
+    //Getting best server
+    servers.sort((a, b) => a.Latency.compareTo(b.Latency));
+    var bestServer = servers.first;
+
+    while (running) {
+      var uploadSpeed = await tester.TestUploadSpeed(
+          bestServer,
+          settings.upload.ThreadsPerUrl == 0
+              ? 2
+              : settings.upload.ThreadsPerUrl,
+          3);
+      setData(ssid, donwloadRate, uploadSpeed.round(), pingTime);
+      await Future.delayed(const Duration(seconds: 5));
+    }
   }
 
   void getSSID() async {
     await Permission.location.request().isGranted;
-    await networkInfo.getWifiName().then((value) =>
-        setData(value!, donwloadRate, uploadRate, unitText, pingTime));
+    await networkInfo
+        .getWifiName()
+        .then((value) => setData(value!, donwloadRate, uploadRate, pingTime));
   }
 
   Future<void> addNetworkDevice() async {
     await networkInfo.getWifiIP().then((ip) async {
-      String subnet = ip!.substring(0, ip.lastIndexOf('.'));
-      for (ipNumber; ipNumber <= 255; ipNumber++) {
-        await Socket.connect('$subnet.$ipNumber', 80,
-                timeout: const Duration(milliseconds: 100))
-            .then((socket) async {
-          await InternetAddress(socket.address.address).reverse().then((value) {
-            Map<String, String> deviceData = {
-              'name': value.host.substring(0, value.host.indexOf('.')),
-              'ip': socket.address.address
-            };
-            setState(() {
-              devices.add(deviceData);
-              devices = devices.map((item) => jsonEncode(item)).toList();
-              devices = devices.toSet().toList();
-              devices = devices.map((item) => jsonDecode(item)).toList();
-              devices.sort((s1, s2) {
-                List<String> ips1 = s1['ip']!.split(".");
-                String updatedIp1 = sprintf(
-                    "%3s.%3s.%3s.%3s", [ips1[0], ips1[1], ips1[2], ips1[3]]);
-                List<String> ips2 = s2['ip']!.split(".");
-                String updatedIp2 = sprintf(
-                    "%3s.%3s.%3s.%3s", [ips2[0], ips2[1], ips2[2], ips2[3]]);
-                return updatedIp1.compareTo(updatedIp2);
-              });
+      String subnet = ipToCSubnet(ip!);
+      final scanner = LanScanner(debugLogging: true);
+
+      final stream = scanner.icmpScan(
+        subnet,
+        progressCallback: (progress) {
+          if (kDebugMode) {
+            print('progress: $progress');
+          }
+        },
+      );
+
+      stream.handleError((host) {
+        if (!host.isReachable) {
+          devices.removeWhere((element) => element.containsValue(host.ip));
+        }
+      });
+
+      listOfWifiDevices = stream.listen((host) async {
+        await InternetAddress(host.ip).reverse().then((value) {
+          Map<String, String> deviceData = {
+            'name': value.host.substring(0, value.host.indexOf('.')),
+            'ip': host.ip
+          };
+          setState(() {
+            devices.add(deviceData);
+            devices = devices.map((item) => jsonEncode(item)).toList();
+            devices = devices.toSet().toList();
+            devices = devices.map((item) => jsonDecode(item)).toList();
+            devices.sort((s1, s2) {
+              List<String> ips1 = s1['ip']!.split(".");
+              String updatedIp1 = sprintf(
+                  "%3s.%3s.%3s.%3s", [ips1[0], ips1[1], ips1[2], ips1[3]]);
+              List<String> ips2 = s2['ip']!.split(".");
+              String updatedIp2 = sprintf(
+                  "%3s.%3s.%3s.%3s", [ips2[0], ips2[1], ips2[2], ips2[3]]);
+              return updatedIp1.compareTo(updatedIp2);
             });
           });
-          socket.destroy();
-        }).catchError((error) {
-          //setState(() {
-          devices.removeWhere(
-              (element) => element.containsValue('$subnet.$ipNumber'));
-          // });
         });
-      }
-    }).then((value) {
-      CustomAppBarLayout.stopAnimation();
-      ipNumber = 0;
+      });
+      listOfWifiDevices.onDone(() => CustomAppBarLayout.stopAnimation());
     });
   }
 
@@ -198,7 +206,7 @@ class NetworkLayout extends State<Network> {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 10),
                           child: Text(
-                            '${donwloadRate.round()} $unitText',
+                            '$donwloadRate $unitText',
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -208,7 +216,7 @@ class NetworkLayout extends State<Network> {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 20),
                           child: Text(
-                            '${uploadRate.round()} $unitText',
+                            '$uploadRate $unitText',
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -294,31 +302,36 @@ class NetworkLayout extends State<Network> {
   void initState() {
     super.initState();
     ping();
-    internetSpeedTestStream = speedTestDown().asStream().listen((event) {});
     getSSID();
-    listOfWifiDevices = addNetworkDevice().asStream().listen((event) {});
+    addNetworkDevice();
+    getWifiSpeed();
+    uploadSpeedTest();
   }
 
   @override
   void dispose() {
     _ping.stop();
-    internetSpeedTestStream.cancel();
     listOfWifiDevices.cancel();
+    running = false;
     super.dispose();
   }
 
   void resume() {
+    _ping = Ping('google.com');
     ping();
-    internetSpeedTestStream = speedTestDown().asStream().listen((event) {});
     getSSID();
-    listOfWifiDevices = addNetworkDevice().asStream().listen((event) {});
+    listOfWifiDevices.resume();
     CustomAppBarLayout.startAnimation();
+    running = true;
+    getWifiSpeed();
+    uploadSpeedTest();
   }
 
   void stop() {
     _ping.stop();
-    internetSpeedTestStream.cancel();
-    listOfWifiDevices.cancel();
-    setData('-', 0, 0, '', 0);
+    listOfWifiDevices.pause();
+    CustomAppBarLayout.stopAnimation();
+    setData('-', 0, 0, 0);
+    running = false;
   }
 }
