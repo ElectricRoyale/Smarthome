@@ -6,10 +6,10 @@ class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
 
   @override
-  _AccountPageState createState() => _AccountPageState();
+  AccountPageState createState() => AccountPageState();
 }
 
-class _AccountPageState extends State<AccountPage> {
+class AccountPageState extends State<AccountPage> {
   @override
   void initState() {
     super.initState();

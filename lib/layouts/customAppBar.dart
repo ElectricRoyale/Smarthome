@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dart_ping/dart_ping.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -5,7 +7,7 @@ import 'package:smarthome/layouts/statistics.dart';
 
 import 'Network.dart';
 
-const pageParams = [
+var pageParams = [
   {
     'name': 'Rooms',
     'icon': 'assets/house_app_icon.svg',
@@ -19,46 +21,44 @@ const pageParams = [
   {'name': 'Settings', 'con': '', 'layout': CustomAppBar.APP_BAR_WITHOUT_ICONS},
 ];
 
+late final GlobalKey<NetworkLayout> network;
+
 class CustomAppBar extends StatefulWidget with PreferredSizeWidget {
   @override
   final Size preferredSize;
-  static const APP_BAR_WITH_ICONS = 0;
-  static const APP_BAR_WITHOUT_ICONS = 1;
+  static int get APP_BAR_WITH_ICONS => 0;
+  static int get APP_BAR_WITHOUT_ICONS => 1;
 
-  CustomAppBarLayout customAppBarLayout = CustomAppBarLayout();
-
-  CustomAppBar({Key? key})
+  CustomAppBar({Key? key, required network})
       : preferredSize = const Size.fromHeight(70.0),
         super(key: key);
 
   @override
-  State<StatefulWidget> createState() => customAppBarLayout;
-
-  void update(int index) {
-    customAppBarLayout.changeIndex(index);
-  }
+  State<StatefulWidget> createState() => CustomAppBarLayout();
 }
 
 class CustomAppBarLayout extends State<CustomAppBar>
     with SingleTickerProviderStateMixin {
-  int index = 0;
+  static int index = 0;
   static late AnimationController _animationController;
   SvgPicture signalStrength = SvgPicture.asset('assets/unavailable_signal.svg');
-  final _ping = Ping('192.168.0.51');
+  var ping = Ping('192.168.0.51');
+  late StreamSubscription<PingData> pingStream;
 
-  void changeIndex(int index) {
+  void changeIndex(int index1) {
     setState(() {
-      this.index = index;
-      index == 1
-          ? _animationController
-              .forward()
-              .then((value) => _animationController.repeat())
-          : _animationController.reset();
+      index = index1;
+      if (index1 != 1) _animationController.reset();
     });
   }
 
+  void resumeSignalChecker() {
+    ping = Ping('192.168.0.51');
+    checkSignalStrength();
+  }
+
   void checkSignalStrength() {
-    _ping.stream.listen((pingData) {
+    pingStream = ping.stream.listen((pingData) {
       int strength = pingData.response!.time!.inMilliseconds;
       if (strength < 50) {
         setState(() {
@@ -74,16 +74,23 @@ class CustomAppBarLayout extends State<CustomAppBar>
         });
       }
     });
+    pingStream.onError((error) {
+      setState(() {
+        signalStrength = SvgPicture.asset('assets/unavailable_signal.svg');
+      });
+    });
   }
 
   static void stopAnimation() {
-    _animationController.animateTo(1);
+    if (index == 1) _animationController.animateTo(1);
   }
 
   static void startAnimation() {
-    _animationController
-        .forward()
-        .then((value) => _animationController.repeat());
+    if (index == 1) {
+      _animationController
+          .forward()
+          .then((value) => _animationController.repeat());
+    }
   }
 
   @override
@@ -116,13 +123,13 @@ class CustomAppBarLayout extends State<CustomAppBar>
                             break;
                           case 1:
                             if (_animationController.isAnimating) {
-                              Network.networkLayout.listOfWifiDevices.cancel();
+                              network.currentState!.listOfWifiDevices.cancel();
                               _animationController.animateTo(1);
                             } else {
                               if (!_animationController.isAnimating) {
                                 _animationController.forward().then(
                                     (value) => _animationController.repeat());
-                                Network.networkLayout.addNetworkDevice();
+                                network.currentState!.addNetworkDevice();
                               }
                             }
                             break;
@@ -176,7 +183,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
   @override
   void dispose() {
     _animationController.dispose();
-    _ping.stop();
+    ping.stop();
     super.dispose();
   }
 }

@@ -23,12 +23,10 @@ class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
 
   @override
-  _RegisterState createState() {
-    return _RegisterState();
-  }
+  RegisterState createState() => RegisterState();
 }
 
-class _RegisterState extends State<Register> with TickerProviderStateMixin {
+class RegisterState extends State<Register> with TickerProviderStateMixin {
   bool _isObscure = true,
       _isObscureConfirm = true,
       nameError = false,
@@ -37,9 +35,6 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
       passwordError = false,
       confirmPasswordError = false,
       connectionError = false;
-  late BuildContext errorDialogContext,
-      registerErrorDialogContext,
-      loadingDialog;
 
   String nameErrorText = '',
       emailErrorText = '',
@@ -86,26 +81,27 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
     switch (result) {
       case ConnectivityResult.wifi:
         if (connectionError) {
-          Navigator.pop(errorDialogContext);
+          Navigator.pop(context);
         }
+        connectionError = false;
         break;
       case ConnectivityResult.mobile:
         if (connectionError) {
-          Navigator.pop(errorDialogContext);
+          Navigator.pop(context);
         }
         connectionErrorDialog(
             'No internet connection! Please turn on your wifi, for connecting to server!');
         break;
       case ConnectivityResult.none:
         if (connectionError) {
-          Navigator.pop(errorDialogContext);
+          Navigator.pop(context);
         }
         connectionErrorDialog(
             'No internet connection! Please check your wifi, for connecting to server!');
         break;
       default:
         if (connectionError) {
-          Navigator.pop(errorDialogContext);
+          Navigator.pop(context);
         }
         connectionErrorDialog(
             'No internet connection! Please check your wifi, for connecting to server!');
@@ -115,10 +111,6 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // Future.delayed(
-    //const Duration(milliseconds: 300),
-    //() => registerErrorDialog(
-    //  'Test', 'This is a test, for design this dialog!'));
     super.initState();
     initConnectivity();
     _connectivitySubscription =
@@ -129,6 +121,10 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
   void dispose() {
     super.dispose();
     _connectivitySubscription.cancel();
+    if (connectionError) {
+      Navigator.pop(context);
+      connectionError = false;
+    }
   }
 
   @override
@@ -178,6 +174,8 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                                           top: Radius.circular(26)),
                                       color: Color(0xff292828),
                                     ),
+                                    height: 130,
+                                    clipBehavior: Clip.hardEdge,
                                     child: Padding(
                                       padding: const EdgeInsets.only(top: 10),
                                       child: Row(
@@ -237,20 +235,18 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                                         ],
                                       ),
                                     ),
-                                    height: 130,
-                                    clipBehavior: Clip.hardEdge,
                                   );
                                 });
                           },
                           elevation: 0.0,
-                          child: SizedBox(
-                              width: 106.0,
-                              height: 106.0,
-                              child: _profileImage),
                           clipBehavior: Clip.hardEdge,
                           shape: const CircleBorder(
                               side:
                                   BorderSide(color: Colors.white, width: 2.0)),
+                          child: SizedBox(
+                              width: 106.0,
+                              height: 106.0,
+                              child: _profileImage),
                         ))),
                 DelayedDisplay(
                     delay: const Duration(milliseconds: 1200),
@@ -439,6 +435,17 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                             });
                           });
                         },
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: Size.zero,
+                          // Set this
+                          padding: const EdgeInsets.only(left: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(70),
+                          ),
+                          fixedSize: const Size.fromHeight(45),
+                          side:
+                              const BorderSide(color: Colors.white, width: 2.0),
+                        ),
                         child: Row(children: [
                           const Icon(
                             Icons.calendar_today,
@@ -459,17 +466,6 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                                     fontWeight: FontWeight.bold),
                               )),
                         ]),
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: Size.zero,
-                          // Set this
-                          padding: const EdgeInsets.only(left: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(70),
-                          ),
-                          fixedSize: const Size.fromHeight(45),
-                          side:
-                              const BorderSide(color: Colors.white, width: 2.0),
-                        ),
                       ),
                     )),
                 DelayedDisplay(
@@ -629,7 +625,6 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                               barrierDismissible: false,
                               useRootNavigator: false,
                               builder: (BuildContext context) {
-                                loadingDialog = context;
                                 return LoadingDialog();
                               });
                           FocusScope.of(context).unfocus();
@@ -645,7 +640,7 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                                 ]),
                                 _passwordController.text);
                             if (result == 'successful') {
-                              Navigator.pop(loadingDialog);
+                              Navigator.pop(context);
                               _controller
                                   .reverse(from: 1.0)
                                   .then((value) => Navigator.pushReplacement(
@@ -661,7 +656,7 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                                                 child),
                                       ));
                             } else {
-                              Navigator.pop(loadingDialog);
+                              Navigator.pop(context);
                               setState(() {
                                 result == 'failed'
                                     ? registerErrorDialog('Registration failed',
@@ -676,6 +671,12 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                             }
                           }
                         },
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(70)),
+                          backgroundColor: Colors.white,
+                          fixedSize: const Size.fromHeight(45),
+                        ),
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: const [
@@ -685,12 +686,6 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
                                     color: Colors.black, fontSize: 17),
                               ),
                             ]),
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(70)),
-                          backgroundColor: Colors.white,
-                          fixedSize: const Size.fromHeight(45),
-                        ),
                       ),
                     )),
                 DelayedDisplay(
@@ -872,7 +867,6 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
         barrierDismissible: false,
         useRootNavigator: false,
         builder: (BuildContext context) {
-          errorDialogContext = context;
           return WillPopScope(
             onWillPop: () async => false,
             child: BackdropFilter(
@@ -923,7 +917,6 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
     showDialog(
         context: context,
         builder: (BuildContext context) {
-          registerErrorDialogContext = context;
           return Center(
               child: Wrap(children: [
             Container(

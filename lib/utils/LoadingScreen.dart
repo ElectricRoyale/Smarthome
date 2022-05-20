@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class LoadingDialog extends StatelessWidget {
-  LoadingDialog({Key? key}) : super(key: key);
+  const LoadingDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,20 +18,22 @@ class LoadingDialog extends StatelessWidget {
           ),
           elevation: 0,
           backgroundColor: Colors.transparent,
-          child:
-          Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
-          DefaultTextStyle(
-              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-              child: Text('   Loading...'))
-        ],
-      ),
-      ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+              DefaultTextStyle(
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                  child: Text('   Loading...'))
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -10,21 +10,21 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 import 'package:local_auth/local_auth.dart';
-
 import 'package:smarthome/layouts/Register.dart';
 import 'package:smarthome/layouts/mainlayout.dart';
 import 'package:smarthome/utils/LoadingScreen.dart';
 import 'package:smarthome/utils/MySQLHelper.dart';
+
 import '../utils/constants.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
   @override
-  _LoginState createState() => _LoginState();
+  LoginState createState() => LoginState();
 }
 
-class _LoginState extends State<Login> with TickerProviderStateMixin {
+class LoginState extends State<Login> with TickerProviderStateMixin {
   final LocalAuthentication auth = LocalAuthentication();
 
   bool _isObscure = true,
@@ -34,7 +34,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   String nameErrorText = '', passwordErrorText = '';
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
-  late BuildContext errorDialogContext;
 
   Box loginData = Hive.box('LoginData');
 
@@ -72,7 +71,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         break;
       case ConnectivityResult.mobile:
         if (connectionError) {
-          Navigator.pop(errorDialogContext);
+          Navigator.pop(context);
         }
         connectionErrorDialog(
             'No internet connection! Please turn on your wifi, for connecting to server!',
@@ -80,7 +79,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         break;
       case ConnectivityResult.none:
         if (connectionError) {
-          Navigator.pop(errorDialogContext);
+          Navigator.pop(context);
         }
         connectionErrorDialog(
             'No internet connection! Please check your wifi, for connecting to server!',
@@ -88,7 +87,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         break;
       default:
         if (connectionError) {
-          Navigator.pop(errorDialogContext);
+          Navigator.pop(context);
         }
         connectionErrorDialog(
             'No internet connection! Please check your wifi, for connecting to server!',
@@ -133,12 +132,12 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             timeout: const Duration(milliseconds: 1000))
         .then((value) {
       if (connectionError) {
-        Navigator.pop(errorDialogContext);
+        Navigator.pop(context);
         connectionError = false;
         biometricLogin();
       }
     }).catchError((error) {
-      if (connectionError) Navigator.pop(errorDialogContext);
+      if (connectionError) Navigator.pop(context);
       connectionErrorDialog(
           'Can\'t build a connect to the Server! Please check your Internet connection and the connection of the Server!',
           true);
@@ -149,6 +148,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   void dispose() {
     super.dispose();
     _connectivitySubscription.cancel();
+    if (connectionError) {
+      Navigator.pop(context);
+      connectionError = false;
+    }
     _cancelAuthentication();
   }
 
@@ -162,7 +165,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
           useRootNavigator: false,
           builder: (BuildContext context) {
             loadingDialog = context;
-            return LoadingDialog();
+            return const LoadingDialog();
           });
       if (await MySQLHelper().login(name, password)) {
         Navigator.pop(loadingDialog);
@@ -378,6 +381,12 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       child: TextButton(
                         onPressed: () =>
                             login(nameController.text, passwordController.text),
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(70)),
+                          backgroundColor: Colors.white,
+                          fixedSize: const Size.fromHeight(45),
+                        ),
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: const [
@@ -387,12 +396,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                     color: Colors.black, fontSize: 17),
                               ),
                             ]),
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(70)),
-                          backgroundColor: Colors.white,
-                          fixedSize: const Size.fromHeight(45),
-                        ),
                       ),
                     )),
                 DelayedDisplay(
@@ -445,7 +448,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         barrierDismissible: false,
         useRootNavigator: false,
         builder: (BuildContext context) {
-          errorDialogContext = context;
           return WillPopScope(
             onWillPop: () async => false,
             child: BackdropFilter(
@@ -485,7 +487,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       ),
                       if (retry)
                         TextButton(
-                            onPressed: () => checkConnection(), child: const Text('Retry')),
+                            onPressed: () => checkConnection(),
+                            child: const Text('Retry')),
                     ],
                   ),
                 ]),

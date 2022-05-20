@@ -16,21 +16,19 @@ import 'package:wifi_info_plugin_plus/wifi_info_plugin_plus.dart';
 class Network extends StatefulWidget {
   const Network({Key? key}) : super(key: key);
 
-  static late NetworkLayout networkLayout;
-
   @override
-  State<StatefulWidget> createState() => networkLayout = NetworkLayout();
+  State<StatefulWidget> createState() => NetworkLayout();
 }
 
 class NetworkLayout extends State<Network> {
   List<dynamic> devices = [];
   late StreamSubscription<void> listOfWifiDevices;
 
-  var _ping = Ping('google.com');
+  late Ping _ping;
   var networkInfo = NetworkInfo();
 
   String ssid = '-';
-  int donwloadRate = 0;
+  int downloadRate = 0;
   int uploadRate = 0;
   var unitText = 'MB/s';
   int pingTime = 0;
@@ -40,19 +38,10 @@ class NetworkLayout extends State<Network> {
 
   SpeedTest tester = SpeedTest();
 
-  void setData(String ssid, int download, int upload, int ping) {
-    setState(() {
-      this.ssid = ssid;
-      donwloadRate = download;
-      uploadRate = upload;
-      pingTime = ping;
-    });
-  }
-
   Future<void> ping() async {
     _ping.stream.listen((result) {
-      setData(ssid, donwloadRate, uploadRate,
-          result.response!.time!.inMilliseconds);
+      pingTime = result.response!.time!.inMilliseconds;
+      setState(() {});
     });
   }
 
@@ -61,7 +50,8 @@ class NetworkLayout extends State<Network> {
 
     while (running) {
       wifiObject = await WifiInfoPlugin.wifiDetails;
-      setData(ssid, wifiObject!.linkSpeed, uploadRate, pingTime);
+      downloadRate = wifiObject!.linkSpeed;
+      setState(() {});
       await Future.delayed(const Duration(seconds: 5));
     }
   }
@@ -85,7 +75,8 @@ class NetworkLayout extends State<Network> {
               ? 2
               : settings.upload.ThreadsPerUrl,
           3);
-      setData(ssid, donwloadRate, uploadSpeed.round(), pingTime);
+      uploadRate = uploadSpeed.round();
+      setState(() {});
       await Future.delayed(const Duration(seconds: 5));
     }
   }
@@ -94,7 +85,7 @@ class NetworkLayout extends State<Network> {
     await Permission.location.request().isGranted;
     await networkInfo
         .getWifiName()
-        .then((value) => setData(value!, donwloadRate, uploadRate, pingTime));
+        .then((value) => setState(() => ssid = value!));
   }
 
   Future<void> addNetworkDevice() async {
@@ -206,7 +197,7 @@ class NetworkLayout extends State<Network> {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 10),
                           child: Text(
-                            '$donwloadRate $unitText',
+                            '$downloadRate $unitText',
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -299,16 +290,6 @@ class NetworkLayout extends State<Network> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    ping();
-    getSSID();
-    addNetworkDevice();
-    getWifiSpeed();
-    uploadSpeedTest();
-  }
-
-  @override
   void dispose() {
     _ping.stop();
     listOfWifiDevices.cancel();
@@ -320,7 +301,7 @@ class NetworkLayout extends State<Network> {
     _ping = Ping('google.com');
     ping();
     getSSID();
-    listOfWifiDevices.resume();
+    addNetworkDevice();
     CustomAppBarLayout.startAnimation();
     running = true;
     getWifiSpeed();
@@ -329,9 +310,14 @@ class NetworkLayout extends State<Network> {
 
   void stop() {
     _ping.stop();
-    listOfWifiDevices.pause();
+    listOfWifiDevices.cancel();
     CustomAppBarLayout.stopAnimation();
-    setData('-', 0, 0, 0);
+    setState(() {
+      ssid = '-';
+      downloadRate = 0;
+      uploadRate = 0;
+      pingTime = 0;
+    });
     running = false;
   }
 }

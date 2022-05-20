@@ -7,15 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:smarthome/layouts/Dashboard.dart';
 import 'package:smarthome/layouts/Network.dart';
 import 'package:smarthome/layouts/Settings.dart';
 import 'package:smarthome/layouts/customAppBar.dart';
-import 'package:smarthome/utils/biometricAuthentication.dart';
 import 'package:smarthome/utils/constants.dart';
-
-import '../security/secure_application.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -27,15 +23,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   int _selectedIndex = 0;
+  final network = GlobalKey<NetworkLayout>();
+  final customAppBar = GlobalKey<CustomAppBarLayout>();
 
-  final LocalAuthentication auth = LocalAuthentication();
-  SecureApplicationController? _secureNotifier;
+  late BuildContext connectionErrorContext;
 
-  AppLifecycleState lastState = AppLifecycleState.resumed;
-
-  //late var dashboard, network, settings;
-  CustomAppBar customAppBar = CustomAppBar();
-  late BuildContext errorDialogContext;
   bool connectionError = false,
       dashboardIsInit = false,
       networkIsInit = false,
@@ -49,34 +41,12 @@ class _MyHomePageState extends State<MyHomePage>
 
   double widget1Opacity = 0.0;
 
-  Widget getPage(int index) {
-    switch (index) {
-      case 0:
-        /*var page =
-            dashboardIsInit ? dashboard : (dashboard = const Dashboard());
-        dashboardIsInit = true;*/
-        return const Dashboard();
-      case 1:
-        /*var page = networkIsInit ? network : (network = const Network());
-        networkIsInit = true;*/
-        return const Network();
-      case 2:
-        /*var page = settingsIsInit ? settings : (settings = const Settings());
-        settingsIsInit = true;*/
-        return const Settings();
-      default:
-        /*var page =
-            dashboardIsInit ? dashboard : (dashboard = const Dashboard());
-        dashboardIsInit = true;*/
-        return const Dashboard();
-    }
-  }
-
   void onItemTap(int index) {
     setState(() {
       _selectedIndex = index;
-      customAppBar.update(index);
+      customAppBar.currentState!.changeIndex(index);
     });
+    index == 1 ? network.currentState!.resume() : network.currentState!.stop();
   }
 
   Future<void> initConnectivity() async {
@@ -97,46 +67,46 @@ class _MyHomePageState extends State<MyHomePage>
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
     switch (result) {
       case ConnectivityResult.wifi:
-        if (connectionError) {
-          Navigator.pop(errorDialogContext);
-          if (_selectedIndex == 1) {
-            Network.networkLayout.resume();
-          }
+        closeConnectionError(false);
+        if (_selectedIndex == 1) {
+          network.currentState!.getSSID();
+          network.currentState!.setState(() {});
         }
-        connectionError = false;
         break;
       case ConnectivityResult.mobile:
-        if (connectionError) {
-          Navigator.pop(errorDialogContext);
-        }
+        closeConnectionError(true);
         connectionErrorDialog(
             'No internet connection! Please turn on your wifi, for connecting to server!');
         break;
       case ConnectivityResult.none:
-        if (connectionError) {
-          Navigator.pop(errorDialogContext);
-        }
+        closeConnectionError(true);
         connectionErrorDialog(
             'No internet connection! Please check your wifi, for connecting to server!');
         break;
       default:
-        if (connectionError) {
-          Navigator.pop(errorDialogContext);
-        }
-        connectionErrorDialog(
-            'No internet connection! Please check your wifi, for connecting to server!');
+        closeConnectionError(true);
         break;
     }
   }
 
+  void closeConnectionError(bool onlyCheck) {
+    if (connectionError) {
+      Navigator.of(connectionErrorContext, rootNavigator: true).pop();
+      if (_selectedIndex == 1 && !onlyCheck) network.currentState!.resume();
+      connectionError = false;
+    }
+    if (!onlyCheck) customAppBar.currentState!.resumeSignalChecker();
+  }
+
   void connectionErrorDialog(String error) {
+    customAppBar.currentState!.pingStream.cancel();
     connectionError = true;
     showDialog(
         context: context,
         barrierDismissible: false,
         useRootNavigator: false,
         builder: (BuildContext context) {
-          errorDialogContext = context;
+          connectionErrorContext = context;
           return WillPopScope(
             onWillPop: () async => false,
             child: BackdropFilter(
@@ -181,47 +151,46 @@ class _MyHomePageState extends State<MyHomePage>
             ),
           );
         });
-    if (_selectedIndex == 1) Network.networkLayout.stop();
+    network.currentState!.stop();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SecureApplication(
-        child: SecureGate(
-            opacity: 0,
-            lockedBuilder: ((context, secureNotifier) {
-              _secureNotifier = secureNotifier;
-              return const BiometricAuthentication();
-            }),
-            child: Builder(builder: (context) {
-              SecureApplicationProvider.of(context)!.secure();
-              return Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      BACKGROUND_START,
-                      BACKGROUND_END,
-                    ],
-                  ),
-                ),
-                child: AnimatedOpacity(
-                  opacity: widget1Opacity,
-                  duration: const Duration(milliseconds: 1500),
-                  child: Scaffold(
-                    backgroundColor: Colors.transparent,
-                    appBar: customAppBar,
-                    extendBody: true,
-                    body: SafeArea(
-                      bottom: false,
-                      child: getPage(_selectedIndex),
-                    ),
-                    bottomNavigationBar: _bottomNavigationBar(),
-                  ),
-                ),
-              );
-            })));
+    return Builder(builder: (context) {
+      return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              BACKGROUND_START,
+              BACKGROUND_END,
+            ],
+          ),
+        ),
+        child: AnimatedOpacity(
+          opacity: widget1Opacity,
+          duration: const Duration(milliseconds: 1500),
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: CustomAppBar(key: customAppBar, network: network),
+            extendBody: true,
+            body: SafeArea(
+              bottom: false,
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: [
+                  const Dashboard(),
+                  Network(key: network),
+                  const Settings(),
+                ],
+              ),
+            ),
+            bottomNavigationBar: _bottomNavigationBar(),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _bottomNavigationBar() {
@@ -266,19 +235,6 @@ class _MyHomePageState extends State<MyHomePage>
     );
   }
 
-  void biometricLogin() async {
-    if (await auth.isDeviceSupported() && await auth.canCheckBiometrics) {
-      if (await auth.authenticate(
-          localizedReason: 'Please complete the biometrics to proceed.',
-          options: const AuthenticationOptions(
-            biometricOnly: true,
-            stickyAuth: true,
-          ))) {
-        _secureNotifier?.authSuccess(unlock: true);
-      }
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -293,6 +249,7 @@ class _MyHomePageState extends State<MyHomePage>
   void dispose() {
     _connectivitySubscription.cancel();
     WidgetsBinding.instance.removeObserver(this);
+    closeConnectionError(true);
     Hive.close();
     super.dispose();
   }
@@ -301,10 +258,14 @@ class _MyHomePageState extends State<MyHomePage>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (lastAppState == AppLifecycleState.paused &&
         state == AppLifecycleState.resumed) {
-      biometricLogin();
-      _connectivitySubscription.cancel();
-      _connectivitySubscription =
-          _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+      Navigator.popUntil(context, (route) {
+        if (route.settings.name == 'biometricAuthentication') {
+          return false;
+        }
+        return true;
+      });
+      Navigator.pushNamed(context, 'biometricAuthentication')
+          .then((value) => initConnectivity());
     }
     lastAppState = state;
     super.didChangeAppLifecycleState(state);

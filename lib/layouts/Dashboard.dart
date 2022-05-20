@@ -5,7 +5,6 @@ import 'package:smarthome/my_icons_icons.dart';
 import 'package:smarthome/utils/constants.dart';
 
 class Dashboard extends StatefulWidget {
-
   const Dashboard({Key? key}) : super(key: key);
 
   @override
@@ -13,11 +12,13 @@ class Dashboard extends StatefulWidget {
 }
 
 class Layout extends State<Dashboard> {
-  final List rooms = [{'name': 'add'}];
+  final List rooms = [
+    {'name': 'add'}
+  ];
 
   void addItem() {
     setState(() {
-      rooms.insert((rooms.length -1), {
+      rooms.insert((rooms.length - 1), {
         'icon': 'bed.svg',
         'name': 'Bedroom',
         'appliances': [
@@ -29,13 +30,13 @@ class Layout extends State<Dashboard> {
     });
   }
 
-  Container itemContainer(var icon, double size){
+  Container itemContainer(var icon, double size) {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
-            colors: [Color(0xff1effffff), Color(0xff4affffff)]),
+            colors: [Color(0x1effffff), Color(0x4affffff)]),
         shape: BoxShape.circle,
       ),
       padding: const EdgeInsets.all(3),
@@ -137,8 +138,8 @@ class Layout extends State<Dashboard> {
                       child: Column(
                         children: [
                           Padding(
-                            padding:
-                                const EdgeInsets.only(top: 10, left: 10, right: 10),
+                            padding: const EdgeInsets.only(
+                                top: 10, left: 10, right: 10),
                             child: SvgPicture.asset(
                               'assets/${APPLIANCES.elementAt(index)['icon']}',
                               height: 64,
