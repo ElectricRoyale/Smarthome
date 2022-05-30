@@ -102,36 +102,33 @@ class NetworkLayout extends State<Network> {
         },
       );
 
-      stream.handleError((host) {
-        if (!host.isReachable) {
-          devices.removeWhere((element) => element.containsValue(host.ip));
-        }
-      });
-
-      listOfWifiDevices = stream.listen((host) async {
-        await InternetAddress(host.ip).reverse().then((value) {
-          Map<String, String> deviceData = {
-            'name': value.host.substring(0, value.host.indexOf('.')),
-            'ip': host.ip
-          };
-          setState(() {
-            devices.add(deviceData);
-            devices = devices.map((item) => jsonEncode(item)).toList();
-            devices = devices.toSet().toList();
-            devices = devices.map((item) => jsonDecode(item)).toList();
-            devices.sort((s1, s2) {
-              List<String> ips1 = s1['ip']!.split(".");
-              String updatedIp1 = sprintf(
-                  "%3s.%3s.%3s.%3s", [ips1[0], ips1[1], ips1[2], ips1[3]]);
-              List<String> ips2 = s2['ip']!.split(".");
-              String updatedIp2 = sprintf(
-                  "%3s.%3s.%3s.%3s", [ips2[0], ips2[1], ips2[2], ips2[3]]);
-              return updatedIp1.compareTo(updatedIp2);
+      listOfWifiDevices = stream.forEach((host) async{
+        if (host.isReachable) {
+          await InternetAddress(host.ip).reverse().then((value) {
+            Map<String, String> deviceData = {
+              'name': value.host.substring(0, value.host.indexOf('.')),
+              'ip': host.ip
+            };
+            setState(() {
+              devices.add(deviceData);
+              devices = devices.map((item) => jsonEncode(item)).toList();
+              devices = devices.toSet().toList();
+              devices = devices.map((item) => jsonDecode(item)).toList();
+              devices.sort((s1, s2) {
+                List<String> ips1 = s1['ip']!.split(".");
+                String updatedIp1 = sprintf(
+                    "%3s.%3s.%3s.%3s", [ips1[0], ips1[1], ips1[2], ips1[3]]);
+                List<String> ips2 = s2['ip']!.split(".");
+                String updatedIp2 = sprintf(
+                    "%3s.%3s.%3s.%3s", [ips2[0], ips2[1], ips2[2], ips2[3]]);
+                return updatedIp1.compareTo(updatedIp2);
+              });
             });
           });
-        });
-      });
-      listOfWifiDevices.onDone(() => CustomAppBarLayout.stopAnimation());
+        }else{
+          devices.removeWhere((element) => element.containsValue(host.ip));
+        }
+      }).whenComplete(() => CustomAppBarLayout.stopAnimation()).asStream().listen((event) { });
     });
   }
 
@@ -308,16 +305,18 @@ class NetworkLayout extends State<Network> {
     uploadSpeedTest();
   }
 
-  void stop() {
+  void stop(bool error) {
     _ping.stop();
     listOfWifiDevices.cancel();
     CustomAppBarLayout.stopAnimation();
-    setState(() {
-      ssid = '-';
-      downloadRate = 0;
-      uploadRate = 0;
-      pingTime = 0;
-    });
+    if (error) {
+      setState(() {
+        ssid = '-';
+        downloadRate = 0;
+        uploadRate = 0;
+        pingTime = 0;
+      });
+    }
     running = false;
   }
 }

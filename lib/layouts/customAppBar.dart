@@ -21,15 +21,14 @@ var pageParams = [
   {'name': 'Settings', 'con': '', 'layout': CustomAppBar.APP_BAR_WITHOUT_ICONS},
 ];
 
-late final GlobalKey<NetworkLayout> network;
-
 class CustomAppBar extends StatefulWidget with PreferredSizeWidget {
   @override
   final Size preferredSize;
   static int get APP_BAR_WITH_ICONS => 0;
   static int get APP_BAR_WITHOUT_ICONS => 1;
+  final GlobalKey<NetworkLayout> network;
 
-  CustomAppBar({Key? key, required network})
+  CustomAppBar({Key? key, required this.network})
       : preferredSize = const Size.fromHeight(70.0),
         super(key: key);
 
@@ -123,13 +122,13 @@ class CustomAppBarLayout extends State<CustomAppBar>
                             break;
                           case 1:
                             if (_animationController.isAnimating) {
-                              network.currentState!.listOfWifiDevices.cancel();
+                              widget.network.currentState!.listOfWifiDevices.cancel();
                               _animationController.animateTo(1);
                             } else {
                               if (!_animationController.isAnimating) {
                                 _animationController.forward().then(
                                     (value) => _animationController.repeat());
-                                network.currentState!.addNetworkDevice();
+                                widget.network.currentState!.addNetworkDevice();
                               }
                             }
                             break;

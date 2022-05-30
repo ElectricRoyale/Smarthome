@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage>
       _selectedIndex = index;
       customAppBar.currentState!.changeIndex(index);
     });
-    index == 1 ? network.currentState!.resume() : network.currentState!.stop();
+    index == 1 ? network.currentState!.resume() : network.currentState!.stop(false);
   }
 
   Future<void> initConnectivity() async {
@@ -151,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage>
             ),
           );
         });
-    network.currentState!.stop();
+    network.currentState!.stop(true);
   }
 
   @override

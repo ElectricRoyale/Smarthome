@@ -190,6 +190,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                                         .pickImage(
                                                             source: ImageSource
                                                                 .gallery))!;
+                                                if (!mounted) return;
                                                 _cropImage(
                                                     File(_pickedImage.path),
                                                     context);
@@ -215,6 +216,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                                         .pickImage(
                                                             source: ImageSource
                                                                 .camera))!;
+                                                if (!mounted) return;
                                                 _cropImage(
                                                     File(_pickedImage.path),
                                                     context);
@@ -625,7 +627,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                               barrierDismissible: false,
                               useRootNavigator: false,
                               builder: (BuildContext context) {
-                                return LoadingDialog();
+                                return const LoadingDialog();
                               });
                           FocusScope.of(context).unfocus();
                           if (validate()) {
@@ -640,6 +642,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                 ]),
                                 _passwordController.text);
                             if (result == 'successful') {
+                              if (!mounted) return;
                               Navigator.pop(context);
                               _controller
                                   .reverse(from: 1.0)
@@ -656,6 +659,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                                 child),
                                       ));
                             } else {
+                              if (!mounted) return;
                               Navigator.pop(context);
                               setState(() {
                                 result == 'failed'
