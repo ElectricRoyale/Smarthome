@@ -267,9 +267,10 @@ class _MyHomePageState extends State<MyHomePage>
         }
         return true;
       });
-      if (globals.mustAuthenticate)
+      if (globals.mustAuthenticate) {
         Navigator.pushNamed(context, 'biometricAuthentication')
             .then((value) => initConnectivity());
+      }
     }
     lastAppState = state;
     super.didChangeAppLifecycleState(state);

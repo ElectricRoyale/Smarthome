@@ -8,6 +8,7 @@ import 'package:hive/hive.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smarthome/Model/UserData.dart';
+import 'package:smarthome/layouts/Login.dart';
 import 'package:smarthome/utils/MySQLHelper.dart';
 import 'package:smarthome/utils/globals.dart' as globals;
 import 'package:smarthome/utils/widget_functions.dart';
@@ -371,7 +372,27 @@ class AccountPageState extends State<AccountPage> {
                         cursorColor: Colors.white,
                       ),
                     ]),
-                  ))
+                  )),
+              addVerticalSpace(20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 70),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Hive.box('LoginData').clear();
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Login()),
+                        (Route<dynamic> route) => false);
+                  },
+                  style: ElevatedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      primary: const Color(0x7c292828)),
+                  child: const Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.red, fontSize: 16),
+                  ),
+                ),
+              ),
             ])),
         bottomNavigationBar: Container(
             padding: const EdgeInsets.only(top: 12),
