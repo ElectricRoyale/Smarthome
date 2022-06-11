@@ -9,13 +9,41 @@ const COLOR_BLACK = Colors.black;
 const COLOR_WHITE = Colors.white;
 
 const APPLIANCES = [
-  {'icon':'light.svg', 'name':'LIGHT', 'energyConsumption':'19 KW USED'},
-  {'icon':'socket.svg', 'name':'SOCKET', 'energyConsumption':'19 KW USED'},
-  {'icon':'shutter.svg', 'name':'ROLLER SHUTTER', 'energyConsumption':'19 KW USED'},
-  {'icon':'Air_conditioner.svg', 'name':'AIR CONDITIONER', 'energyConsumption':'19 KW USED'},
-  {'icon':'television.svg', 'name':'VIDEO DEVICES', 'energyConsumption':'19 KW USED'},
-  {'icon':'heating_system.svg', 'name':'HEATING SYSTEM', 'energyConsumption':'19 KW USED'},
-  {'icon':'kitchen_tools.svg', 'name':'KITCHEN TOOLS', 'energyConsumption':'19 KW USED'},
-  {'icon':'washing_machine.svg', 'name':'WASHING MACHINE', 'energyConsumption':'19 KW USED'},
-  {'icon':'garden.svg', 'name':'IRRIGATION', 'energyConsumption':'19 KW USED'},
+  {'icon': 'light.svg', 'name': 'LIGHT', 'energyConsumption': '0 KW USED'},
+  {'icon': 'socket.svg', 'name': 'SOCKET', 'energyConsumption': '0 KW USED'},
+  {
+    'icon': 'shutter.svg',
+    'name': 'ROLLER SHUTTER',
+    'energyConsumption': '0 KW USED'
+  },
+  {
+    'icon': 'Air_conditioner.svg',
+    'name': 'AIR CONDITIONER',
+    'energyConsumption': '0 KW USED'
+  },
+  {
+    'icon': 'television.svg',
+    'name': 'VIDEO DEVICES',
+    'energyConsumption': '0 KW USED'
+  },
+  {
+    'icon': 'heating_system.svg',
+    'name': 'HEATING SYSTEM',
+    'energyConsumption': '0 KW USED'
+  },
+  {
+    'icon': 'kitchen_tools.svg',
+    'name': 'KITCHEN TOOLS',
+    'energyConsumption': '0 KW USED'
+  },
+  {
+    'icon': 'washing_machine.svg',
+    'name': 'WASHING MACHINE',
+    'energyConsumption': '0 KW USED'
+  },
+  {
+    'icon': 'garden.svg',
+    'name': 'IRRIGATION',
+    'energyConsumption': '0 KW USED'
+  },
 ];

@@ -31,7 +31,6 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
       _isObscureConfirm = true,
       nameError = false,
       emailError = false,
-      birthdayError = false,
       passwordError = false,
       confirmPasswordError = false,
       connectionError = false;
@@ -353,123 +352,132 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                 DelayedDisplay(
                     delay: const Duration(milliseconds: 1600),
                     child: Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, left: 28, right: 28),
-                      child: OutlinedButton(
-                        onPressed: () {
-                          FocusScope.of(context).unfocus();
-                          showRoundedDatePicker(
-                              context: context,
-                              initialDate: birthday,
-                              firstDate: DateTime(1800),
-                              lastDate: DateTime(2600),
-                              height: 340,
-                              borderRadius: 16,
-                              imageHeader: const AssetImage(
-                                  'assets/datepickerbackground.png'),
-                              customWeekDays: [
-                                "SUN",
-                                "MON",
-                                "TUE",
-                                "WED",
-                                "THU",
-                                "FRI",
-                                "SAT"
-                              ],
-                              styleDatePicker: MaterialRoundedDatePickerStyle(
-                                textStyleDayButton: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 26,
-                                ),
-                                textStyleYearButton: const TextStyle(
-                                  fontSize: 21,
-                                  color: Colors.white,
-                                ),
-                                textStyleDayHeader: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                                textStyleCurrentDayOnCalendar: const TextStyle(
-                                    color: Color(0xffaf0000),
-                                    fontWeight: FontWeight.bold),
-                                textStyleDayOnCalendar:
-                                    const TextStyle(color: Colors.white),
-                                textStyleDayOnCalendarSelected: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                                textStyleDayOnCalendarDisabled: TextStyle(
-                                    color: Colors.white.withOpacity(0.1)),
-                                textStyleMonthYearHeader: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                                paddingDatePicker: const EdgeInsets.all(0),
-                                paddingMonthHeader: const EdgeInsets.all(16),
-                                paddingDateYearHeader: const EdgeInsets.all(32),
-                                colorArrowNext: Colors.white,
-                                colorArrowPrevious: Colors.white,
-                                textStyleButtonPositive: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                                textStyleButtonNegative: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                                decorationDateSelected: const BoxDecoration(
-                                    color: Color(0xffaf0000),
-                                    shape: BoxShape.circle),
-                                backgroundPicker: BACKGROUND_END,
-                                backgroundHeader: const Color(0xffaf0000),
-                                backgroundHeaderMonth: BACKGROUND_END,
+                        padding:
+                            const EdgeInsets.only(top: 10, left: 28, right: 28),
+                        child: Focus(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              focusedBorder: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(70)),
+                                borderSide:
+                                    BorderSide(color: Colors.white, width: 2.0),
                               ),
-                              styleYearPicker: MaterialRoundedYearPickerStyle(
-                                textStyleYear: const TextStyle(
-                                    fontSize: 21, color: Colors.white),
-                                textStyleYearSelected: const TextStyle(
-                                    fontSize: 24,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                                heightYearRow: 32,
-                                backgroundPicker: BACKGROUND_END,
-                              )).then((value) {
-                            setState(() {
-                              if (value != null && value != birthday) {
-                                birthday = value;
-                              }
-                            });
-                          });
-                        },
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: Size.zero,
-                          // Set this
-                          padding: const EdgeInsets.only(left: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(70),
+                              enabledBorder: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(70)),
+                                borderSide:
+                                    BorderSide(color: Colors.white, width: 2.0),
+                              ),
+                              hintText: sprintf("%02i.%02i.%04i", [
+                                birthday.day,
+                                birthday.month,
+                                birthday.year
+                              ]),
+                              hintStyle: const TextStyle(color: Colors.white),
+                              prefixIcon: const Icon(
+                                Icons.calendar_month,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                              contentPadding: const EdgeInsets.all(0),
+                              isDense: true,
+                            ),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                            cursorColor: Colors.white,
+                            readOnly: true,
+                            onTap: () {
+                              FocusScope.of(context).unfocus();
+                              showRoundedDatePicker(
+                                  context: context,
+                                  initialDate: birthday,
+                                  firstDate: DateTime(1800),
+                                  lastDate: DateTime(2600),
+                                  height: 340,
+                                  borderRadius: 16,
+                                  imageHeader: const AssetImage(
+                                      'assets/datepickerbackground.png'),
+                                  customWeekDays: [
+                                    "SUN",
+                                    "MON",
+                                    "TUE",
+                                    "WED",
+                                    "THU",
+                                    "FRI",
+                                    "SAT"
+                                  ],
+                                  styleDatePicker:
+                                      MaterialRoundedDatePickerStyle(
+                                    textStyleDayButton: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 26,
+                                    ),
+                                    textStyleYearButton: const TextStyle(
+                                      fontSize: 21,
+                                      color: Colors.white,
+                                    ),
+                                    textStyleDayHeader: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                    textStyleCurrentDayOnCalendar:
+                                        const TextStyle(
+                                            color: Color(0xffaf0000),
+                                            fontWeight: FontWeight.bold),
+                                    textStyleDayOnCalendar:
+                                        const TextStyle(color: Colors.white),
+                                    textStyleDayOnCalendarSelected:
+                                        const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                    textStyleDayOnCalendarDisabled: TextStyle(
+                                        color: Colors.white.withOpacity(0.1)),
+                                    textStyleMonthYearHeader: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                    paddingDatePicker: const EdgeInsets.all(0),
+                                    paddingMonthHeader:
+                                        const EdgeInsets.all(16),
+                                    paddingDateYearHeader:
+                                        const EdgeInsets.all(32),
+                                    colorArrowNext: Colors.white,
+                                    colorArrowPrevious: Colors.white,
+                                    textStyleButtonPositive: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                    textStyleButtonNegative: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                    decorationDateSelected: const BoxDecoration(
+                                        color: Color(0xffaf0000),
+                                        shape: BoxShape.circle),
+                                    backgroundPicker: BACKGROUND_END,
+                                    backgroundHeader: const Color(0xffaf0000),
+                                    backgroundHeaderMonth: BACKGROUND_END,
+                                  ),
+                                  styleYearPicker:
+                                      MaterialRoundedYearPickerStyle(
+                                    textStyleYear: const TextStyle(
+                                        fontSize: 21, color: Colors.white),
+                                    textStyleYearSelected: const TextStyle(
+                                        fontSize: 24,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                    heightYearRow: 32,
+                                    backgroundPicker: BACKGROUND_END,
+                                  )).then((value) {
+                                setState(() {
+                                  if (value != null && value != birthday) {
+                                    birthday = value;
+                                  }
+                                });
+                              });
+                            },
                           ),
-                          fixedSize: const Size.fromHeight(45),
-                          side:
-                              const BorderSide(color: Colors.white, width: 2.0),
-                        ),
-                        child: Row(children: [
-                          const Icon(
-                            Icons.calendar_today,
-                            color: Colors.white,
-                            size: 25,
-                          ),
-                          Padding(
-                              padding: const EdgeInsets.only(left: 12),
-                              child: Text(
-                                sprintf("%02i.%02i.%04i", [
-                                  birthday.day,
-                                  birthday.month,
-                                  birthday.year
-                                ]),
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                        ]),
-                      ),
-                    )),
+                        ))),
                 DelayedDisplay(
                     delay: const Duration(milliseconds: 1800),
                     child: Padding(
@@ -721,10 +729,10 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
         ));
   }
 
-  Future<void> _cropImage(File pickeImgae, BuildContext context) async {
+  Future<void> _cropImage(File pickeImage, BuildContext context) async {
     Navigator.pop(context);
     final imageFile = await ImageCropper().cropImage(
-      sourcePath: pickeImgae.path,
+      sourcePath: pickeImage.path,
       aspectRatioPresets: Platform.isAndroid
           ? [
               CropAspectRatioPreset.square,

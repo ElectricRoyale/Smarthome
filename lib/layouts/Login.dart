@@ -7,9 +7,9 @@ import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_auth_invisible/flutter_local_auth_invisible.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:smarthome/layouts/Register.dart';
 import 'package:smarthome/layouts/mainlayout.dart';
 import 'package:smarthome/utils/LoadingScreen.dart';
@@ -25,8 +25,6 @@ class Login extends StatefulWidget {
 }
 
 class LoginState extends State<Login> with TickerProviderStateMixin {
-  final LocalAuthentication auth = LocalAuthentication();
-
   bool _isObscure = true,
       nameError = false,
       passwordError = false,
@@ -107,19 +105,18 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
   }
 
   Future<void> _cancelAuthentication() async {
-    await auth.stopAuthentication();
+    await LocalAuthentication.stopAuthentication();
   }
 
   void biometricLogin() async {
     if (loginData.isNotEmpty && !connectionError) {
       nameController.text = loginData.get('name');
-      if (await auth.isDeviceSupported() && await auth.canCheckBiometrics) {
-        if (await auth.authenticate(
-            localizedReason: 'Please complete the biometrics to proceed.',
-            options: const AuthenticationOptions(
-              biometricOnly: true,
-              stickyAuth: true,
-            ))) {
+      if (await LocalAuthentication.isDeviceSupported() &&
+          await LocalAuthentication.canCheckBiometrics) {
+        if (await LocalAuthentication.authenticate(
+          localizedReason: 'Unlock the app.',
+          stickyAuth: true,
+        )) {
           passwordController.text = loginData.get('password');
           login(loginData.get('name'), loginData.get('password'));
         }

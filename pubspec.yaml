@@ -44,14 +44,14 @@ dependencies:
   #flutter_launcher_name: "^0.0.1"
   permission_handler: ^9.2.0
   delayed_display: ^2.0.0
-  local_auth: ^2.1.0
+  flutter_local_auth_invisible: ^2.2.0
   flutter_libphonenumber: ^1.2.4
   image_cropper: ^2.0.3
   image_picker: ^0.8.5+3
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.5
   rxdart: ^0.27.4
   lan_scanner: ^3.4.1
-  device_info_plus: ^3.2.3
+  device_info_plus: ^3.2.4
   wifi_info_plugin_plus: ^2.0.2
   speed_test_port: ^1.0.4
 

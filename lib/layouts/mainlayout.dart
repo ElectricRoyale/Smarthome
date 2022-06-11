@@ -12,6 +12,7 @@ import 'package:smarthome/layouts/Network.dart';
 import 'package:smarthome/layouts/Settings.dart';
 import 'package:smarthome/layouts/customAppBar.dart';
 import 'package:smarthome/utils/constants.dart';
+import 'package:smarthome/utils/globals.dart' as globals;
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -46,7 +47,9 @@ class _MyHomePageState extends State<MyHomePage>
       _selectedIndex = index;
       customAppBar.currentState!.changeIndex(index);
     });
-    index == 1 ? network.currentState!.resume() : network.currentState!.stop(false);
+    index == 1
+        ? network.currentState!.resume()
+        : network.currentState!.stop(false);
   }
 
   Future<void> initConnectivity() async {
@@ -204,7 +207,7 @@ class _MyHomePageState extends State<MyHomePage>
             Colors.transparent,
             Color(0xE6000000),
           ],
-          tileMode: TileMode.clamp,
+          tileMode: TileMode.decal,
         ),
       ),
       child: BottomNavigationBar(
@@ -264,8 +267,9 @@ class _MyHomePageState extends State<MyHomePage>
         }
         return true;
       });
-      Navigator.pushNamed(context, 'biometricAuthentication')
-          .then((value) => initConnectivity());
+      if (globals.mustAuthenticate)
+        Navigator.pushNamed(context, 'biometricAuthentication')
+            .then((value) => initConnectivity());
     }
     lastAppState = state;
     super.didChangeAppLifecycleState(state);

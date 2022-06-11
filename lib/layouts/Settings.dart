@@ -45,11 +45,20 @@ class Settingslayout extends State<Settings> {
                     context,
                     PageRouteBuilder(
                         pageBuilder: (context, animation, secondaryAnimation) =>
-                            const AccountPage(),
+                            AccountPage(
+                              profileimage: _profileImage!,
+                              name: _name,
+                              email: _email,
+                              birthday: _birthday,
+                              address: _address,
+                              telephonenumber: _handynumber,
+                            ),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) =>
                                 child),
-                  );
+                  ).then((value) {
+                    setData();
+                  });
                 },
                 child: Container(
                   padding:
