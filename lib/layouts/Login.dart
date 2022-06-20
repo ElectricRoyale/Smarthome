@@ -113,9 +113,10 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
       nameController.text = loginData.get('name');
       if (await LocalAuthentication.isDeviceSupported() &&
           await LocalAuthentication.canCheckBiometrics) {
-        if (await LocalAuthentication.authenticate(
+        if (await LocalAuthentication.authenticateWithBiometrics(
           localizedReason: 'Unlock the app.',
           stickyAuth: true,
+          useErrorDialogs: false,
         )) {
           passwordController.text = loginData.get('password');
           login(loginData.get('name'), loginData.get('password'));

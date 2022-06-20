@@ -9,41 +9,58 @@ const COLOR_BLACK = Colors.black;
 const COLOR_WHITE = Colors.white;
 
 const APPLIANCES = [
-  {'icon': 'light.svg', 'name': 'LIGHT', 'energyConsumption': '0 KW USED'},
-  {'icon': 'socket.svg', 'name': 'SOCKET', 'energyConsumption': '0 KW USED'},
+  {
+    'icon': 'light.svg',
+    'name': 'LIGHT',
+    'group': 'switch',
+    'energyConsumption': '0 KW USED'
+  },
+  {
+    'icon': 'socket.svg',
+    'name': 'SOCKET',
+    'group': 'switch',
+    'energyConsumption': '0 KW USED'
+  },
   {
     'icon': 'shutter.svg',
     'name': 'ROLLER SHUTTER',
+    'group': 'cover',
     'energyConsumption': '0 KW USED'
   },
   {
     'icon': 'Air_conditioner.svg',
     'name': 'AIR CONDITIONER',
+    'group': 'air_conditioner',
     'energyConsumption': '0 KW USED'
   },
   {
     'icon': 'television.svg',
     'name': 'VIDEO DEVICES',
+    'group': 'switch',
     'energyConsumption': '0 KW USED'
   },
   {
     'icon': 'heating_system.svg',
     'name': 'HEATING SYSTEM',
+    'group': 'switch',
     'energyConsumption': '0 KW USED'
   },
   {
     'icon': 'kitchen_tools.svg',
     'name': 'KITCHEN TOOLS',
+    'group': 'switch',
     'energyConsumption': '0 KW USED'
   },
   {
     'icon': 'washing_machine.svg',
     'name': 'WASHING MACHINE',
+    'group': 'switch',
     'energyConsumption': '0 KW USED'
   },
   {
     'icon': 'garden.svg',
     'name': 'IRRIGATION',
+    'group': 'switch',
     'energyConsumption': '0 KW USED'
   },
 ];

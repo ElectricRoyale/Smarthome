@@ -55,11 +55,25 @@ class MySQLHelper {
     }
   }
 
-  Future<void> update(Uint8List? profileImage, String name, String email,
-      String birthday, String address, String telephonenumber) async {
+  Future<void> update(
+      Uint8List? profileImage,
+      String name,
+      String email,
+      String birthday,
+      String address,
+      String telephonenumber,
+      String oldname) async {
     conn = await MySqlConnection.connect(settings);
     conn.query(
-        'update logindata set Profile_image = ?, Name = ?, Email_Address = ?, Birthday = ?, Address = ?, Telephonenumber = ?;',
-        [profileImage, name, email, birthday, address, telephonenumber]);
+        'update logindata set Profile_image = ?, Name = ?, Email_Address = ?, Birthday = ?, Address = ?, Telephonenumber = ? where Name = ?;',
+        [
+          profileImage,
+          name,
+          email,
+          birthday,
+          address,
+          telephonenumber,
+          oldname
+        ]);
   }
 }

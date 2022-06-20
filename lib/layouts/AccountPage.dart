@@ -9,6 +9,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smarthome/Model/UserData.dart';
 import 'package:smarthome/layouts/Login.dart';
+import 'package:smarthome/layouts/mainlayout.dart';
 import 'package:smarthome/utils/MySQLHelper.dart';
 import 'package:smarthome/utils/globals.dart' as globals;
 import 'package:smarthome/utils/widget_functions.dart';
@@ -378,6 +379,7 @@ class AccountPageState extends State<AccountPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 70),
                 child: ElevatedButton(
                   onPressed: () {
+                    WidgetsBinding.instance.removeObserver(MyHomePageState());
                     Hive.box('LoginData').clear();
                     Navigator.pushAndRemoveUntil(
                         context,
@@ -417,7 +419,7 @@ class AccountPageState extends State<AccountPage> {
                             onPressed: () {
                               setState(() => editing = false);
                               var data = UserData(
-                                  profileImage: widget.profileimage,
+                                  profileImage: _profileImage,
                                   name: _nameController.text,
                                   email: _emailController.text,
                                   birthday: _birthdayController.text,
@@ -430,7 +432,8 @@ class AccountPageState extends State<AccountPage> {
                                   _emailController.text,
                                   _birthdayController.text,
                                   _addressController.text,
-                                  _telephonenumberController.text);
+                                  _telephonenumberController.text,
+                                  widget.name);
                             },
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,

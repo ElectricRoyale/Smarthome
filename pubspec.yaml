@@ -42,7 +42,7 @@ dependencies:
   connectivity: ^3.0.6
   flutter_launcher_icons: "^0.9.2"
   #flutter_launcher_name: "^0.0.1"
-  permission_handler: ^9.2.0
+  permission_handler: ^10.0.0
   delayed_display: ^2.0.0
   flutter_local_auth_invisible: ^2.2.0
   flutter_libphonenumber: ^1.2.4
@@ -54,6 +54,9 @@ dependencies:
   device_info_plus: ^3.2.4
   wifi_info_plugin_plus: ^2.0.2
   speed_test_port: ^1.0.4
+  http: ^0.13.4
+  carousel_slider: ^4.1.1
+  smooth_page_indicator: ^1.0.0+2
 
 dev_dependencies:
   flutter_test:
