@@ -21,20 +21,7 @@ class Layout extends State<Dashboard> {
     {'name': 'add'}
   ];
 
-  Devices devices = Devices();
   int activeIndex = 2;
-  List<double> energyUsed = [];
-
-  @override
-  void initState() {
-    super.initState();
-    energyUsed.addAll(Devices().getEnergyList);
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      setState(() {
-        energyUsed.addAll(Devices().getEnergyList);
-      });
-    });
-  }
 
   void addItem() {
     setState(() {
@@ -166,69 +153,72 @@ class Layout extends State<Dashboard> {
                         child: Padding(
                           padding: const EdgeInsets.only(
                               top: 30, left: 20, right: 20),
-                          child: GridView.count(
+                          child: GridView.builder(
                             // Create a grid with 2 columns. If you change the scrollDirection to
                             // horizontal, this produces 2 rows.
+                            itemCount: 9,
                             physics: const NeverScrollableScrollPhysics(),
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                            ),
                             // Generate 100 widgets that display their index in the List.
-                            children: List.generate(9, (index) {
-                              return Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0x12ffffff),
-                                  borderRadius: BorderRadius.circular(20.0),
+                            itemBuilder: (BuildContext context, int index) =>
+                                Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0x12ffffff),
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              child: InkWell(
+                                onTap: () => Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                        pageBuilder: (context, animation,
+                                                secondAnimation) =>
+                                            OverViewPage(
+                                              name: (APPLIANCES
+                                                  .elementAt(index)['name'])!,
+                                              group: (APPLIANCES
+                                                  .elementAt(index)['group'])!,
+                                            ))),
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 10, left: 10, right: 10),
+                                      child: SvgPicture.asset(
+                                        'assets/${APPLIANCES.elementAt(index)['icon']}',
+                                        height: 64,
+                                        width: 64,
+                                        fit: BoxFit.scaleDown,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 7),
+                                      child: Text(
+                                        '${APPLIANCES.elementAt(index)['name']}',
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 1),
+                                      child: Text(
+                                        '${Devices().getEnergyList.elementAt(index)} KWh USED',
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Color(0xff919191)),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                child: InkWell(
-                                  onTap: () => Navigator.push(
-                                      context,
-                                      PageRouteBuilder(
-                                          pageBuilder: (context, animation,
-                                                  secondAnimation) =>
-                                              OverViewPage(
-                                                name: (APPLIANCES
-                                                    .elementAt(index)['name'])!,
-                                                group: (APPLIANCES.elementAt(
-                                                    index)['group'])!,
-                                              ))),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10, left: 10, right: 10),
-                                        child: SvgPicture.asset(
-                                          'assets/${APPLIANCES.elementAt(index)['icon']}',
-                                          height: 64,
-                                          width: 64,
-                                          fit: BoxFit.scaleDown,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 7),
-                                        child: Text(
-                                          '${APPLIANCES.elementAt(index)['name']}',
-                                          style: const TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 1),
-                                        child: Text(
-                                          '${energyUsed.elementAt(index)} KWh USED',
-                                          style: const TextStyle(
-                                              fontSize: 12,
-                                              color: Color(0xff919191)),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }),
+                              ),
+                            ),
                           ),
                         ),
                       ),
