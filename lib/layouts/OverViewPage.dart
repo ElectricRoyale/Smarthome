@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../JSON/device_data.dart';
 import '../utils/Devices.dart';
 import '../utils/constants.dart';
+import '../utils/scrolling_text.dart';
 
 class OverViewPage extends StatefulWidget {
-  final String group, name;
+  final String group, name, icon;
 
-  const OverViewPage({Key? key, required this.name, required this.group})
+  const OverViewPage(
+      {Key? key, required this.name, required this.icon, required this.group})
       : super(key: key);
 
   @override
@@ -15,38 +18,38 @@ class OverViewPage extends StatefulWidget {
 }
 
 class OverViewPageState extends State<OverViewPage> {
-  List<DeviceData> devices = [];
+  List<DeviceData> deviceData = [];
 
   @override
   void initState() {
     super.initState();
     switch (widget.name) {
       case 'LIGHT':
-        devices.addAll(Devices().getLights);
+        deviceData.addAll(Devices().getLights);
         break;
       case 'SOCKET':
-        devices.addAll(Devices().getSockets);
+        deviceData.addAll(Devices().getSockets);
         break;
       case 'ROLLER SHUTTER':
-        devices.addAll(Devices().getShutters);
+        deviceData.addAll(Devices().getShutters);
         break;
       case 'AIR CONDITIONER':
-        devices.addAll(Devices().getAirConditioners);
+        deviceData.addAll(Devices().getAirConditioners);
         break;
       case 'VIDEO DEVICES':
-        devices.addAll(Devices().getVideoDevices);
+        deviceData.addAll(Devices().getVideoDevices);
         break;
       case 'HEATING SYSTEM':
-        devices.addAll(Devices().getHeatingSystems);
+        deviceData.addAll(Devices().getHeatingSystems);
         break;
       case 'KITCHEN TOOLS':
-        devices.addAll(Devices().getKitchenTools);
+        deviceData.addAll(Devices().getKitchenTools);
         break;
       case 'WASHING MACHINE':
-        devices.addAll(Devices().getWashingMachines);
+        deviceData.addAll(Devices().getWashingMachines);
         break;
       case 'IRRIGATION':
-        devices.addAll(Devices().getIrrigations);
+        deviceData.addAll(Devices().getIrrigations);
         break;
     }
   }
@@ -65,7 +68,6 @@ class OverViewPageState extends State<OverViewPage> {
         ),
       ),
       child: Scaffold(
-        backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Text(
             widget.name,
@@ -75,25 +77,64 @@ class OverViewPageState extends State<OverViewPage> {
           elevation: 0.0,
           centerTitle: true,
         ),
+        backgroundColor: Colors.transparent,
         body: GridView.builder(
           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 200,
-              childAspectRatio: 3 / 2,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 20),
-          padding: const EdgeInsets.only(left: 5, right: 5, top: 20),
-          itemCount: devices.length,
+              childAspectRatio: 3.25 / 2,
+              crossAxisSpacing: 15,
+              mainAxisSpacing: 15),
+          padding: const EdgeInsets.only(left: 7, right: 7, top: 20),
+          itemCount: deviceData.length,
           itemBuilder: (ctx, index) => Container(
+            height: 200,
+            width: 200,
             decoration: BoxDecoration(
-                color: const Color(0x12ffffff),
-                borderRadius: BorderRadius.circular(15)),
-            child: Text(
-              (devices.elementAt(index).attributes!.friendlyName)!,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  decoration: TextDecoration.none),
+              color: const Color(0x12ffffff),
+              borderRadius: BorderRadius.circular(15),
             ),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: SvgPicture.asset(
+                  'assets/${widget.icon}',
+                  fit: BoxFit.scaleDown,
+                  height: 50,
+                  width: 50,
+                ),
+              ),
+              Container(
+                width: double.maxFinite,
+                height: 16,
+                margin: const EdgeInsets.only(top: 5, left: 10, right: 10),
+                child: ScrollingText(
+                  velocity: 20,
+                  maxWidth: 170,
+                  text: (deviceData.elementAt(index).attributes!.friendlyName)!,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.none),
+                  pauseAfterRound: const Duration(seconds: 3),
+                  blankSpace: 100,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: Text(
+                  deviceData.elementAt(index).energy != 'Unavailable'
+                      ? '${deviceData.elementAt(index).energy} KWh USED'
+                      : deviceData.elementAt(index).energy,
+                  style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                      decoration: TextDecoration.none),
+                  maxLines: 1,
+                ),
+              ),
+            ]),
           ),
         ),
       ),

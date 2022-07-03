@@ -4,12 +4,15 @@ class Assets {
 
   static const String assetsAirConditioner = 'assets/Air_conditioner.svg';
   static const String assetsBed = 'assets/bed.svg';
+  static const String assetsCamera = 'assets/camera.svg';
   static const String assetsCoffeeMachine = 'assets/coffee_machine.svg';
   static const String assetsComputer = 'assets/computer.svg';
-  static const String assetsDatepickerbackground = 'assets/datepickerbackground.png';
+  static const String assetsDatepickerbackground =
+      'assets/datepickerbackground.png';
   static const String assetsDeviceFullscreen = 'assets/device_fullscreen.svg';
   static const String assetsError = 'assets/error.svg';
   static const String assetsFullSignal = 'assets/full_signal.svg';
+  static const String assetsGallery = 'assets/gallery.svg';
   static const String assetsGarden = 'assets/garden.svg';
   static const String assetsHeatingSystem = 'assets/heating_system.svg';
   static const String assetsHouseAppIcon = 'assets/house_app_icon.svg';
@@ -17,6 +20,8 @@ class Assets {
   static const String assetsKitchen = 'assets/kitchen.svg';
   static const String assetsKitchenTools = 'assets/kitchen_tools.svg';
   static const String assetsLight = 'assets/light.svg';
+  static const String assetsLowSignal = 'assets/low_signal.svg';
+  static const String assetsMediumSignal = 'assets/medium_signal.svg';
   static const String assetsMicrowave = 'assets/microwave.svg';
   static const String assetsOven = 'assets/oven.svg';
   static const String assetsPerson = 'assets/person.png';
@@ -25,7 +30,7 @@ class Assets {
   static const String assetsShutter = 'assets/shutter.svg';
   static const String assetsSocket = 'assets/socket.svg';
   static const String assetsTelevision = 'assets/television.svg';
+  static const String assetsUnavailableSignal = 'assets/unavailable_signal.svg';
   static const String assetsWashingMachine = 'assets/washing_machine.svg';
   static const String assetsWaterHeater = 'assets/water_heater.svg';
-
 }

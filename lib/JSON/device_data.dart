@@ -8,6 +8,7 @@ class DeviceData {
   String? lastChanged;
   String? lastUpdated;
   Context? context;
+  String energy = 'Unavailable';
 
   DeviceData(
       {this.entityId,

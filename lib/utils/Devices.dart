@@ -1,17 +1,19 @@
+import 'package:flutter/foundation.dart';
+
 import '../JSON/device_data.dart';
 import 'CURL_Request.dart';
 
 class Devices {
-  List<DeviceData> _devices = [],
-      _lights = [],
-      _sockets = [],
-      _shutters = [],
-      _airConditioners = [],
-      _videoDevices = [],
-      _heatingSystems = [],
-      _kitchenTools = [],
-      _washingMachines = [],
-      _irrigations = [];
+  late List<DeviceData> devices,
+      _lights,
+      _sockets,
+      _shutters,
+      _airConditioners,
+      _videoDevices,
+      _heatingSystems,
+      _kitchenTools,
+      _washingMachines,
+      _irrigations;
 
   double _lightEnergy = 0,
       _socketEnergy = 0,
@@ -36,75 +38,164 @@ class Devices {
   void init() async {
     List<dynamic> deviceData = await CURL_Request()
         .getRequest(Uri.parse('http://192.168.0.29:8123/api/states'));
+    devices = [];
     for (var element in deviceData) {
-      _devices.add(DeviceData.fromJson(element));
+      devices.add(DeviceData.fromJson(element));
     }
+    _lights = [];
     _lights.addAll(
-        _devices.where((element) => element.entityId!.contains('switch.')));
+        devices.where((element) => element.entityId!.contains('ligth.')));
+    _sockets = [];
     _sockets.addAll(
-        _devices.where((element) => element.entityId!.contains('switch.')));
+        devices.where((element) => element.entityId!.contains('switch.')));
+    _shutters = [];
     _shutters.addAll(
-        _devices.where((element) => element.entityId!.contains('cover.')));
-    _airConditioners.addAll(
-        _devices.where((element) => element.entityId!.contains('switch.')));
-    _videoDevices.addAll(
-        _devices.where((element) => element.entityId!.contains('switch.')));
+        devices.where((element) => element.entityId!.contains('cover.')));
+    _airConditioners = [];
+    _airConditioners
+        .addAll(devices.where((element) => element.entityId!.contains('fan.')));
+    _videoDevices = [];
+    _videoDevices.addAll(devices
+        .where((element) => element.entityId!.contains('media_player.')));
+    _heatingSystems = [];
     _heatingSystems.addAll(
-        _devices.where((element) => element.entityId!.contains('switch.')));
+        devices.where((element) => element.entityId!.contains('switch.')));
+    _kitchenTools = [];
     _kitchenTools.addAll(
-        _devices.where((element) => element.entityId!.contains('switch.')));
+        devices.where((element) => element.entityId!.contains('switch.')));
+    _washingMachines = [];
     _washingMachines.addAll(
-        _devices.where((element) => element.entityId!.contains('switch.')));
+        devices.where((element) => element.entityId!.contains('switch.')));
+    _irrigations = [];
     _irrigations.addAll(
-        _devices.where((element) => element.entityId!.contains('switch.')));
+        devices.where((element) => element.entityId!.contains('switch.')));
 
-    /*_lights.forEach((device) => _lightEnergy += _devices
-        .singleWhere((sensor) =>
-            sensor.entityId! ==
-            'sensor${device.entityId!.substring(device.entityId!.indexOf('.'))}_energy')
-        .state! as double);
-    _sockets.forEach((device) => _socketEnergy += _devices
-        .singleWhere((sensor) =>
-            sensor.entityId! ==
-            'sensor${device.entityId!.substring(device.entityId!.indexOf('.'))}_energy')
-        .state! as double);*/
-    for (var device in _shutters) {
-      _shutterEnergy += double.parse(_devices
-          .singleWhere((sensor) =>
-              sensor.entityId! ==
-              'sensor${device.entityId!.substring(device.entityId!.indexOf('.'))}_energy')
-          .state!);
+    for (var device in _lights) {
+      try {
+        _lightEnergy += double.parse(device.energy = devices
+            .singleWhere((sensor) =>
+                sensor.attributes!.unitOfMeasurement == 'kWh' &&
+                sensor.entityId!.contains(device.entityId!
+                    .substring(device.entityId!.indexOf('.') + 1)))
+            .state!);
+      } catch (_) {
+        if (kDebugMode) {
+          print('no sensor available for energy usage');
+        }
+      }
     }
-    /* _airConditioners.forEach((device) => _airConditionerEnergy += _devices
-        .singleWhere((sensor) =>
-            sensor.entityId! ==
-            'sensor${device.entityId!.substring(device.entityId!.indexOf('.'))}_energy')
-        .state! as double);
-    _videoDevices.forEach((device) => _videoDevicesEnergy += _devices
-        .singleWhere((sensor) =>
-            sensor.entityId! ==
-            'sensor${device.entityId!.substring(device.entityId!.indexOf('.'))}_energy')
-        .state! as double);
-    _heatingSystems.forEach((device) => _heatingSystemEnergy += _devices
-        .singleWhere((sensor) =>
-            sensor.entityId! ==
-            'sensor${device.entityId!.substring(device.entityId!.indexOf('.'))}_energy')
-        .state! as double);
-    _kitchenTools.forEach((device) => _kitchenToolsEnergy += _devices
-        .singleWhere((sensor) =>
-            sensor.entityId! ==
-            'sensor${device.entityId!.substring(device.entityId!.indexOf('.'))}_energy')
-        .state! as double);
-    _washingMachines.forEach((device) => _washingMachineEnergy += _devices
-        .singleWhere((sensor) =>
-            sensor.entityId! ==
-            'sensor${device.entityId!.substring(device.entityId!.indexOf('.'))}_energy')
-        .state! as double);
-    _irrigations.forEach((device) => _irrigationEnergy += _devices
-        .singleWhere((sensor) =>
-            sensor.entityId! ==
-            'sensor${device.entityId!.substring(device.entityId!.indexOf('.'))}_energy')
-        .state! as double);*/
+    for (var device in _sockets) {
+      try {
+        _socketEnergy += double.parse(device.energy = devices
+            .singleWhere((sensor) =>
+                sensor.attributes!.unitOfMeasurement == 'kWh' &&
+                sensor.entityId!.contains(device.entityId!
+                    .substring(device.entityId!.indexOf('.') + 1)))
+            .state!);
+      } catch (_) {
+        if (kDebugMode) {
+          print('no sensor available for energy usage');
+        }
+      }
+    }
+    for (var device in _shutters) {
+      try {
+        _shutterEnergy += double.parse(device.energy = devices
+            .singleWhere((sensor) =>
+                sensor.attributes!.unitOfMeasurement == 'kWh' &&
+                sensor.entityId!.contains(device.entityId!
+                    .substring(device.entityId!.indexOf('.') + 1)))
+            .state!);
+      } catch (_) {
+        if (kDebugMode) {
+          print('no sensor available for energy usage');
+        }
+      }
+    }
+    for (var device in _airConditioners) {
+      try {
+        _airConditionerEnergy += double.parse(device.energy = devices
+            .singleWhere((sensor) =>
+                sensor.attributes!.unitOfMeasurement == 'kWh' &&
+                sensor.entityId!.contains(device.entityId!
+                    .substring(device.entityId!.indexOf('.') + 1)))
+            .state!);
+      } catch (_) {
+        if (kDebugMode) {
+          print('no sensor available for energy usage');
+        }
+      }
+    }
+    for (var device in _videoDevices) {
+      try {
+        _videoDevicesEnergy += double.parse(device.energy = devices
+            .singleWhere((sensor) =>
+                sensor.attributes!.unitOfMeasurement == 'kWh' &&
+                sensor.entityId!.contains(device.entityId!
+                    .substring(device.entityId!.indexOf('.') + 1)))
+            .state!);
+      } catch (_) {
+        if (kDebugMode) {
+          print('no sensor available for energy usage');
+        }
+      }
+    }
+    for (var device in _heatingSystems) {
+      try {
+        _heatingSystemEnergy += double.parse(device.energy = devices
+            .singleWhere((sensor) =>
+                sensor.attributes!.unitOfMeasurement == 'kWh' &&
+                sensor.entityId!.contains(device.entityId!
+                    .substring(device.entityId!.indexOf('.') + 1)))
+            .state!);
+      } catch (_) {
+        if (kDebugMode) {
+          print('no sensor available for energy usage');
+        }
+      }
+    }
+    for (var device in _kitchenTools) {
+      try {
+        _kitchenToolsEnergy += double.parse(device.energy = devices
+            .singleWhere((sensor) =>
+                sensor.attributes!.unitOfMeasurement == 'kWh' &&
+                sensor.entityId!.contains(device.entityId!
+                    .substring(device.entityId!.indexOf('.') + 1)))
+            .state!);
+      } catch (_) {
+        if (kDebugMode) {
+          print('no sensor available for energy usage');
+        }
+      }
+    }
+    for (var device in _washingMachines) {
+      try {
+        _washingMachineEnergy += double.parse(device.energy = devices
+            .singleWhere((sensor) =>
+                sensor.attributes!.unitOfMeasurement == 'kWh' &&
+                sensor.entityId!.contains(device.entityId!
+                    .substring(device.entityId!.indexOf('.') + 1)))
+            .state!);
+      } catch (_) {
+        if (kDebugMode) {
+          print('no sensor available for energy usage');
+        }
+      }
+    }
+    for (var device in _irrigations) {
+      try {
+        _irrigationEnergy += double.parse(device.energy = devices
+            .singleWhere((sensor) =>
+                sensor.attributes!.unitOfMeasurement == 'kWh' &&
+                sensor.entityId!.contains(device.entityId!
+                    .substring(device.entityId!.indexOf('.') + 1)))
+            .state!);
+      } catch (_) {
+        if (kDebugMode) {
+          print('no sensor available for energy usage');
+        }
+      }
+    }
 
     _energyList.setAll(0, [
       _lightEnergy.toStringAsPrecision(2),

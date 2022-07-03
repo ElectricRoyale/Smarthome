@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:smarthome/Model/UserData.dart';
-import 'package:smarthome/utils/Devices.dart';
 import 'package:smarthome/utils/biometricAuthentication.dart';
 
 import 'layouts/Login.dart';
@@ -13,7 +12,6 @@ void main() async {
   Hive.registerAdapter(UserDataAdapter());
   await Hive.openBox<UserData>('UserData');
   await Hive.openBox('LoginData');
-  Devices devices = Devices();
 
   runApp(const MyApp());
 }

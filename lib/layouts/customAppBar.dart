@@ -58,18 +58,24 @@ class CustomAppBarLayout extends State<CustomAppBar>
 
   void checkSignalStrength() {
     pingStream = ping.stream.listen((pingData) {
-      int strength = pingData.response!.time!.inMilliseconds;
-      if (strength < 50) {
+      try {
+        int strength = pingData.response!.time!.inMilliseconds;
+        if (strength < 50) {
+          setState(() {
+            signalStrength = SvgPicture.asset('assets/full_signal.svg');
+          });
+        } else if (strength < 100) {
+          setState(() {
+            signalStrength = SvgPicture.asset('assets/medium_signal.svg');
+          });
+        } else if (strength >= 100) {
+          setState(() {
+            signalStrength = SvgPicture.asset('assets/low_signal.svg');
+          });
+        }
+      } catch (_) {
         setState(() {
-          signalStrength = SvgPicture.asset('assets/full_signal.svg');
-        });
-      } else if (strength < 100) {
-        setState(() {
-          signalStrength = SvgPicture.asset('assets/medium_signal.svg');
-        });
-      } else if (strength >= 100) {
-        setState(() {
-          signalStrength = SvgPicture.asset('assets/low_signal.svg');
+          signalStrength = SvgPicture.asset('assets/unavailable_signal.svg');
         });
       }
     });
@@ -122,7 +128,8 @@ class CustomAppBarLayout extends State<CustomAppBar>
                             break;
                           case 1:
                             if (_animationController.isAnimating) {
-                              widget.network.currentState!.listOfWifiDevices.cancel();
+                              widget.network.currentState!.listOfWifiDevices
+                                  .cancel();
                               _animationController.animateTo(1);
                             } else {
                               if (!_animationController.isAnimating) {

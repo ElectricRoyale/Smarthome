@@ -180,6 +180,8 @@ class Layout extends State<Dashboard> {
                                             OverViewPage(
                                               name: (APPLIANCES
                                                   .elementAt(index)['name'])!,
+                                              icon: (APPLIANCES
+                                                  .elementAt(index)['icon'])!,
                                               group: (APPLIANCES
                                                   .elementAt(index)['group'])!,
                                             ))),

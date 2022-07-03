@@ -70,7 +70,6 @@ class _BiometricAuthenticationState extends State<BiometricAuthentication> {
         await LocalAuthentication.canCheckBiometrics) {
       if (await LocalAuthentication.authenticate(
         localizedReason: 'Unlock the app.',
-        biometricOnly: true,
         stickyAuth: true,
       )) {
         Navigator.pop(context);
