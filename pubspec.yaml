@@ -33,7 +33,7 @@ dependencies:
   flutter_rounded_date_picker: ^3.0.1
   material_design_icons_flutter: ^5.0.6595
   font_awesome_flutter: ^10.1.0
-  dart_ping: ^6.1.2
+  dart_ping: ^7.0.1
   network_info_plus: ^2.1.3
   mysql1: ^0.20.0
   hive: ^2.2.2
@@ -50,15 +50,16 @@ dependencies:
   image_cropper: ^2.0.3
   image_picker: ^0.8.5+3
   cupertino_icons: ^1.0.5
-  rxdart: ^0.27.4
-  lan_scanner: ^3.4.1
-  device_info_plus: ^4.0.0
+  rxdart: ^0.27.5
+  lan_scanner: ^3.5.0
+  device_info_plus: ^4.0.1
   wifi_info_plugin_plus: ^2.0.2
   speed_test_port: ^1.0.4
   http: ^0.13.4
   carousel_slider: ^4.1.1
   smooth_page_indicator: ^1.0.0+2
-  simple_animations: ^4.2.0
+  web_socket_channel: ^2.2.0
+
 
 dev_dependencies:
   flutter_test:

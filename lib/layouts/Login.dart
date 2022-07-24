@@ -12,7 +12,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 import 'package:smarthome/layouts/Register.dart';
 import 'package:smarthome/layouts/mainlayout.dart';
-import 'package:smarthome/utils/Devices.dart';
+import 'package:smarthome/utils/DashboardData.dart';
 import 'package:smarthome/utils/LoadingScreen.dart';
 import 'package:smarthome/utils/MySQLHelper.dart';
 
@@ -33,6 +33,7 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
   String nameErrorText = '', passwordErrorText = '';
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
+  //LocalAuthentication auth = LocalAuthentication();
 
   Box loginData = Hive.box('LoginData');
 
@@ -115,9 +116,10 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
       if (await LocalAuthentication.isDeviceSupported() &&
           await LocalAuthentication.canCheckBiometrics) {
         if (await LocalAuthentication.authenticate(
-          localizedReason: 'Unlock the app.',
-          stickyAuth: true,
-        )) {
+            localizedReason: 'Unlock the app.',
+            sensitiveTransaction: false,
+            stickyAuth: true,
+            biometricOnly: true)) {
           passwordController.text = loginData.get('password');
           login(loginData.get('name'), loginData.get('password'));
         }
@@ -133,9 +135,9 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
         Navigator.pop(context);
         connectionError = false;
         biometricLogin();
-        Devices().init();
+        DashboadData().init();
       }
-      Devices();
+      DashboadData();
     }).catchError((error) {
       if (connectionError) Navigator.pop(context);
       connectionErrorDialog(

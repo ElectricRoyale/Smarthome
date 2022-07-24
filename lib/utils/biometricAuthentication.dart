@@ -11,6 +11,8 @@ class BiometricAuthentication extends StatefulWidget {
 }
 
 class _BiometricAuthenticationState extends State<BiometricAuthentication> {
+  //LocalAuthentication auth = LocalAuthentication();
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -70,7 +72,9 @@ class _BiometricAuthenticationState extends State<BiometricAuthentication> {
         await LocalAuthentication.canCheckBiometrics) {
       if (await LocalAuthentication.authenticate(
         localizedReason: 'Unlock the app.',
+        sensitiveTransaction: false,
         stickyAuth: true,
+        biometricOnly: true,
       )) {
         Navigator.pop(context);
       }

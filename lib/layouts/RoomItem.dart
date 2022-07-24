@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smarthome/layouts/Dashboard.dart';
 import 'package:smarthome/my_icons_icons.dart';
+import 'package:smarthome/utils/scrolling_text.dart';
 
 class RoomItem extends StatelessWidget {
   final dynamic roomItem;
@@ -49,13 +50,21 @@ class RoomItem extends StatelessWidget {
                       color: Colors.white),
                 ),
                 Container(
+                    width: width * 0.425,
+                    height: 30,
                     margin: const EdgeInsets.only(left: 20, top: 20),
-                    child: Text(
-                      "${roomItem['name']}",
+                    child: ScrollingText(
+                      text: "${roomItem['name']}",
+                      maxWidth: width * 0.425,
+                      velocity: 30,
+                      startPointOffset: 1,
+                      blankSpace: 100,
                       style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
                           fontSize: 24),
+                      startAfter: const Duration(seconds: 3),
+                      pauseAfterRound: const Duration(seconds: 3),
                     )),
               ],
             ),

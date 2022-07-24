@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:smarthome/layouts/OverViewPage.dart';
 import 'package:smarthome/layouts/RoomItem.dart';
-import 'package:smarthome/my_icons_icons.dart';
-import 'package:smarthome/utils/Devices.dart';
+import 'package:smarthome/utils/DashboardData.dart';
 import 'package:smarthome/utils/constants.dart';
 import 'package:smarthome/utils/widget_functions.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
+import '../my_icons_icons.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -37,23 +38,12 @@ class Layout extends State<Dashboard> {
     });
   }
 
-  Container itemContainer(var icon, double size) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [Color(0x1effffff), Color(0x4affffff)]),
-        shape: BoxShape.circle,
-      ),
-      padding: const EdgeInsets.all(3),
-      margin: const EdgeInsets.only(right: 4),
-      child: Icon(
-        icon,
-        color: Colors.white,
-        size: size,
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(
+        const Duration(hours: 1), () => setState(() => DashboadData().init()));
+    rooms.insertAll(0, DashboadData().getRooms);
   }
 
   @override
@@ -64,29 +54,27 @@ class Layout extends State<Dashboard> {
         return Column(children: [
           SizedBox(
             width: constraints.maxHeight,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10.0),
-              child: Stack(
-                children: [
-                  Container(
-                      width: constraints.maxWidth,
-                      height: constraints.maxHeight * 0.25,
-                      margin: const EdgeInsets.only(top: 30),
-                      child: ListView.builder(
-                        itemCount: rooms.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return RoomItem(
-                            layout: this,
-                            roomItem: rooms.elementAt(index),
-                            width: constraints.maxWidth,
-                            height: constraints.maxHeight,
-                          );
-                        },
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                      )),
-                ],
-              ),
+            child: Stack(
+              children: [
+                Container(
+                    width: constraints.maxWidth,
+                    height: constraints.maxHeight * 0.25,
+                    margin: const EdgeInsets.only(top: 30),
+                    child: ListView.builder(
+                      itemCount: rooms.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return RoomItem(
+                          layout: this,
+                          roomItem: rooms.elementAt(index),
+                          width: constraints.maxWidth,
+                          height: constraints.maxHeight,
+                        );
+                      },
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    )),
+              ],
             ),
           ),
           Padding(
@@ -128,8 +116,8 @@ class Layout extends State<Dashboard> {
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
-                            children: const [
-                              Padding(
+                            children: [
+                              const Padding(
                                 padding: EdgeInsets.only(right: 5),
                                 child: Icon(
                                   Icons.add,
@@ -138,11 +126,21 @@ class Layout extends State<Dashboard> {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(right: 30),
-                                child: Icon(
-                                  Icons.grid_view_rounded,
-                                  color: Colors.white,
-                                  size: 29,
+                                padding: const EdgeInsets.only(right: 30),
+                                child: InkWell(
+                                  onTap: () => Navigator.push(
+                                      context,
+                                      PageRouteBuilder(
+                                          pageBuilder: (context, animation,
+                                                  secondAnimation) =>
+                                              const OverViewPage(
+                                                name: 'ALL DEVICES',
+                                              ))),
+                                  child: const Icon(
+                                    Icons.grid_view_rounded,
+                                    color: Colors.white,
+                                    size: 29,
+                                  ),
                                 ),
                               ),
                             ],
@@ -152,7 +150,7 @@ class Layout extends State<Dashboard> {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(
-                              top: 30, left: 20, right: 20),
+                              top: 25, left: 20, right: 20),
                           child: GridView.builder(
                             // Create a grid with 2 columns. If you change the scrollDirection to
                             // horizontal, this produces 2 rows.
@@ -180,10 +178,6 @@ class Layout extends State<Dashboard> {
                                             OverViewPage(
                                               name: (APPLIANCES
                                                   .elementAt(index)['name'])!,
-                                              icon: (APPLIANCES
-                                                  .elementAt(index)['icon'])!,
-                                              group: (APPLIANCES
-                                                  .elementAt(index)['group'])!,
                                             ))),
                                 borderRadius: BorderRadius.circular(20.0),
                                 child: Column(
@@ -211,7 +205,7 @@ class Layout extends State<Dashboard> {
                                     Padding(
                                       padding: const EdgeInsets.only(top: 1),
                                       child: Text(
-                                        '${Devices().getEnergyList.elementAt(index)} KWh USED',
+                                        '${DashboadData().getEnergyList.elementAt(index)} KWh USED',
                                         style: const TextStyle(
                                             fontSize: 12,
                                             color: Color(0xff919191)),
@@ -240,7 +234,7 @@ class Layout extends State<Dashboard> {
                   )
                 ]),
           ),
-          addVerticalSpace(7.5),
+          addVerticalSpace(6),
           buildIndicator(),
         ]);
       }),

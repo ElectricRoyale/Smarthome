@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:smarthome/utils/Home_Assistant_Connection.dart';
+import 'package:smarthome/utils/globals.dart';
+import 'package:smarthome/utils/widget_functions.dart';
 
 import '../JSON/device_data.dart';
-import 'CURL_Request.dart';
 
-class Devices {
+class DashboadData {
   late List<DeviceData> devices,
       _lights,
       _sockets,
@@ -13,7 +16,8 @@ class Devices {
       _heatingSystems,
       _kitchenTools,
       _washingMachines,
-      _irrigations;
+      _irrigations,
+      allDevices;
 
   double _lightEnergy = 0,
       _socketEnergy = 0,
@@ -27,49 +31,110 @@ class Devices {
 
   final List<String> _energyList = List.filled(9, '0.0');
 
-  static final Devices _instance = Devices._internal();
+  late List _roomList, _roomDevices;
+  late Map _roomDevicesMap;
 
-  factory Devices() => _instance;
+  static final DashboadData _instance = DashboadData._internal();
 
-  Devices._internal() {
+  factory DashboadData() => _instance;
+
+  DashboadData._internal() {
     init();
   }
 
   void init() async {
-    List<dynamic> deviceData = await CURL_Request()
-        .getRequest(Uri.parse('http://192.168.0.29:8123/api/states'));
+    Map roomData = await HomeAssistantConnection()
+        .send('{"type" : "config/area_registry/list", "id" : "${idNumber++}"}');
+    Map roomDevices = await HomeAssistantConnection().send(
+        '{"type" : "config/device_registry/list", "id" : "${idNumber++}"}');
+    _roomDevices = roomDevices["result"];
+    _roomDevices.removeWhere((element) => element["area_id"] == null);
+    List result = roomData["result"];
+    Map deviceData = await HomeAssistantConnection()
+        .send('{"type" : "get_states", "id" : "${idNumber++}"}');
+    allDevices = [];
     devices = [];
-    for (var element in deviceData) {
+    for (var element in deviceData["result"]) {
       devices.add(DeviceData.fromJson(element));
+    }
+    List
+    _roomDevices.forEach((element) {devices.singleWhere((element) => element)});
+    _roomDevicesMap.
+    for (var value in result) {
+      _roomList.add({
+        'icon': 'bed.svg',
+        'name': '${value['name']}',
+        'appliances': [
+          itemContainer(Icons.lightbulb_outline_rounded, 24),
+        ],
+        'energyConsumption': '0 KW USED'
+      });
     }
     _lights = [];
     _lights.addAll(
-        devices.where((element) => element.entityId!.contains('ligth.')));
+        devices.where((element) => element.entityId!.contains('light.')));
+    for (var element in _lights) {
+      element.icon = 'light.svg';
+    }
+    allDevices.addAll(_lights);
     _sockets = [];
     _sockets.addAll(
         devices.where((element) => element.entityId!.contains('switch.')));
+    for (var element in _sockets) {
+      element.icon = 'socket.svg';
+    }
+    allDevices.addAll(_sockets);
     _shutters = [];
     _shutters.addAll(
         devices.where((element) => element.entityId!.contains('cover.')));
+    for (var element in _shutters) {
+      element.icon = 'shutter.svg';
+    }
+    allDevices.addAll(_shutters);
     _airConditioners = [];
     _airConditioners
         .addAll(devices.where((element) => element.entityId!.contains('fan.')));
+    for (var element in _airConditioners) {
+      element.icon = 'Air_conditioner.svg';
+    }
+    allDevices.addAll(_airConditioners);
     _videoDevices = [];
     _videoDevices.addAll(devices
         .where((element) => element.entityId!.contains('media_player.')));
+    for (var element in _videoDevices) {
+      element.icon = 'television.svg';
+    }
+    allDevices.addAll(_videoDevices);
     _heatingSystems = [];
-    _heatingSystems.addAll(
-        devices.where((element) => element.entityId!.contains('switch.')));
+    _heatingSystems.addAll(devices
+        .where((element) => element.entityId!.contains('heating_system.')));
+    for (var element in _heatingSystems) {
+      element.icon = 'heating_system.svg';
+    }
+    allDevices.addAll(_heatingSystems);
     _kitchenTools = [];
     _kitchenTools.addAll(
-        devices.where((element) => element.entityId!.contains('switch.')));
+        devices.where((element) => element.entityId!.contains('kitchen.')));
+    for (var element in _kitchenTools) {
+      element.icon = 'kitchen_tools.svg';
+    }
+    allDevices.addAll(_kitchenTools);
     _washingMachines = [];
-    _washingMachines.addAll(
-        devices.where((element) => element.entityId!.contains('switch.')));
+    _washingMachines.addAll(devices
+        .where((element) => element.entityId!.contains('washing_machine.')));
+    for (var element in _washingMachines) {
+      element.icon = 'washing_machine.svg';
+    }
+    allDevices.addAll(_washingMachines);
     _irrigations = [];
     _irrigations.addAll(
-        devices.where((element) => element.entityId!.contains('switch.')));
+        devices.where((element) => element.entityId!.contains('irrigation.')));
+    for (var element in _irrigations) {
+      element.icon = 'garden.svg';
+    }
+    allDevices.addAll(_heatingSystems);
 
+    _lightEnergy = 0;
     for (var device in _lights) {
       try {
         _lightEnergy += double.parse(device.energy = devices
@@ -84,6 +149,8 @@ class Devices {
         }
       }
     }
+
+    _socketEnergy = 0;
     for (var device in _sockets) {
       try {
         _socketEnergy += double.parse(device.energy = devices
@@ -98,6 +165,8 @@ class Devices {
         }
       }
     }
+
+    _shutterEnergy = 0;
     for (var device in _shutters) {
       try {
         _shutterEnergy += double.parse(device.energy = devices
@@ -112,6 +181,8 @@ class Devices {
         }
       }
     }
+
+    _airConditionerEnergy = 0;
     for (var device in _airConditioners) {
       try {
         _airConditionerEnergy += double.parse(device.energy = devices
@@ -126,6 +197,8 @@ class Devices {
         }
       }
     }
+
+    _videoDevicesEnergy = 0;
     for (var device in _videoDevices) {
       try {
         _videoDevicesEnergy += double.parse(device.energy = devices
@@ -140,6 +213,8 @@ class Devices {
         }
       }
     }
+
+    _heatingSystemEnergy = 0;
     for (var device in _heatingSystems) {
       try {
         _heatingSystemEnergy += double.parse(device.energy = devices
@@ -154,6 +229,8 @@ class Devices {
         }
       }
     }
+
+    _kitchenToolsEnergy = 0;
     for (var device in _kitchenTools) {
       try {
         _kitchenToolsEnergy += double.parse(device.energy = devices
@@ -168,6 +245,8 @@ class Devices {
         }
       }
     }
+
+    _washingMachineEnergy = 0;
     for (var device in _washingMachines) {
       try {
         _washingMachineEnergy += double.parse(device.energy = devices
@@ -182,6 +261,8 @@ class Devices {
         }
       }
     }
+
+    _irrigationEnergy = 0;
     for (var device in _irrigations) {
       try {
         _irrigationEnergy += double.parse(device.energy = devices
@@ -208,6 +289,9 @@ class Devices {
       _washingMachineEnergy.toStringAsPrecision(2),
       _irrigationEnergy.toStringAsPrecision(2)
     ]);
+    allDevices.sort((a, b) => a.attributes!.friendlyName!
+        .toLowerCase()
+        .compareTo(b.attributes!.friendlyName!.toLowerCase()));
   }
 
   List<DeviceData> get getIrrigations => _irrigations;
@@ -229,4 +313,8 @@ class Devices {
   List<DeviceData> get getLights => _lights;
 
   List<String> get getEnergyList => _energyList;
+
+  List<DeviceData> get getAllDevices => allDevices;
+
+  List get getRooms => _roomList;
 }

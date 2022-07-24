@@ -27,13 +27,18 @@ class MyApp extends StatelessWidget {
     ]);
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
+        systemNavigationBarContrastEnforced: true,
         statusBarColor: Colors.transparent, // transparent status bar
-        systemNavigationBarColor: Colors.transparent, // navigation bar color
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarDividerColor:
+            Colors.transparent, // navigation bar color
         statusBarIconBrightness: Brightness.light, // status bar icons' color
         systemNavigationBarIconBrightness:
             Brightness.dark, //navigation bar icons' color
       ),
     );
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+        overlays: [SystemUiOverlay.top]);
     return MaterialApp(
       theme: ThemeData(),
       routes: {
