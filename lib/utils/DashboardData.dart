@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:smarthome/utils/Home_Assistant_Connection.dart';
 import 'package:smarthome/utils/globals.dart';
 import 'package:smarthome/utils/widget_functions.dart';
@@ -31,8 +32,8 @@ class DashboadData {
 
   final List<String> _energyList = List.filled(9, '0.0');
 
-  late List _roomList, _roomDevices;
-  late Map _roomDevicesMap;
+  final List _roomList = [];
+  final Map<String, List<DeviceData>> _roomDevicesMap = {};
 
   static final DashboadData _instance = DashboadData._internal();
 
@@ -43,32 +44,33 @@ class DashboadData {
   }
 
   void init() async {
-    Map roomData = await HomeAssistantConnection()
-        .send('{"type" : "config/area_registry/list", "id" : "${idNumber++}"}');
-    Map roomDevices = await HomeAssistantConnection().send(
-        '{"type" : "config/device_registry/list", "id" : "${idNumber++}"}');
-    _roomDevices = roomDevices["result"];
-    _roomDevices.removeWhere((element) => element["area_id"] == null);
-    List result = roomData["result"];
-    Map deviceData = await HomeAssistantConnection()
-        .send('{"type" : "get_states", "id" : "${idNumber++}"}');
+    List<Map> responses = await HomeAssistantConnection().send([
+      '{"type" : "config/area_registry/list", "id" : "${idNumber++}"}',
+      '{"type" : "config/device_registry/list", "id" : "${idNumber++}"}',
+      '{"type" : "config/entity_registry/list", "id" : "${idNumber++}"}',
+      '{"type" : "get_states", "id" : "${idNumber++}"}'
+    ]);
+    List roomData = responses.elementAt(2)["result"];
+    List roomDevices = responses.elementAt(3)["result"];
+    List entitys = responses.elementAt(4)["result"];
+    List deviceData = responses.elementAt(5)["result"];
     allDevices = [];
     devices = [];
-    for (var element in deviceData["result"]) {
+    for (var element in deviceData) {
       devices.add(DeviceData.fromJson(element));
     }
-    List
-    _roomDevices.forEach((element) {devices.singleWhere((element) => element)});
-    _roomDevicesMap.
-    for (var value in result) {
-      _roomList.add({
-        'icon': 'bed.svg',
-        'name': '${value['name']}',
-        'appliances': [
-          itemContainer(Icons.lightbulb_outline_rounded, 24),
-        ],
-        'energyConsumption': '0 KW USED'
+    _roomDevicesMap.clear();
+    for (var roomName in roomData) {
+      List<DeviceData> enddevice = [];
+      roomDevices
+          .where((device) => device["area_id"] == roomName["area_id"])
+          .toList()
+          .forEach((device) {
+           //String name = entitys.singleWhere((entity) => entity["device_id"] == device["id"])["name"];
+        enddevice
+            .add(devices.firstWhere((id) => id.attributes!.friendlyName == device["name"]));
       });
+      _roomDevicesMap[roomName["area_id"]] = enddevice;
     }
     _lights = [];
     _lights.addAll(
@@ -289,9 +291,65 @@ class DashboadData {
       _washingMachineEnergy.toStringAsPrecision(2),
       _irrigationEnergy.toStringAsPrecision(2)
     ]);
+
+    _roomList.clear();
+    for (var value in roomData) {
+      double energy = 0.0;
+      for (var device in _roomDevicesMap[value["area_id"]]!) {
+        energy += double.parse(
+            device.energy != 'Unavailable' ? device.energy : '0.0');
+      }
+      _roomList.add({
+        'icon': 'bed.svg',
+        'name': '${value['name']}',
+        'appliances': roomDeviceIcons(value["area_id"]),
+        'energyConsumption': '$energy KW USED'
+      });
+    }
     allDevices.sort((a, b) => a.attributes!.friendlyName!
         .toLowerCase()
         .compareTo(b.attributes!.friendlyName!.toLowerCase()));
+  }
+
+  List<Widget> roomDeviceIcons(String roomName) {
+    List<Widget> items = [];
+    for (var device in _roomDevicesMap[roomName]!) {
+      IconData icon = Icons.error_outline;
+      switch (device.entityId!.substring(0, device.entityId!.indexOf('.'))) {
+        case 'light':
+          icon = Icons.lightbulb_outlined;
+          break;
+        case 'switch':
+          icon = MdiIcons.powerSocketDe;
+          break;
+        case 'cover':
+          icon = MdiIcons.windowShutter;
+          break;
+        case 'fan':
+          icon = MdiIcons.airConditioner;
+          break;
+        case 'media_player':
+          icon = Icons.tv_rounded;
+          break;
+        case 'heating_system':
+          icon = Icons.hvac_outlined;
+          break;
+        case 'kitchen':
+          icon = Icons.kitchen_outlined;
+          break;
+        case 'washing_machine':
+          icon = Icons.local_laundry_service_outlined;
+          break;
+        case 'irrigation':
+          icon = MdiIcons.wateringCanOutline;
+          break;
+        default:
+          icon = Icons.error_outline;
+          break;
+      }
+      items.add(itemContainer(icon, 24));
+    }
+    return items;
   }
 
   List<DeviceData> get getIrrigations => _irrigations;

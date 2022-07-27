@@ -102,7 +102,7 @@ class NetworkLayout extends State<Network> {
         },
       );
 
-      listOfWifiDevices = stream.listen((host) async {
+      listOfWifiDevices = stream.forEach((host) async{
         if (host.isReachable) {
           await InternetAddress(host.ip).reverse().then((value) {
             Map<String, String> deviceData = {
@@ -125,11 +125,10 @@ class NetworkLayout extends State<Network> {
               });
             });
           });
-        } else {
+        }else{
           devices.removeWhere((element) => element.containsValue(host.ip));
         }
-      })
-        ..onDone(() => CustomAppBarLayout.stopAnimation());
+      }).whenComplete(() => CustomAppBarLayout.stopAnimation()).asStream().listen((event) { });
     });
   }
 
@@ -259,7 +258,7 @@ class NetworkLayout extends State<Network> {
                 thickness: 1.1,
               ),
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(top: 20, bottom: 90),
+              padding: const EdgeInsets.only(top: 20, bottom: 60),
               itemCount: devices.length,
               itemBuilder: (context, index) => Container(
                 margin: const EdgeInsets.only(left: 15),

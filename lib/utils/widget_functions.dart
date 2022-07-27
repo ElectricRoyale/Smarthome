@@ -12,7 +12,7 @@ Widget addHorizontalSpace(double width) {
   );
 }
 
-Container itemContainer(var icon, double size) {
+Container itemContainer(IconData icon, double size) {
   return Container(
     decoration: const BoxDecoration(
       gradient: LinearGradient(
