@@ -102,7 +102,7 @@ class NetworkLayout extends State<Network> {
         },
       );
 
-      listOfWifiDevices = stream.forEach((host) async{
+      listOfWifiDevices = stream.listen((host) async {
         if (host.isReachable) {
           await InternetAddress(host.ip).reverse().then((value) {
             Map<String, String> deviceData = {
@@ -125,10 +125,11 @@ class NetworkLayout extends State<Network> {
               });
             });
           });
-        }else{
+        } else {
           devices.removeWhere((element) => element.containsValue(host.ip));
         }
-      }).whenComplete(() => CustomAppBarLayout.stopAnimation()).asStream().listen((event) { });
+      })
+        ..onDone(() => CustomAppBarLayout.stopAnimation());
     });
   }
 
@@ -194,7 +195,7 @@ class NetworkLayout extends State<Network> {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 10),
                           child: Text(
-                            '$downloadRate $unitText',
+                            '$uploadRate $unitText',
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -204,7 +205,7 @@ class NetworkLayout extends State<Network> {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 20),
                           child: Text(
-                            '$uploadRate $unitText',
+                            '$downloadRate $unitText',
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -258,7 +259,7 @@ class NetworkLayout extends State<Network> {
                 thickness: 1.1,
               ),
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(top: 20, bottom: 60),
+              padding: const EdgeInsets.only(top: 20, bottom: 80),
               itemCount: devices.length,
               itemBuilder: (context, index) => Container(
                 margin: const EdgeInsets.only(left: 15),

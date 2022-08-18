@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:smarthome/utils/globals.dart';
 
 import '../JSON/device_data.dart';
 import '../utils/DashboardData.dart';
@@ -88,6 +89,23 @@ class OverViewPageState extends State<OverViewPage> {
           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 20),
           itemCount: deviceData.length,
           itemBuilder: (ctx, index) => InkWell(
+            onTap: () {
+              entity_id = deviceData.elementAt(index).entityId;
+              if (deviceData.elementAt(index).entityId!.substring(
+                      0, deviceData.elementAt(index).entityId!.indexOf('.')) ==
+                  "cover") {
+                postion = 100 -
+                    deviceData
+                        .elementAt(index)
+                        .attributes!
+                        .currentPosition!
+                        .toDouble();
+              }
+              Navigator.pushNamed(
+                  context,
+                  deviceData.elementAt(index).entityId!.substring(
+                      0, deviceData.elementAt(index).entityId!.indexOf('.')));
+            },
             child: Container(
               height: 200,
               width: 200,

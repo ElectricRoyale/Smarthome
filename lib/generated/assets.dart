@@ -4,33 +4,62 @@ class Assets {
 
   static const String assetsAirConditioner = 'assets/Air_conditioner.svg';
   static const String assetsBed = 'assets/bed.svg';
+  static const String assetsBrokenCloud = 'assets/broken_cloud.svg';
   static const String assetsCamera = 'assets/camera.svg';
+  static const String assetsCloud = 'assets/cloud.svg';
+  static const String assetsCloudLightning = 'assets/cloud_lightning.svg';
   static const String assetsCoffeeMachine = 'assets/coffee_machine.svg';
   static const String assetsComputer = 'assets/computer.svg';
   static const String assetsDatepickerbackground =
       'assets/datepickerbackground.png';
   static const String assetsDeviceFullscreen = 'assets/device_fullscreen.svg';
+  static const String assetsDrizzle = 'assets/Drizzle.svg';
+  static const String assetsDust = 'assets/dust.svg';
   static const String assetsError = 'assets/error.svg';
   static const String assetsFullSignal = 'assets/full_signal.svg';
   static const String assetsGallery = 'assets/gallery.svg';
   static const String assetsGarden = 'assets/garden.svg';
+  static const String assetsHail = 'assets/hail.svg';
   static const String assetsHeatingSystem = 'assets/heating_system.svg';
+  static const String assetsHeavyDrizzle = 'assets/heavy_Drizzle.svg';
+  static const String assetsHeavyRain = 'assets/heavy_rain.svg';
   static const String assetsHouseAppIcon = 'assets/house_app_icon.svg';
+  static const String assetsHygrometer = 'assets/hygrometer.svg';
   static const String assetsIrrigation = 'assets/irrigation.svg';
   static const String assetsKitchen = 'assets/kitchen.svg';
   static const String assetsKitchenTools = 'assets/kitchen_tools.svg';
   static const String assetsLight = 'assets/light.svg';
+  static const String assetsLightDrizzle = 'assets/light_Drizzle.svg';
+  static const String assetsLightSnow = 'assets/light_snow.svg';
   static const String assetsLowSignal = 'assets/low_signal.svg';
   static const String assetsMediumSignal = 'assets/medium_signal.svg';
   static const String assetsMicrowave = 'assets/microwave.svg';
   static const String assetsOven = 'assets/oven.svg';
+  static const String assetsPartlyCloudy = 'assets/partly_cloudy.svg';
   static const String assetsPerson = 'assets/person.png';
+  static const String assetsRain = 'assets/rain.svg';
+  static const String assetsRainCloud = 'assets/rain_cloud.svg';
   static const String assetsRefresh = 'assets/refresh.svg';
   static const String assetsRefrigerator = 'assets/refrigerator.svg';
   static const String assetsShutter = 'assets/shutter.svg';
+  static const String assetsSleet = 'assets/sleet.svg';
+  static const String assetsSnow = 'assets/snow.svg';
+  static const String assetsSnowStorm = 'assets/snow_storm.svg';
   static const String assetsSocket = 'assets/socket.svg';
+  static const String assetsStormWithHeavyRain =
+      'assets/storm_with_heavy_rain.svg';
+  static const String assetsStormWithLigthRain =
+      'assets/storm_with_light_rain.svg';
+  static const String assetsStormyWeather = 'assets/stormy_weather.svg';
+  static const String assetsSun = 'assets/sun.svg';
+  static const String assetsSunrise = 'assets/sunrise.svg';
+  static const String assetsSunset = 'assets/sunset.svg';
   static const String assetsTelevision = 'assets/television.svg';
+  static const String assetsThermometer = 'assets/thermometer.svg';
+  static const String assetsTornado = 'assets/tornado.svg';
   static const String assetsUnavailableSignal = 'assets/unavailable_signal.svg';
   static const String assetsWashingMachine = 'assets/washing_machine.svg';
   static const String assetsWaterHeater = 'assets/water_heater.svg';
+  static const String assetsWind = 'assets/wind.svg';
+  static const String assetsWindyWeather = 'assets/windy_weather.svg';
 }

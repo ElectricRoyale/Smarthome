@@ -1,4 +1,5 @@
 class Attributes {
+  int? currentPosition;
   bool? editable;
   String? id;
   String? userId;
@@ -6,13 +7,15 @@ class Attributes {
   String? unitOfMeasurement;
 
   Attributes(
-      {this.editable,
+      {this.currentPosition,
+      this.editable,
       this.id,
       this.userId,
       this.friendlyName,
       this.unitOfMeasurement});
 
   Attributes.fromJson(Map<String, dynamic> json) {
+    currentPosition = json['current_position'];
     editable = json['editable'];
     id = json['id'];
     userId = json['user_id'];
@@ -22,6 +25,7 @@ class Attributes {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data['current_position'] = currentPosition;
     data['editable'] = editable;
     data['id'] = id;
     data['user_id'] = userId;

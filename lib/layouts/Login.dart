@@ -15,6 +15,7 @@ import 'package:smarthome/layouts/mainlayout.dart';
 import 'package:smarthome/utils/DashboardData.dart';
 import 'package:smarthome/utils/LoadingScreen.dart';
 import 'package:smarthome/utils/MySQLHelper.dart';
+import 'package:smarthome/utils/weatherData.dart';
 
 import '../utils/constants.dart';
 
@@ -136,8 +137,10 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
         connectionError = false;
         biometricLogin();
         DashboadData().init();
+        WeatherData().init();
       }
       DashboadData();
+      WeatherData();
     }).catchError((error) {
       if (connectionError) Navigator.pop(context);
       connectionErrorDialog(

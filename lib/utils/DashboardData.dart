@@ -43,17 +43,17 @@ class DashboadData {
     init();
   }
 
-  void init() async {
-    List<Map> responses = await HomeAssistantConnection().send([
+  Future<void> init() async {
+    HomeAssistantConnection homeAssistantConnection = HomeAssistantConnection();
+    await homeAssistantConnection.send([
       '{"type" : "config/area_registry/list", "id" : "${idNumber++}"}',
       '{"type" : "config/device_registry/list", "id" : "${idNumber++}"}',
-      '{"type" : "config/entity_registry/list", "id" : "${idNumber++}"}',
       '{"type" : "get_states", "id" : "${idNumber++}"}'
     ]);
+    List<Map> responses = homeAssistantConnection.getResponses;
     List roomData = responses.elementAt(2)["result"];
     List roomDevices = responses.elementAt(3)["result"];
-    List entitys = responses.elementAt(4)["result"];
-    List deviceData = responses.elementAt(5)["result"];
+    List deviceData = responses.elementAt(4)["result"];
     allDevices = [];
     devices = [];
     for (var element in deviceData) {
@@ -66,9 +66,9 @@ class DashboadData {
           .where((device) => device["area_id"] == roomName["area_id"])
           .toList()
           .forEach((device) {
-           //String name = entitys.singleWhere((entity) => entity["device_id"] == device["id"])["name"];
-        enddevice
-            .add(devices.firstWhere((id) => id.attributes!.friendlyName == device["name"]));
+        //String name = entitys.singleWhere((entity) => entity["device_id"] == device["id"])["name"];
+        enddevice.add(devices
+            .firstWhere((id) => id.attributes!.friendlyName == device["name"]));
       });
       _roomDevicesMap[roomName["area_id"]] = enddevice;
     }
@@ -303,7 +303,7 @@ class DashboadData {
         'icon': 'bed.svg',
         'name': '${value['name']}',
         'appliances': roomDeviceIcons(value["area_id"]),
-        'energyConsumption': '$energy KW USED'
+        'energyConsumption': '${energy.toStringAsPrecision(2)} KW USED'
       });
     }
     allDevices.sort((a, b) => a.attributes!.friendlyName!

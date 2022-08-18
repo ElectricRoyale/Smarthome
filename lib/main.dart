@@ -5,6 +5,15 @@ import 'package:smarthome/Model/UserData.dart';
 import 'package:smarthome/utils/biometricAuthentication.dart';
 
 import 'layouts/Login.dart';
+import 'layouts/controllpanels/air_conditioner.dart';
+import 'layouts/controllpanels/heating_system.dart';
+import 'layouts/controllpanels/irrigation.dart';
+import 'layouts/controllpanels/kitchen_tool.dart';
+import 'layouts/controllpanels/light.dart';
+import 'layouts/controllpanels/shutter.dart';
+import 'layouts/controllpanels/socket.dart';
+import 'layouts/controllpanels/video_device.dart';
+import 'layouts/controllpanels/washing_machine.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,11 +37,13 @@ class MyApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         systemNavigationBarContrastEnforced: true,
-        statusBarColor: Colors.transparent, // transparent status bar
+        statusBarColor: Colors.transparent,
+        // transparent status bar
         systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarDividerColor:
-            Colors.transparent, // navigation bar color
-        statusBarIconBrightness: Brightness.light, // status bar icons' color
+        systemNavigationBarDividerColor: Colors.transparent,
+        // navigation bar color
+        statusBarIconBrightness: Brightness.light,
+        // status bar icons' color
         systemNavigationBarIconBrightness:
             Brightness.dark, //navigation bar icons' color
       ),
@@ -43,7 +54,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(),
       routes: {
         'biometricAuthentication': (BuildContext ctx) =>
-            const BiometricAuthentication()
+            const BiometricAuthentication(),
+        'light': (BuildContext ctx) => const Light(),
+        'switch': (BuildContext ctx) => const Socket(),
+        'cover': (BuildContext ctx) => const Shutter(),
+        'fan': (BuildContext ctx) => const AirConditioner(),
+        'media_player': (BuildContext ctx) => const VideoDevice(),
+        'heating_system': (BuildContext ctx) => const HeatingSystem(),
+        'kitchen_tool': (BuildContext ctx) => const KitchenTool(),
+        'washing_machine': (BuildContext ctx) => const WashingMachine(),
+        'irrigation': (BuildContext ctx) => const Irrigation(),
       },
       home: const Login(),
     );
