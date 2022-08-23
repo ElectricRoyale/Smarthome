@@ -9,7 +9,7 @@ import 'package:lan_scanner/lan_scanner.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:smarthome/layouts/customAppBar.dart';
-import 'package:speed_test_port/speed_test_port.dart';
+import 'package:speed_test_dart/speed_test_dart.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:wifi_info_plugin_plus/wifi_info_plugin_plus.dart';
 
@@ -22,9 +22,9 @@ class Network extends StatefulWidget {
 
 class NetworkLayout extends State<Network> {
   List<dynamic> devices = [];
-  late StreamSubscription<void> listOfWifiDevices;
+  StreamSubscription<void>? listOfWifiDevices;
 
-  late Ping _ping;
+  Ping? _ping;
   var networkInfo = NetworkInfo();
 
   String ssid = '-';
@@ -36,11 +36,14 @@ class NetworkLayout extends State<Network> {
   @override
   late BuildContext context;
 
-  SpeedTest tester = SpeedTest();
+  SpeedTestDart tester = SpeedTestDart();
 
   Future<void> ping() async {
-    _ping.stream.listen((result) {
-      pingTime = result.response!.time!.inMilliseconds;
+    _ping = Ping('www.google.com');
+    _ping!.stream.listen((result) {
+      if (result.response != null) {
+        pingTime = result.response!.time!.inMilliseconds;
+      }
       setState(() {});
     });
   }
@@ -57,24 +60,20 @@ class NetworkLayout extends State<Network> {
   }
 
   Future<void> uploadSpeedTest() async {
-    var settings = await tester.GetSettings();
+    var settings = await tester.getSettings();
     var servers = settings.servers;
 
-    for (var server in servers) {
-      server.Latency = await tester.TestServerLatency(server, 3);
-    }
-
-    //Getting best server
-    servers.sort((a, b) => a.Latency.compareTo(b.Latency));
-    var bestServer = servers.first;
+    final bestServersList = await tester.getBestServers(
+      servers: servers,
+    );
 
     while (running) {
-      var uploadSpeed = await tester.TestUploadSpeed(
-          bestServer,
-          settings.upload.ThreadsPerUrl == 0
+      var uploadSpeed = await tester.testUploadSpeed(
+          servers: bestServersList,
+          simultaneousUploads: settings.upload.threadsPerUrl == 0
               ? 2
-              : settings.upload.ThreadsPerUrl,
-          3);
+              : settings.upload.threadsPerUrl,
+          retryCount: 3);
       uploadRate = uploadSpeed.round();
       setState(() {});
       await Future.delayed(const Duration(seconds: 5));
@@ -85,7 +84,7 @@ class NetworkLayout extends State<Network> {
     await Permission.location.request().isGranted;
     await networkInfo
         .getWifiName()
-        .then((value) => setState(() => ssid = value!));
+        .then((value) => setState(() => ssid = value!.replaceAll('"', '')));
   }
 
   Future<void> addNetworkDevice() async {
@@ -109,6 +108,24 @@ class NetworkLayout extends State<Network> {
               'name': value.host.substring(0, value.host.indexOf('.')),
               'ip': host.ip
             };
+            setState(() {
+              devices.add(deviceData);
+              devices = devices.map((item) => jsonEncode(item)).toList();
+              devices = devices.toSet().toList();
+              devices = devices.map((item) => jsonDecode(item)).toList();
+              devices.sort((s1, s2) {
+                List<String> ips1 = s1['ip']!.split(".");
+                String updatedIp1 = sprintf(
+                    "%3s.%3s.%3s.%3s", [ips1[0], ips1[1], ips1[2], ips1[3]]);
+                List<String> ips2 = s2['ip']!.split(".");
+                String updatedIp2 = sprintf(
+                    "%3s.%3s.%3s.%3s", [ips2[0], ips2[1], ips2[2], ips2[3]]);
+                return updatedIp1.compareTo(updatedIp2);
+              });
+            });
+          }).catchError((error) {
+            debugPrint(error.toString());
+            Map<String, String> deviceData = {'name': 'Unknown', 'ip': host.ip};
             setState(() {
               devices.add(deviceData);
               devices = devices.map((item) => jsonEncode(item)).toList();
@@ -268,8 +285,10 @@ class NetworkLayout extends State<Network> {
                   children: [
                     Text(
                       '${devices.elementAt(index)['name']}',
-                      style: const TextStyle(
-                          color: Colors.white,
+                      style: TextStyle(
+                          color: devices.elementAt(index)['name'] != 'Unknown'
+                              ? Colors.white
+                              : const Color.fromARGB(255, 240, 0, 0),
                           fontWeight: FontWeight.bold,
                           fontSize: 16),
                     ),
@@ -288,15 +307,19 @@ class NetworkLayout extends State<Network> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
-    _ping.stop();
-    listOfWifiDevices.cancel();
+    _ping!.stop();
+    listOfWifiDevices!.cancel();
     running = false;
     super.dispose();
   }
 
   void resume() {
-    _ping = Ping('google.com');
     ping();
     getSSID();
     addNetworkDevice();
@@ -307,8 +330,8 @@ class NetworkLayout extends State<Network> {
   }
 
   void stop(bool error) {
-    _ping.stop();
-    listOfWifiDevices.cancel();
+    if (_ping != null) _ping!.stop();
+    if (listOfWifiDevices != null) listOfWifiDevices!.cancel();
     CustomAppBarLayout.stopAnimation();
     if (error) {
       setState(() {

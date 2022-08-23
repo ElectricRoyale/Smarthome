@@ -90,17 +90,7 @@ class OverViewPageState extends State<OverViewPage> {
           itemCount: deviceData.length,
           itemBuilder: (ctx, index) => InkWell(
             onTap: () {
-              entity_id = deviceData.elementAt(index).entityId;
-              if (deviceData.elementAt(index).entityId!.substring(
-                      0, deviceData.elementAt(index).entityId!.indexOf('.')) ==
-                  "cover") {
-                postion = 100 -
-                    deviceData
-                        .elementAt(index)
-                        .attributes!
-                        .currentPosition!
-                        .toDouble();
-              }
+              deviceItem = deviceData.elementAt(index);
               Navigator.pushNamed(
                   context,
                   deviceData.elementAt(index).entityId!.substring(

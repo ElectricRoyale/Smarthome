@@ -11,21 +11,28 @@ var pageParams = [
   {
     'name': 'Rooms',
     'icon': 'assets/house_app_icon.svg',
-    'layout': CustomAppBar.APP_BAR_WITH_ICONS
+    'layout': CustomAppBarIcons.appBarWithIcons
   },
   {
     'name': 'Network',
     'icon': 'assets/refresh.svg',
-    'layout': CustomAppBar.APP_BAR_WITH_ICONS
+    'layout': CustomAppBarIcons.appBarWithIcons
   },
-  {'name': 'Settings', 'con': '', 'layout': CustomAppBar.APP_BAR_WITHOUT_ICONS},
+  {
+    'name': 'Settings',
+    'con': '',
+    'layout': CustomAppBarIcons.appBarWithoutIcons
+  },
 ];
+
+enum CustomAppBarIcons {
+  appBarWithIcons,
+  appBarWithoutIcons,
+}
 
 class CustomAppBar extends StatefulWidget with PreferredSizeWidget {
   @override
   final Size preferredSize;
-  static int get APP_BAR_WITH_ICONS => 0;
-  static int get APP_BAR_WITHOUT_ICONS => 1;
   final GlobalKey<NetworkLayout> network;
 
   CustomAppBar({Key? key, required this.network})
@@ -101,7 +108,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
   @override
   Widget build(BuildContext context) {
     switch (pageParams.elementAt(index)['layout']) {
-      case 0:
+      case CustomAppBarIcons.appBarWithIcons:
         return AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -128,7 +135,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
                             break;
                           case 1:
                             if (_animationController.isAnimating) {
-                              widget.network.currentState!.listOfWifiDevices
+                              widget.network.currentState!.listOfWifiDevices!
                                   .cancel();
                               _animationController.animateTo(1);
                             } else {
@@ -155,7 +162,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
                 child: IconButton(icon: signalStrength, onPressed: () {})),
           ],
         );
-      case 1:
+      case CustomAppBarIcons.appBarWithoutIcons:
         return AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,

@@ -35,6 +35,10 @@ class DashboadData {
   final List _roomList = [];
   final Map<String, List<DeviceData>> _roomDevicesMap = {};
 
+  Future? _isInitialized;
+
+  BuildContext? context;
+
   static final DashboadData _instance = DashboadData._internal();
 
   factory DashboadData() => _instance;
@@ -44,16 +48,25 @@ class DashboadData {
   }
 
   Future<void> init() async {
-    HomeAssistantConnection homeAssistantConnection = HomeAssistantConnection();
-    await homeAssistantConnection.send([
-      '{"type" : "config/area_registry/list", "id" : "${idNumber++}"}',
-      '{"type" : "config/device_registry/list", "id" : "${idNumber++}"}',
-      '{"type" : "get_states", "id" : "${idNumber++}"}'
+    initialisation = true;
+    List<int> idList = [];
+    for (int i = 0; i < 3; i++) {
+      idList.add(idNumber++);
+    }
+    ids = idList;
+    HomeAssistantConnection().send([
+      '{"type" : "config/area_registry/list", "id" : "${idList.elementAt(0)}"}',
+      '{"type" : "config/device_registry/list", "id" : "${idList.elementAt(1)}"}',
+      '{"type" : "get_states", "id" : "${idList.elementAt(2)}"}',
+      '{"id": ${idNumber++}, "type": "subscribe_events", "event_type": "state_changed"}',
     ]);
-    List<Map> responses = homeAssistantConnection.getResponses;
-    List roomData = responses.elementAt(2)["result"];
-    List roomDevices = responses.elementAt(3)["result"];
-    List deviceData = responses.elementAt(4)["result"];
+    _isInitialized = Future.delayed(const Duration(seconds: 2));
+  }
+
+  void setData(List<Map> responses) {
+    List roomData = responses.elementAt(0)["result"];
+    List roomDevices = responses.elementAt(1)["result"];
+    List deviceData = responses.elementAt(2)["result"];
     allDevices = [];
     devices = [];
     for (var element in deviceData) {
@@ -66,7 +79,6 @@ class DashboadData {
           .where((device) => device["area_id"] == roomName["area_id"])
           .toList()
           .forEach((device) {
-        //String name = entitys.singleWhere((entity) => entity["device_id"] == device["id"])["name"];
         enddevice.add(devices
             .firstWhere((id) => id.attributes!.friendlyName == device["name"]));
       });
@@ -136,149 +148,15 @@ class DashboadData {
     }
     allDevices.addAll(_heatingSystems);
 
-    _lightEnergy = 0;
-    for (var device in _lights) {
-      try {
-        _lightEnergy += double.parse(device.energy = devices
-            .singleWhere((sensor) =>
-                sensor.attributes!.unitOfMeasurement == 'kWh' &&
-                sensor.entityId!.contains(device.entityId!
-                    .substring(device.entityId!.indexOf('.') + 1)))
-            .state!);
-      } catch (_) {
-        if (kDebugMode) {
-          print('no sensor available for energy usage');
-        }
-      }
-    }
-
-    _socketEnergy = 0;
-    for (var device in _sockets) {
-      try {
-        _socketEnergy += double.parse(device.energy = devices
-            .singleWhere((sensor) =>
-                sensor.attributes!.unitOfMeasurement == 'kWh' &&
-                sensor.entityId!.contains(device.entityId!
-                    .substring(device.entityId!.indexOf('.') + 1)))
-            .state!);
-      } catch (_) {
-        if (kDebugMode) {
-          print('no sensor available for energy usage');
-        }
-      }
-    }
-
-    _shutterEnergy = 0;
-    for (var device in _shutters) {
-      try {
-        _shutterEnergy += double.parse(device.energy = devices
-            .singleWhere((sensor) =>
-                sensor.attributes!.unitOfMeasurement == 'kWh' &&
-                sensor.entityId!.contains(device.entityId!
-                    .substring(device.entityId!.indexOf('.') + 1)))
-            .state!);
-      } catch (_) {
-        if (kDebugMode) {
-          print('no sensor available for energy usage');
-        }
-      }
-    }
-
-    _airConditionerEnergy = 0;
-    for (var device in _airConditioners) {
-      try {
-        _airConditionerEnergy += double.parse(device.energy = devices
-            .singleWhere((sensor) =>
-                sensor.attributes!.unitOfMeasurement == 'kWh' &&
-                sensor.entityId!.contains(device.entityId!
-                    .substring(device.entityId!.indexOf('.') + 1)))
-            .state!);
-      } catch (_) {
-        if (kDebugMode) {
-          print('no sensor available for energy usage');
-        }
-      }
-    }
-
-    _videoDevicesEnergy = 0;
-    for (var device in _videoDevices) {
-      try {
-        _videoDevicesEnergy += double.parse(device.energy = devices
-            .singleWhere((sensor) =>
-                sensor.attributes!.unitOfMeasurement == 'kWh' &&
-                sensor.entityId!.contains(device.entityId!
-                    .substring(device.entityId!.indexOf('.') + 1)))
-            .state!);
-      } catch (_) {
-        if (kDebugMode) {
-          print('no sensor available for energy usage');
-        }
-      }
-    }
-
-    _heatingSystemEnergy = 0;
-    for (var device in _heatingSystems) {
-      try {
-        _heatingSystemEnergy += double.parse(device.energy = devices
-            .singleWhere((sensor) =>
-                sensor.attributes!.unitOfMeasurement == 'kWh' &&
-                sensor.entityId!.contains(device.entityId!
-                    .substring(device.entityId!.indexOf('.') + 1)))
-            .state!);
-      } catch (_) {
-        if (kDebugMode) {
-          print('no sensor available for energy usage');
-        }
-      }
-    }
-
-    _kitchenToolsEnergy = 0;
-    for (var device in _kitchenTools) {
-      try {
-        _kitchenToolsEnergy += double.parse(device.energy = devices
-            .singleWhere((sensor) =>
-                sensor.attributes!.unitOfMeasurement == 'kWh' &&
-                sensor.entityId!.contains(device.entityId!
-                    .substring(device.entityId!.indexOf('.') + 1)))
-            .state!);
-      } catch (_) {
-        if (kDebugMode) {
-          print('no sensor available for energy usage');
-        }
-      }
-    }
-
-    _washingMachineEnergy = 0;
-    for (var device in _washingMachines) {
-      try {
-        _washingMachineEnergy += double.parse(device.energy = devices
-            .singleWhere((sensor) =>
-                sensor.attributes!.unitOfMeasurement == 'kWh' &&
-                sensor.entityId!.contains(device.entityId!
-                    .substring(device.entityId!.indexOf('.') + 1)))
-            .state!);
-      } catch (_) {
-        if (kDebugMode) {
-          print('no sensor available for energy usage');
-        }
-      }
-    }
-
-    _irrigationEnergy = 0;
-    for (var device in _irrigations) {
-      try {
-        _irrigationEnergy += double.parse(device.energy = devices
-            .singleWhere((sensor) =>
-                sensor.attributes!.unitOfMeasurement == 'kWh' &&
-                sensor.entityId!.contains(device.entityId!
-                    .substring(device.entityId!.indexOf('.') + 1)))
-            .state!);
-      } catch (_) {
-        if (kDebugMode) {
-          print('no sensor available for energy usage');
-        }
-      }
-    }
+    _lightEnergy = _energyConsumption(_lights);
+    _socketEnergy = _energyConsumption(_sockets);
+    _shutterEnergy = _energyConsumption(_shutters);
+    _airConditionerEnergy = _energyConsumption(_airConditioners);
+    _videoDevicesEnergy = _energyConsumption(_videoDevices);
+    _heatingSystemEnergy = _energyConsumption(_heatingSystems);
+    _kitchenToolsEnergy = _energyConsumption(_kitchenTools);
+    _washingMachineEnergy = _energyConsumption(_washingMachines);
+    _irrigationEnergy = _energyConsumption(_irrigations);
 
     _energyList.setAll(0, [
       _lightEnergy.toStringAsPrecision(2),
@@ -296,8 +174,9 @@ class DashboadData {
     for (var value in roomData) {
       double energy = 0.0;
       for (var device in _roomDevicesMap[value["area_id"]]!) {
-        energy += double.parse(
-            device.energy != 'Unavailable' ? device.energy : '0.0');
+        energy += double.parse(device.energy.toLowerCase() != 'unavailable'
+            ? device.energy
+            : '0.0');
       }
       _roomList.add({
         'icon': 'bed.svg',
@@ -309,6 +188,20 @@ class DashboadData {
     allDevices.sort((a, b) => a.attributes!.friendlyName!
         .toLowerCase()
         .compareTo(b.attributes!.friendlyName!.toLowerCase()));
+
+    initialisation = false;
+  }
+
+  void updateData(Map<String, dynamic> response) {
+    DeviceData deviceData =
+        DeviceData.fromJson(response['event']['data']['new_state']);
+    try {
+      allDevices
+          .elementAt(allDevices
+              .indexWhere((element) => element.entityId == deviceData.entityId))
+          .update(deviceData);
+      if (!deviceData.entityId!.contains('sensor')) onUpdate!.call();
+    } catch (_) {}
   }
 
   List<Widget> roomDeviceIcons(String roomName) {
@@ -352,6 +245,25 @@ class DashboadData {
     return items;
   }
 
+  double _energyConsumption(List<DeviceData> roomDevices) {
+    double energy = 0;
+    for (var device in roomDevices) {
+      try {
+        energy += double.parse(device.energy = devices
+            .singleWhere((sensor) =>
+                sensor.attributes!.unitOfMeasurement == 'kWh' &&
+                sensor.entityId!.contains(device.entityId!
+                    .substring(device.entityId!.indexOf('.') + 1)))
+            .state!);
+      } catch (_) {
+        if (kDebugMode) {
+          print('no sensor available for energy usage');
+        }
+      }
+    }
+    return energy;
+  }
+
   List<DeviceData> get getIrrigations => _irrigations;
 
   List<DeviceData> get getWashingMachines => _washingMachines;
@@ -375,4 +287,6 @@ class DashboadData {
   List<DeviceData> get getAllDevices => allDevices;
 
   List get getRooms => _roomList;
+
+  Future get isInitialized => _isInitialized!;
 }

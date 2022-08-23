@@ -9,6 +9,7 @@ class Assets {
   static const String assetsCloud = 'assets/cloud.svg';
   static const String assetsCloudLightning = 'assets/cloud_lightning.svg';
   static const String assetsCoffeeMachine = 'assets/coffee_machine.svg';
+  static const String assetsColorloop = 'assets/colorloop.svg';
   static const String assetsComputer = 'assets/computer.svg';
   static const String assetsDatepickerbackground =
       'assets/datepickerbackground.png';
@@ -30,6 +31,8 @@ class Assets {
   static const String assetsKitchenTools = 'assets/kitchen_tools.svg';
   static const String assetsLight = 'assets/light.svg';
   static const String assetsLightDrizzle = 'assets/light_Drizzle.svg';
+  static const String assetsLightOff = 'assets/light_off.svg';
+  static const String assetsLightRain = 'assets/light_rain.svg';
   static const String assetsLightSnow = 'assets/light_snow.svg';
   static const String assetsLowSignal = 'assets/low_signal.svg';
   static const String assetsMediumSignal = 'assets/medium_signal.svg';
@@ -48,7 +51,7 @@ class Assets {
   static const String assetsSocket = 'assets/socket.svg';
   static const String assetsStormWithHeavyRain =
       'assets/storm_with_heavy_rain.svg';
-  static const String assetsStormWithLigthRain =
+  static const String assetsStormWithLightRain =
       'assets/storm_with_light_rain.svg';
   static const String assetsStormyWeather = 'assets/stormy_weather.svg';
   static const String assetsSun = 'assets/sun.svg';

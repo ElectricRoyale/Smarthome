@@ -6,7 +6,7 @@ import 'package:weather/weather.dart';
 class WeatherData {
   final WeatherFactory _weather =
       WeatherFactory("ab4d16747f052431ba606ea20103f65c");
-  String _icon = "assets/sun.svg",
+  String _icon = "assets/error.svg",
       _temperature = "-",
       _sunrise = '-',
       _sunset = '-',
@@ -22,6 +22,9 @@ class WeatherData {
     'Sat',
     'Sun'
   ];
+
+  Future? _isInitialized;
+
   final List<Widget> _forecasts = [];
 
   static final WeatherData _instance = WeatherData._internal();
@@ -29,7 +32,7 @@ class WeatherData {
   factory WeatherData() => _instance;
 
   WeatherData._internal() {
-    init();
+    _isInitialized = init();
   }
 
   Future<void> init() async {
@@ -211,4 +214,6 @@ class WeatherData {
   get temperature => _temperature;
 
   String get icon => _icon;
+
+  Future get isInitialized => _isInitialized!;
 }

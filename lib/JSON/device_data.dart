@@ -31,6 +31,15 @@ class DeviceData {
         json['context'] != null ? Context.fromJson(json['context']) : null;
   }
 
+  void update(DeviceData deviceData) {
+    entityId = deviceData.entityId;
+    state = deviceData.state;
+    attributes!.update(deviceData.attributes!);
+    lastChanged = deviceData.lastChanged;
+    lastUpdated = deviceData.lastUpdated;
+    context = deviceData.context;
+  }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['entity_id'] = entityId;

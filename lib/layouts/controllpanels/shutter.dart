@@ -18,6 +18,18 @@ class ShutterState extends State<Shutter> {
   @override
   void initState() {
     super.initState();
+    onUpdate = () => refresh();
+  }
+
+  void refresh() {
+    setState(() {
+      selected =
+          deviceItem!.state == 'opening' || deviceItem!.state == 'closing'
+              ? deviceItem!.state == 'opening'
+                  ? 1
+                  : 3
+              : 2;
+    });
   }
 
   @override
@@ -86,17 +98,17 @@ class ShutterState extends State<Shutter> {
                           switch (index) {
                             case 1:
                               HomeAssistantConnection().send([
-                                '{"id": "${idNumber++}", "type": "call_service", "domain": "cover", "service": "open_cover", "target": {"entity_id": "$entity_id"}}'
+                                '{"id": "${idNumber++}", "type": "call_service", "domain": "cover", "service": "open_cover", "target": {"entity_id": "${deviceItem!.entityId}"}}'
                               ]);
                               break;
                             case 2:
                               HomeAssistantConnection().send([
-                                '{"id": "${idNumber++}", "type": "call_service", "domain": "cover", "service": "stop_cover", "target": {"entity_id": "$entity_id"}}'
+                                '{"id": "${idNumber++}", "type": "call_service", "domain": "cover", "service": "stop_cover", "target": {"entity_id": "${deviceItem!.entityId}"}}'
                               ]);
                               break;
                             case 3:
                               HomeAssistantConnection().send([
-                                '{"id": "${idNumber++}", "type": "call_service", "domain": "cover", "service": "close_cover", "target": {"entity_id": "$entity_id"}}'
+                                '{"id": "${idNumber++}", "type": "call_service", "domain": "cover", "service": "close_cover", "target": {"entity_id": "${deviceItem!.entityId}"}}'
                               ]);
                               break;
                           }
@@ -109,13 +121,16 @@ class ShutterState extends State<Shutter> {
                             data: const SliderThemeData(),
                             child: Slider(
                               max: 100.0,
-                              value: postion,
+                              value: 100 -
+                                  deviceItem!.attributes!.currentPosition!
+                                      .toDouble(),
                               onChanged: (double value) => setState(() {
-                                postion = value.roundToDouble();
+                                deviceItem!.attributes!.currentPosition =
+                                    100 - value.round();
                               }),
                               onChangeEnd: (double value) =>
                                   HomeAssistantConnection().send([
-                                '{"id": "${idNumber++}", "type": "call_service", "domain" : "cover", "service": "set_cover_position", "service_data" : {"position" : "${100 - value.round()}"}, "target" : {"entity_id": "$entity_id"}}'
+                                '{"id": "${idNumber++}", "type": "call_service", "domain" : "cover", "service": "set_cover_position", "service_data" : {"position" : "${100 - value.round()}"}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
                               ]),
                             ))),
                   ]),

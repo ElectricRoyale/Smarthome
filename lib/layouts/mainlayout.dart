@@ -1,18 +1,12 @@
-import 'dart:async';
-import 'dart:ui';
-
-import 'package:connectivity/connectivity.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
 import 'package:smarthome/layouts/Dashboard.dart';
 import 'package:smarthome/layouts/Network.dart';
 import 'package:smarthome/layouts/Settings.dart';
 import 'package:smarthome/layouts/customAppBar.dart';
 import 'package:smarthome/utils/constants.dart';
-import 'package:smarthome/utils/globals.dart' as globals;
+import 'package:smarthome/utils/error_dialog.dart';
+import 'package:smarthome/utils/globals.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -26,19 +20,14 @@ class MyHomePageState extends State<MyHomePage>
   int _selectedIndex = 0;
   final network = GlobalKey<NetworkLayout>();
   final customAppBar = GlobalKey<CustomAppBarLayout>();
+  ErrorDialog errorDialog = ErrorDialog();
 
-  late BuildContext connectionErrorContext;
-
-  bool connectionError = false,
-      dashboardIsInit = false,
+  bool dashboardIsInit = false,
       networkIsInit = false,
       settingsIsInit = false,
       visible = true;
 
   AppLifecycleState lastAppState = AppLifecycleState.resumed;
-
-  final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   double widget1Opacity = 0.0;
 
@@ -50,111 +39,6 @@ class MyHomePageState extends State<MyHomePage>
     index == 1
         ? network.currentState!.resume()
         : network.currentState!.stop(false);
-  }
-
-  Future<void> initConnectivity() async {
-    ConnectivityResult result = ConnectivityResult.none;
-    try {
-      result = await _connectivity.checkConnectivity();
-    } on PlatformException catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-    }
-    if (!mounted) {
-      return Future.value(null);
-    }
-    return _updateConnectionStatus(result);
-  }
-
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    switch (result) {
-      case ConnectivityResult.wifi:
-        closeConnectionError(false);
-        if (_selectedIndex == 1) {
-          network.currentState!.getSSID();
-          network.currentState!.setState(() {});
-        }
-        break;
-      case ConnectivityResult.mobile:
-        closeConnectionError(true);
-        connectionErrorDialog(
-            'No internet connection! Please turn on your wifi, for connecting to server!');
-        break;
-      case ConnectivityResult.none:
-        closeConnectionError(true);
-        connectionErrorDialog(
-            'No internet connection! Please check your wifi, for connecting to server!');
-        break;
-      default:
-        closeConnectionError(true);
-        break;
-    }
-  }
-
-  void closeConnectionError(bool onlyCheck) {
-    if (connectionError) {
-      Navigator.of(connectionErrorContext, rootNavigator: true).pop();
-      if (_selectedIndex == 1 && !onlyCheck) network.currentState!.resume();
-      connectionError = false;
-    }
-    if (!onlyCheck) customAppBar.currentState!.resumeSignalChecker();
-  }
-
-  void connectionErrorDialog(String error) {
-    customAppBar.currentState!.pingStream.cancel();
-    connectionError = true;
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        useRootNavigator: false,
-        builder: (BuildContext context) {
-          connectionErrorContext = context;
-          return WillPopScope(
-            onWillPop: () async => false,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
-              child: Dialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                child: Stack(children: [
-                  Align(
-                      child: Padding(
-                          padding: const EdgeInsets.only(bottom: 240),
-                          child: SvgPicture.asset(
-                            'assets/error.svg',
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                          ))),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Connection error',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 26),
-                      ),
-                      Text(
-                        error,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ]),
-              ),
-            ),
-          );
-        });
-    network.currentState!.stop(true);
   }
 
   @override
@@ -241,18 +125,23 @@ class MyHomePageState extends State<MyHomePage>
   @override
   void initState() {
     super.initState();
-    initConnectivity();
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    errorDialog.initialize(context, onChange: (connectionStatus) {
+      if (connectionStatus == ConnectionStatus.connected) {
+        if (_selectedIndex == 1) network.currentState!.resume();
+        customAppBar.currentState!.resumeSignalChecker();
+      } else {
+        customAppBar.currentState!.pingStream.cancel();
+        network.currentState!.stop(true);
+      }
+    });
     widget1Opacity = 1;
     WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    _connectivitySubscription.cancel();
     WidgetsBinding.instance.removeObserver(this);
-    closeConnectionError(true);
+    errorDialog.dispose();
     Hive.close();
     super.dispose();
   }
@@ -267,9 +156,17 @@ class MyHomePageState extends State<MyHomePage>
         }
         return true;
       });
-      if (globals.mustAuthenticate) {
-        Navigator.pushNamed(context, 'biometricAuthentication')
-            .then((value) => initConnectivity());
+      if (mustAuthenticate) {
+        Navigator.pushNamed(context, 'biometricAuthentication').then((value) =>
+            errorDialog.initialize(context, onChange: (connectionStatus) {
+              if (connectionStatus == ConnectionStatus.connected) {
+                if (_selectedIndex == 1) network.currentState!.resume();
+                customAppBar.currentState!.resumeSignalChecker();
+              } else {
+                customAppBar.currentState!.pingStream.cancel();
+                network.currentState!.stop(true);
+              }
+            }));
       }
     }
     lastAppState = state;

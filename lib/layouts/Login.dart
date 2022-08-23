@@ -1,23 +1,19 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:ui';
 
-import 'package:connectivity/connectivity.dart';
 import 'package:delayed_display/delayed_display.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_local_auth_invisible/flutter_local_auth_invisible.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 import 'package:smarthome/layouts/Register.dart';
 import 'package:smarthome/layouts/mainlayout.dart';
-import 'package:smarthome/utils/DashboardData.dart';
 import 'package:smarthome/utils/LoadingScreen.dart';
 import 'package:smarthome/utils/MySQLHelper.dart';
-import 'package:smarthome/utils/weatherData.dart';
+import 'package:smarthome/utils/error_dialog.dart';
 
+import '../utils/DashboardData.dart';
 import '../utils/constants.dart';
+import '../utils/globals.dart';
+import '../utils/weatherData.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -27,19 +23,13 @@ class Login extends StatefulWidget {
 }
 
 class LoginState extends State<Login> with TickerProviderStateMixin {
-  bool _isObscure = true,
-      nameError = false,
-      passwordError = false,
-      connectionError = false;
+  bool _isObscure = true, nameError = false, passwordError = false;
   String nameErrorText = '', passwordErrorText = '';
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
-  //LocalAuthentication auth = LocalAuthentication();
+  ErrorDialog errorDialog = ErrorDialog();
 
   Box loginData = Hive.box('LoginData');
-
-  final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   late final AnimationController _controller = AnimationController(
       reverseDuration: const Duration(milliseconds: 800),
@@ -51,59 +41,17 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
     curve: Curves.decelerate,
   );
 
-  Future<void> initConnectivity() async {
-    ConnectivityResult result = ConnectivityResult.none;
-    try {
-      result = await _connectivity.checkConnectivity();
-    } on PlatformException catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-    }
-    return _updateConnectionStatus(result);
-  }
-
-  void _updateConnectionStatus(ConnectivityResult result) {
-    switch (result) {
-      case ConnectivityResult.wifi:
-        if (connectionError) {
-          checkConnection();
-        }
-        break;
-      case ConnectivityResult.mobile:
-        if (connectionError) {
-          Navigator.pop(context);
-        }
-        connectionErrorDialog(
-            'No internet connection! Please turn on your wifi, for connecting to server!',
-            false);
-        break;
-      case ConnectivityResult.none:
-        if (connectionError) {
-          Navigator.pop(context);
-        }
-        connectionErrorDialog(
-            'No internet connection! Please check your wifi, for connecting to server!',
-            false);
-        break;
-      default:
-        if (connectionError) {
-          Navigator.pop(context);
-        }
-        connectionErrorDialog(
-            'No internet connection! Please check your wifi, for connecting to server!',
-            false);
-        break;
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    checkConnection();
-    initConnectivity();
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    errorDialog.initialize(context, onChange: (connectionStatus) {
+      if (connectionStatus == ConnectionStatus.connected) {
+        biometricLogin();
+      } else {
+        _cancelAuthentication();
+      }
+    });
+    errorDialog.checkConnection();
     Future.delayed(const Duration(milliseconds: 2900), () => biometricLogin());
   }
 
@@ -118,7 +66,7 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
           await LocalAuthentication.canCheckBiometrics) {
         if (await LocalAuthentication.authenticate(
             localizedReason: 'Unlock the app.',
-            sensitiveTransaction: false,
+            sensitiveTransaction: true,
             stickyAuth: true,
             biometricOnly: true)) {
           passwordController.text = loginData.get('password');
@@ -128,35 +76,10 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
     }
   }
 
-  void checkConnection() {
-    Socket.connect('192.168.0.51', 80,
-            timeout: const Duration(milliseconds: 1000))
-        .then((value) {
-      if (connectionError) {
-        Navigator.pop(context);
-        connectionError = false;
-        biometricLogin();
-        DashboadData().init();
-        WeatherData().init();
-      }
-      DashboadData();
-      WeatherData();
-    }).catchError((error) {
-      if (connectionError) Navigator.pop(context);
-      connectionErrorDialog(
-          'Can\'t build a connect to the Server! Please check your Internet connection and the connection of the Server!',
-          true);
-    });
-  }
-
   @override
   void dispose() {
     super.dispose();
-    _connectivitySubscription.cancel();
-    if (connectionError) {
-      Navigator.pop(context);
-      connectionError = false;
-    }
+    errorDialog.dispose();
     _cancelAuthentication();
   }
 
@@ -172,7 +95,11 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
             loadingDialog = context;
             return const LoadingDialog();
           });
+      await DashboadData().isInitialized;
+      await WeatherData().isInitialized;
       if (await MySQLHelper().login(name, password)) {
+        errorDialog.dispose();
+        if (!mounted) return;
         Navigator.pop(loadingDialog);
         _controller
             .reverse(from: 1.0)
@@ -443,63 +370,5 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
             ),
           ),
         ));
-  }
-
-  void connectionErrorDialog(String error, bool retry) {
-    connectionError = true;
-    _cancelAuthentication();
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        useRootNavigator: false,
-        builder: (BuildContext context) {
-          return WillPopScope(
-            onWillPop: () async => false,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
-              child: Dialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                child: Stack(children: [
-                  Align(
-                      child: Padding(
-                          padding: const EdgeInsets.only(bottom: 240),
-                          child: SvgPicture.asset(
-                            'assets/error.svg',
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                          ))),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Connection error',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 26),
-                      ),
-                      Text(
-                        error,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
-                      if (retry)
-                        TextButton(
-                            onPressed: () => checkConnection(),
-                            child: const Text('Retry')),
-                    ],
-                  ),
-                ]),
-              ),
-            ),
-          );
-        });
   }
 }
