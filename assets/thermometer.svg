@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="48mm"
+   height="48mm"
+   viewBox="0 0 48 48"
+   version="1.1"
+   id="svg43102"
+   sodipodi:docname="thermometer.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview43104"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="2.0427511"
+     inkscape:cx="23.987259"
+     inkscape:cy="79.304816"
+     inkscape:window-width="1920"
+     inkscape:window-height="974"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs43099" />
+  <circle
+     style="fill:#1b9de2;fill-opacity:1;stroke:#000000;stroke-width:0.058799;stroke-miterlimit:4;stroke-dasharray:0, 0.646789;stroke-dashoffset:0;paint-order:markers stroke fill"
+     id="path96172-82"
+     cx="29.406738"
+     cy="21.855797"
+     r="0.9354865" />
+  <circle
+     style="fill:#1b9de2;fill-opacity:1;stroke:#000000;stroke-width:0.058799;stroke-miterlimit:4;stroke-dasharray:0, 0.646789;stroke-dashoffset:0;paint-order:markers stroke fill"
+     id="path96172-6"
+     cx="29.406738"
+     cy="17.411152"
+     r="0.9354865" />
+  <circle
+     style="fill:#1b9de2;fill-opacity:1;stroke:#000000;stroke-width:0.058799;stroke-miterlimit:4;stroke-dasharray:0, 0.646789;stroke-dashoffset:0;paint-order:markers stroke fill"
+     id="path96172-1"
+     cx="29.406738"
+     cy="8.5218592"
+     r="0.9354865" />
+  <circle
+     style="fill:#1b9de2;fill-opacity:1;stroke:#000000;stroke-width:0.058799;stroke-miterlimit:4;stroke-dasharray:0, 0.646789;stroke-dashoffset:0;paint-order:markers stroke fill"
+     id="path96172-8"
+     cx="29.406738"
+     cy="12.966506"
+     r="0.9354865" />
+  <circle
+     style="fill:#1b9de2;fill-opacity:1;stroke:#000000;stroke-width:0.058799;stroke-miterlimit:4;stroke-dasharray:0, 0.646789;stroke-dashoffset:0;paint-order:markers stroke fill"
+     id="path96172"
+     cx="29.406738"
+     cy="4.0772138"
+     r="0.9354865" />
+  <g
+     inkscape:label="Background"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="fill:#35c1f1;fill-opacity:1;stroke:#000000;stroke-width:0.0648946;stroke-miterlimit:4;stroke-dasharray:0, 0.713841;stroke-dashoffset:0;paint-order:markers stroke fill"
+       id="path43512"
+       cx="25.108368"
+       cy="36.891632"
+       r="11.079165" />
+    <ellipse
+       style="fill:#af2031;fill-opacity:1;stroke:#000000;stroke-width:0.0421815;stroke-miterlimit:4;stroke-dasharray:0, 0.463997;stroke-dashoffset:0;paint-order:markers stroke fill"
+       id="circle45925"
+       cx="25.108368"
+       cy="37.044659"
+       rx="7.2014585"
+       ry="7.201458" />
+    <rect
+       style="fill:#35c1f1;fill-opacity:1;stroke:#000000;stroke-width:0.0632441;stroke-miterlimit:4;stroke-dasharray:0, 0.695685;stroke-dashoffset:0;paint-order:markers stroke fill"
+       id="rect73202"
+       width="8.8260469"
+       height="29.067596"
+       x="20.695343"
+       y="0.06676212"
+       ry="1.0794075" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="between">
+    <rect
+       style="fill:#1b9de2;fill-opacity:1;stroke:#000000;stroke-width:0.0669568;stroke-miterlimit:4;stroke-dasharray:0, 0.736524;stroke-dashoffset:0;paint-order:markers stroke fill"
+       id="rect92400"
+       width="2.698889"
+       height="10.474892"
+       x="23.758923"
+       y="3.0346904"
+       ry="1.4028873" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="foreground">
+    <rect
+       style="fill:#af2031;fill-opacity:1;stroke:#000000;stroke-width:0.058799;stroke-miterlimit:4;stroke-dasharray:0, 0.646789;stroke-dashoffset:0;paint-order:markers stroke fill"
+       id="rect88905"
+       width="2.8784199"
+       height="20.2209"
+       x="23.669157"
+       y="11.506258"
+       ry="1.0794077" />
+  </g>
+</svg>
