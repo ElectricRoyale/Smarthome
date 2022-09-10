@@ -30,15 +30,16 @@ dependencies:
   fading_edge_scrollview: ^3.0.0
   flutter:
     sdk: flutter
-  flutter_rounded_date_picker: ^3.0.1
+  flutter_rounded_date_picker: ^3.0.2
+  intl: ^0.17.0
   material_design_icons_flutter: ^5.0.6996
-  font_awesome_flutter: ^10.1.0
+  font_awesome_flutter: ^10.2.1
   dart_ping: ^7.0.1
   network_info_plus: ^2.1.4+1
   mysql1: ^0.20.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  flutter_svg: ^1.1.4
+  flutter_svg: ^1.1.5
   sprintf: ^6.0.2
   connectivity: ^3.0.6
   flutter_launcher_icons: ^0.10.0
@@ -57,10 +58,10 @@ dependencies:
   carousel_slider: ^4.1.1
   smooth_page_indicator: ^1.0.0+2
   web_socket_channel: ^2.2.0
-  syncfusion_flutter_charts: ^20.2.45
+  syncfusion_flutter_charts: ^20.2.48
   animated_toggle_switch: ^0.5.2
   weather: ^2.0.1
-  dropdown_button2: ^1.7.2
+  dropdown_button2: ^1.8.0
 
 dev_dependencies:
   flutter_test:

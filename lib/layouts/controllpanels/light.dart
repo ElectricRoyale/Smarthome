@@ -1,10 +1,11 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:smarthome/utils/Home_Assistant_Connection.dart';
 import 'package:smarthome/utils/constants.dart';
 import 'package:smarthome/utils/widget_functions.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../utils/ColorPicker/circleColorPicker.dart';
 import '../../utils/ColorPicker/colorPickerController.dart';
@@ -152,7 +153,6 @@ class LightState extends State<Light> {
                           setState(() {
                             toogle = !toogle;
                           });
-                          deviceItem!.state = toogle ? 'on' : 'off';
                           HomeAssistantConnection().send([
                             toogle
                                 ? '{"id": "${idNumber++}", "type": "call_service", "domain": "light", "service": "turn_on", "target": {"entity_id": "${deviceItem!.entityId}"}}'
@@ -190,31 +190,71 @@ class LightState extends State<Light> {
               endIndent: 10,
               color: Colors.white,
             ),
-            SfSparkLineChart(
-              dashArray: const [
-                1.0,
-                5.0,
-                3.0,
-                10.0,
-                4.0,
-                4.0,
-                2.0,
-                7.0,
-                8.0,
-                6.0
-              ],
-              axisLineDashArray: const [
-                1.0,
-                2.0,
-                3.0,
-                4.0,
-                5.0,
-                6.0,
-                7.0,
-                8.0,
-                9.0,
-                10.0
-              ],
+            Padding(
+              padding: const EdgeInsets.only(top: 25.0),
+              child: SizedBox(
+                height: 175,
+                child: SfCartesianChart(
+                  primaryXAxis: DateTimeAxis(
+                    name: 'Time',
+                    labelStyle: const TextStyle(color: Colors.white),
+                    intervalType: DateTimeIntervalType.hours,
+                    dateFormat: DateFormat.Hm(),
+                    majorGridLines: const MajorGridLines(
+                        color: Color.fromARGB(90, 145, 145, 145), width: 1),
+                    majorTickLines:
+                        const MajorTickLines(color: Colors.grey, size: 3),
+                    minorTickLines:
+                        const MinorTickLines(color: Colors.black12, size: 7),
+                  ),
+                  primaryYAxis: NumericAxis(
+                    name: 'Energy Consumption',
+                    labelStyle: const TextStyle(color: Colors.white),
+                    majorGridLines: const MajorGridLines(
+                        color: Color.fromARGB(90, 145, 145, 145), width: 1),
+                    majorTickLines:
+                        const MajorTickLines(color: Colors.grey, size: 3),
+                    minorTickLines:
+                        const MinorTickLines(color: Colors.black12, size: 7),
+                  ),
+                  zoomPanBehavior: ZoomPanBehavior(
+                      enablePanning: true,
+                      enablePinching: true,
+                      zoomMode: ZoomMode.x),
+                  margin: const EdgeInsets.only(right: 25, left: 5),
+                  enableAxisAnimation: true,
+                  plotAreaBorderWidth: 2,
+                  plotAreaBorderColor: Colors.grey,
+                  tooltipBehavior: TooltipBehavior(enable: true),
+                  series: <SplineAreaSeries<EnergyData, DateTime>>[
+                    SplineAreaSeries(
+                      name: 'Energy Consumption',
+                      splineType: SplineType.monotonic,
+                      dataSource: <EnergyData>[
+                        EnergyData(
+                            DateTime.parse('2022-08-25T00:00:00.000'), 0.0),
+                        EnergyData(
+                            DateTime.parse('2022-08-25T01:00:00.000'), 0.0),
+                        EnergyData(
+                            DateTime.parse('2022-08-25T02:00:00.000'), 0.0),
+                        EnergyData(
+                            DateTime.parse('2022-08-25T03:00:00.000'), 0.02),
+                        EnergyData(
+                            DateTime.parse('2022-08-25T04:00:00.000'), 0.02),
+                        EnergyData(
+                            DateTime.parse('2022-08-25T05:00:00.000'), 0.02),
+                        EnergyData(
+                            DateTime.parse('2022-08-25T06:00:00.000'), 0.02),
+                      ],
+                      xValueMapper: (data, _) => data.time,
+                      yValueMapper: (data, _) => data.energy,
+                      color: const Color.fromARGB(191, 248, 131, 17),
+                      borderColor: const Color.fromARGB(255, 254, 183, 5),
+                      borderWidth: 2,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

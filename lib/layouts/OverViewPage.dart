@@ -58,6 +58,112 @@ class OverViewPageState extends State<OverViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (deviceData.isNotEmpty) {
+      return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              BACKGROUND_START,
+              BACKGROUND_END,
+            ],
+          ),
+        ),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              widget.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+            centerTitle: true,
+          ),
+          backgroundColor: Colors.transparent,
+          body: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 200,
+                childAspectRatio: 3.25 / 2,
+                crossAxisSpacing: 15,
+                mainAxisSpacing: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 20),
+            itemCount: deviceData.length,
+            itemBuilder: (ctx, index) => InkWell(
+              onTap: () {
+                deviceItem = deviceData.elementAt(index);
+                Navigator.pushNamed(
+                    context,
+                    deviceData.elementAt(index).entityId!.substring(
+                        0, deviceData.elementAt(index).entityId!.indexOf('.')));
+              },
+              child: Container(
+                height: 200,
+                width: 200,
+                decoration: BoxDecoration(
+                  color: const Color(0x12ffffff),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: SvgPicture.asset(
+                          'assets/${deviceData.elementAt(index).icon}',
+                          fit: BoxFit.scaleDown,
+                          height: 50,
+                          width: 50,
+                        ),
+                      ),
+                      Container(
+                        width: double.maxFinite,
+                        height: 16,
+                        margin:
+                            const EdgeInsets.only(top: 5, left: 10, right: 10),
+                        child: ScrollingText(
+                          velocity: 30,
+                          maxWidth: 170,
+                          startPointOffset: 3,
+                          text: (deviceData
+                              .elementAt(index)
+                              .attributes!
+                              .friendlyName)!,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.none),
+                          startAfter: const Duration(seconds: 3),
+                          pauseAfterRound: const Duration(seconds: 3),
+                          blankSpace: 100,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: Text(
+                          deviceData.elementAt(index).energy != 'Unavailable'
+                              ? '${deviceData.elementAt(index).energy} KWh USED'
+                              : deviceData.elementAt(index).energy,
+                          style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              decoration: TextDecoration.none),
+                          maxLines: 1,
+                        ),
+                      ),
+                    ]),
+              ),
+            ),
+          ),
+        ),
+      );
+    } else {
+      return emptyGrid();
+    }
+  }
+
+  Container emptyGrid() {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -80,79 +186,14 @@ class OverViewPageState extends State<OverViewPage> {
           centerTitle: true,
         ),
         backgroundColor: Colors.transparent,
-        body: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 200,
-              childAspectRatio: 3.25 / 2,
-              crossAxisSpacing: 15,
-              mainAxisSpacing: 15),
-          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 20),
-          itemCount: deviceData.length,
-          itemBuilder: (ctx, index) => InkWell(
-            onTap: () {
-              deviceItem = deviceData.elementAt(index);
-              Navigator.pushNamed(
-                  context,
-                  deviceData.elementAt(index).entityId!.substring(
-                      0, deviceData.elementAt(index).entityId!.indexOf('.')));
-            },
-            child: Container(
-              height: 200,
-              width: 200,
-              decoration: BoxDecoration(
-                color: const Color(0x12ffffff),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: SvgPicture.asset(
-                        'assets/${deviceData.elementAt(index).icon}',
-                        fit: BoxFit.scaleDown,
-                        height: 50,
-                        width: 50,
-                      ),
-                    ),
-                    Container(
-                      width: double.maxFinite,
-                      height: 16,
-                      margin:
-                          const EdgeInsets.only(top: 5, left: 10, right: 10),
-                      child: ScrollingText(
-                        velocity: 30,
-                        maxWidth: 170,
-                        startPointOffset: 3,
-                        text: (deviceData
-                            .elementAt(index)
-                            .attributes!
-                            .friendlyName)!,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.none),
-                        startAfter: const Duration(seconds: 3),
-                        pauseAfterRound: const Duration(seconds: 3),
-                        blankSpace: 100,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
-                      child: Text(
-                        deviceData.elementAt(index).energy != 'Unavailable'
-                            ? '${deviceData.elementAt(index).energy} KWh USED'
-                            : deviceData.elementAt(index).energy,
-                        style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                            decoration: TextDecoration.none),
-                        maxLines: 1,
-                      ),
-                    ),
-                  ]),
-            ),
+        body: Center(
+          child: Text(
+            "No devices available",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 16,
+                decoration: TextDecoration.none),
           ),
         ),
       ),

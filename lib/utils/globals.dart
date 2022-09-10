@@ -9,3 +9,10 @@ bool connectionError = false;
 bool initialisation = false;
 List<int> ids = [];
 Function? onUpdate;
+
+class EnergyData {
+  final double energy;
+  final DateTime time;
+
+  EnergyData(this.time, this.energy);
+}

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:smarthome/utils/Home_Assistant_Connection.dart';
 import 'package:smarthome/utils/constants.dart';
 import 'package:smarthome/utils/globals.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class Shutter extends StatefulWidget {
   const Shutter({Key? key}) : super(key: key);
@@ -142,31 +142,63 @@ class ShutterState extends State<Shutter> {
               endIndent: 10,
               color: Colors.white,
             ),
-            SfSparkLineChart(
-              dashArray: const [
-                1.0,
-                5.0,
-                3.0,
-                10.0,
-                4.0,
-                4.0,
-                2.0,
-                7.0,
-                8.0,
-                6.0
-              ],
-              axisLineDashArray: const [
-                1.0,
-                2.0,
-                3.0,
-                4.0,
-                5.0,
-                6.0,
-                7.0,
-                8.0,
-                9.0,
-                10.0
-              ],
+            Padding(
+              padding: const EdgeInsets.only(top: 25.0),
+              child: SizedBox(
+                height: 175,
+                child: SfCartesianChart(
+                  primaryXAxis: DateTimeAxis(
+                    name: 'Time',
+                    labelStyle: const TextStyle(color: Colors.white),
+                    intervalType: DateTimeIntervalType.hours,
+                    majorGridLines: const MajorGridLines(
+                        color: Color.fromARGB(90, 145, 145, 145), width: 1),
+                    majorTickLines:
+                        const MajorTickLines(color: Colors.grey, size: 3),
+                    minorTickLines:
+                        const MinorTickLines(color: Colors.black12, size: 7),
+                  ),
+                  primaryYAxis: NumericAxis(
+                    name: 'Energy Consumption',
+                    labelStyle: const TextStyle(color: Colors.white),
+                    majorGridLines: const MajorGridLines(
+                        color: Color.fromARGB(90, 145, 145, 145), width: 1),
+                    majorTickLines:
+                        const MajorTickLines(color: Colors.grey, size: 3),
+                    minorTickLines:
+                        const MinorTickLines(color: Colors.black12, size: 7),
+                  ),
+                  zoomPanBehavior: ZoomPanBehavior(
+                      enablePanning: true,
+                      enablePinching: true,
+                      zoomMode: ZoomMode.x),
+                  margin: const EdgeInsets.only(right: 25, left: 5),
+                  enableAxisAnimation: true,
+                  plotAreaBorderWidth: 2,
+                  plotAreaBorderColor: Colors.grey,
+                  tooltipBehavior: TooltipBehavior(enable: true),
+                  series: <SplineAreaSeries<EnergyData, DateTime>>[
+                    SplineAreaSeries(
+                        name: 'Energy Consumption',
+                        splineType: SplineType.clamped,
+                        dataSource: <EnergyData>[
+                          EnergyData(DateTime(2022, 08, 25, 01), 0.0),
+                          EnergyData(DateTime(2022, 08, 25, 02), 0.0),
+                          EnergyData(DateTime(2022, 08, 25, 03), 0.0),
+                          EnergyData(DateTime(2022, 08, 25, 04), 0.0),
+                          EnergyData(DateTime(2022, 08, 25, 05), 0.2),
+                          EnergyData(DateTime(2022, 08, 25, 06), 0.5),
+                          EnergyData(DateTime(2022, 08, 25, 07), 0.4),
+                        ],
+                        xValueMapper: (data, _) => data.time,
+                        yValueMapper: (data, _) => data.energy,
+                        color: const Color.fromARGB(191, 248, 131, 17),
+                        borderColor: const Color.fromARGB(255, 254, 183, 5),
+                        borderWidth: 2,
+                        animationDuration: 10),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
