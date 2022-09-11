@@ -7,6 +7,7 @@ import 'package:smarthome/utils/constants.dart';
 import 'package:smarthome/utils/widget_functions.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import '../../JSON/energy_sensor_data.dart';
 import '../../utils/ColorPicker/circleColorPicker.dart';
 import '../../utils/ColorPicker/colorPickerController.dart';
 import '../../utils/globals.dart';
@@ -20,6 +21,7 @@ class Light extends StatefulWidget {
 
 class LightState extends State<Light> {
   bool toogle = deviceItem!.state == 'on';
+
   Widget get _dropdownValue => _dropdownItems[_value]!;
   String _value = 'none';
   final Map<String, Widget> _dropdownItems = {
@@ -199,7 +201,7 @@ class LightState extends State<Light> {
                     name: 'Time',
                     labelStyle: const TextStyle(color: Colors.white),
                     intervalType: DateTimeIntervalType.hours,
-                    dateFormat: DateFormat.Hm(),
+                    dateFormat: DateFormat.E().add_Hm(),
                     majorGridLines: const MajorGridLines(
                         color: Color.fromARGB(90, 145, 145, 145), width: 1),
                     majorTickLines:
@@ -207,8 +209,20 @@ class LightState extends State<Light> {
                     minorTickLines:
                         const MinorTickLines(color: Colors.black12, size: 7),
                   ),
+                  annotations: [
+                    CartesianChartAnnotation(
+                        widget: emptyView(),
+                        coordinateUnit: CoordinateUnit.percentage,
+                        region: AnnotationRegion.plotArea,
+                        y: '50%',
+                        x: '50%')
+                  ],
                   primaryYAxis: NumericAxis(
                     name: 'Energy Consumption',
+                    title: AxisTitle(
+                        text: 'kWh',
+                        textStyle:
+                            const TextStyle(color: Colors.white, fontSize: 10)),
                     labelStyle: const TextStyle(color: Colors.white),
                     majorGridLines: const MajorGridLines(
                         color: Color.fromARGB(90, 145, 145, 145), width: 1),
@@ -221,37 +235,21 @@ class LightState extends State<Light> {
                       enablePanning: true,
                       enablePinching: true,
                       zoomMode: ZoomMode.x),
-                  margin: const EdgeInsets.only(right: 25, left: 5),
-                  enableAxisAnimation: true,
+                  margin: const EdgeInsets.only(right: 10, left: 5),
                   plotAreaBorderWidth: 2,
                   plotAreaBorderColor: Colors.grey,
                   tooltipBehavior: TooltipBehavior(enable: true),
-                  series: <SplineAreaSeries<EnergyData, DateTime>>[
+                  series: <SplineAreaSeries<EnergySensorData, DateTime>>[
                     SplineAreaSeries(
-                      name: 'Energy Consumption',
-                      splineType: SplineType.monotonic,
-                      dataSource: <EnergyData>[
-                        EnergyData(
-                            DateTime.parse('2022-08-25T00:00:00.000'), 0.0),
-                        EnergyData(
-                            DateTime.parse('2022-08-25T01:00:00.000'), 0.0),
-                        EnergyData(
-                            DateTime.parse('2022-08-25T02:00:00.000'), 0.0),
-                        EnergyData(
-                            DateTime.parse('2022-08-25T03:00:00.000'), 0.02),
-                        EnergyData(
-                            DateTime.parse('2022-08-25T04:00:00.000'), 0.02),
-                        EnergyData(
-                            DateTime.parse('2022-08-25T05:00:00.000'), 0.02),
-                        EnergyData(
-                            DateTime.parse('2022-08-25T06:00:00.000'), 0.02),
-                      ],
-                      xValueMapper: (data, _) => data.time,
-                      yValueMapper: (data, _) => data.energy,
-                      color: const Color.fromARGB(191, 248, 131, 17),
-                      borderColor: const Color.fromARGB(255, 254, 183, 5),
-                      borderWidth: 2,
-                    ),
+                        name: 'Energy Consumption',
+                        splineType: SplineType.monotonic,
+                        dataSource: deviceItem!.energyUsageData,
+                        xValueMapper: (data, _) => data.end!,
+                        yValueMapper: (data, _) => data.state!,
+                        color: const Color.fromARGB(191, 248, 131, 17),
+                        borderColor: const Color.fromARGB(255, 254, 183, 5),
+                        borderWidth: 2,
+                        animationDuration: 3000),
                   ],
                 ),
               ),
@@ -260,5 +258,21 @@ class LightState extends State<Light> {
         ),
       ),
     );
+  }
+
+  Widget emptyView() {
+    if (deviceItem!.energyUsageData.isEmpty) {
+      return const Text(
+        "No energy data found!",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: Color.fromARGB(55, 255, 255, 255),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            decoration: TextDecoration.none),
+      );
+    } else {
+      return Container();
+    }
   }
 }

@@ -61,7 +61,7 @@ dependencies:
   syncfusion_flutter_charts: ^20.2.48
   animated_toggle_switch: ^0.5.2
   weather: ^2.0.1
-  dropdown_button2: ^1.8.0
+  dropdown_button2: 1.7.2
 
 dev_dependencies:
   flutter_test:

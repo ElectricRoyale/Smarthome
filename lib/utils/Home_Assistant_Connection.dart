@@ -14,14 +14,14 @@ class HomeAssistantConnection {
     init();
   }
 
-  final channel = WebSocketChannel.connect(
+  final _channel = WebSocketChannel.connect(
       Uri.parse('ws://192.168.0.29:8123/api/websocket'));
 
   Future<void> init() async {
     List<Map> responses = [];
-    channel.sink.add(
+    _channel.sink.add(
         '{"type": "auth", "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIxNDg2MDJlN2M1NTI0YjE5OGE3M2E0MDc3ZTk3Zjg1NyIsImlhdCI6MTY1NDk4MTM2MiwiZXhwIjoxOTcwMzQxMzYyfQ.qhLmeqGKP1BIPJ98p7Z5LGAtTjADQiRtlOAGec5nm-w"}');
-    channel.stream.listen((data) async {
+    _channel.stream.listen((data) async {
       Map<String, dynamic> dataMap = jsonDecode(data.toString());
       if (dataMap['type'] == 'event') {
         DashboadData().updateData(dataMap);
@@ -30,7 +30,7 @@ class HomeAssistantConnection {
         if (dataMap.containsKey('id') && ids.contains(dataMap['id'])) {
           responses.add(dataMap);
         }
-        if (responses.length == 3) {
+        if (responses.length == 4) {
           DashboadData().setData(responses);
           responses = [];
           initialisation = false;
@@ -41,7 +41,7 @@ class HomeAssistantConnection {
 
   void send(List query) {
     for (var request in query) {
-      channel.sink.add(request);
+      _channel.sink.add(request);
     }
   }
 }

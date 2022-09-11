@@ -11,8 +11,8 @@ List<int> ids = [];
 Function? onUpdate;
 
 class EnergyData {
-  final double energy;
+  final double? energy;
   final DateTime time;
 
-  EnergyData(this.time, this.energy);
+  EnergyData(this.time, {this.energy});
 }

@@ -1,5 +1,7 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:smarthome/JSON/energy_sensor_data.dart';
 import 'package:smarthome/utils/Home_Assistant_Connection.dart';
 import 'package:smarthome/utils/constants.dart';
 import 'package:smarthome/utils/globals.dart';
@@ -151,6 +153,7 @@ class ShutterState extends State<Shutter> {
                     name: 'Time',
                     labelStyle: const TextStyle(color: Colors.white),
                     intervalType: DateTimeIntervalType.hours,
+                    dateFormat: DateFormat.E().add_Hm(),
                     majorGridLines: const MajorGridLines(
                         color: Color.fromARGB(90, 145, 145, 145), width: 1),
                     majorTickLines:
@@ -158,8 +161,20 @@ class ShutterState extends State<Shutter> {
                     minorTickLines:
                         const MinorTickLines(color: Colors.black12, size: 7),
                   ),
+                  annotations: [
+                    CartesianChartAnnotation(
+                        widget: emptyView(),
+                        coordinateUnit: CoordinateUnit.percentage,
+                        region: AnnotationRegion.plotArea,
+                        y: '50%',
+                        x: '50%')
+                  ],
                   primaryYAxis: NumericAxis(
                     name: 'Energy Consumption',
+                    title: AxisTitle(
+                        text: 'kWh',
+                        textStyle:
+                            const TextStyle(color: Colors.white, fontSize: 10)),
                     labelStyle: const TextStyle(color: Colors.white),
                     majorGridLines: const MajorGridLines(
                         color: Color.fromARGB(90, 145, 145, 145), width: 1),
@@ -172,30 +187,21 @@ class ShutterState extends State<Shutter> {
                       enablePanning: true,
                       enablePinching: true,
                       zoomMode: ZoomMode.x),
-                  margin: const EdgeInsets.only(right: 25, left: 5),
-                  enableAxisAnimation: true,
+                  margin: const EdgeInsets.only(right: 10, left: 5),
                   plotAreaBorderWidth: 2,
                   plotAreaBorderColor: Colors.grey,
                   tooltipBehavior: TooltipBehavior(enable: true),
-                  series: <SplineAreaSeries<EnergyData, DateTime>>[
+                  series: <SplineAreaSeries<EnergySensorData, DateTime>>[
                     SplineAreaSeries(
                         name: 'Energy Consumption',
-                        splineType: SplineType.clamped,
-                        dataSource: <EnergyData>[
-                          EnergyData(DateTime(2022, 08, 25, 01), 0.0),
-                          EnergyData(DateTime(2022, 08, 25, 02), 0.0),
-                          EnergyData(DateTime(2022, 08, 25, 03), 0.0),
-                          EnergyData(DateTime(2022, 08, 25, 04), 0.0),
-                          EnergyData(DateTime(2022, 08, 25, 05), 0.2),
-                          EnergyData(DateTime(2022, 08, 25, 06), 0.5),
-                          EnergyData(DateTime(2022, 08, 25, 07), 0.4),
-                        ],
-                        xValueMapper: (data, _) => data.time,
-                        yValueMapper: (data, _) => data.energy,
+                        splineType: SplineType.monotonic,
+                        dataSource: deviceItem!.energyUsageData,
+                        xValueMapper: (data, _) => data.end!,
+                        yValueMapper: (data, _) => data.state!,
                         color: const Color.fromARGB(191, 248, 131, 17),
                         borderColor: const Color.fromARGB(255, 254, 183, 5),
                         borderWidth: 2,
-                        animationDuration: 10),
+                        animationDuration: 3000),
                   ],
                 ),
               ),
@@ -204,5 +210,21 @@ class ShutterState extends State<Shutter> {
         ),
       ),
     );
+  }
+
+  Widget emptyView() {
+    if (deviceItem!.energyUsageData.isEmpty) {
+      return const Text(
+        "No energy data found!",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: Color.fromARGB(55, 255, 255, 255),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            decoration: TextDecoration.none),
+      );
+    } else {
+      return Container();
+    }
   }
 }

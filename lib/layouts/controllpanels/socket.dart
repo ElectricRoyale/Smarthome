@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:smarthome/utils/constants.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import '../../JSON/energy_sensor_data.dart';
 import '../../utils/Home_Assistant_Connection.dart';
 import '../../utils/globals.dart';
 
@@ -15,6 +16,7 @@ class Socket extends StatefulWidget {
 
 class SocketState extends State<Socket> {
   bool toogle = deviceItem!.state == 'on';
+  double? energy = 0.7;
 
   @override
   void initState() {
@@ -97,7 +99,7 @@ class SocketState extends State<Socket> {
                     name: 'Time',
                     labelStyle: const TextStyle(color: Colors.white),
                     intervalType: DateTimeIntervalType.hours,
-                    dateFormat: DateFormat.Hm(),
+                    dateFormat: DateFormat.E().add_Hm(),
                     majorGridLines: const MajorGridLines(
                         color: Color.fromARGB(90, 145, 145, 145), width: 1),
                     majorTickLines:
@@ -105,8 +107,20 @@ class SocketState extends State<Socket> {
                     minorTickLines:
                         const MinorTickLines(color: Colors.black12, size: 7),
                   ),
+                  annotations: [
+                    CartesianChartAnnotation(
+                        widget: emptyView(),
+                        coordinateUnit: CoordinateUnit.percentage,
+                        region: AnnotationRegion.plotArea,
+                        y: '50%',
+                        x: '50%')
+                  ],
                   primaryYAxis: NumericAxis(
                     name: 'Energy Consumption',
+                    title: AxisTitle(
+                        text: 'kWh',
+                        textStyle:
+                            const TextStyle(color: Colors.white, fontSize: 10)),
                     labelStyle: const TextStyle(color: Colors.white),
                     majorGridLines: const MajorGridLines(
                         color: Color.fromARGB(90, 145, 145, 145), width: 1),
@@ -119,37 +133,21 @@ class SocketState extends State<Socket> {
                       enablePanning: true,
                       enablePinching: true,
                       zoomMode: ZoomMode.x),
-                  margin: const EdgeInsets.only(right: 25, left: 5),
-                  enableAxisAnimation: true,
+                  margin: const EdgeInsets.only(right: 10, left: 5),
                   plotAreaBorderWidth: 2,
                   plotAreaBorderColor: Colors.grey,
                   tooltipBehavior: TooltipBehavior(enable: true),
-                  series: <SplineAreaSeries<EnergyData, DateTime>>[
+                  series: <SplineAreaSeries<EnergySensorData, DateTime>>[
                     SplineAreaSeries(
                         name: 'Energy Consumption',
                         splineType: SplineType.monotonic,
-                        dataSource: <EnergyData>[
-                          EnergyData(
-                              DateTime.parse('2022-08-25T01:00:00+03:00'), 0.0),
-                          EnergyData(
-                              DateTime.parse('2022-08-25T02:00:00+03:00'), 0.0),
-                          EnergyData(
-                              DateTime.parse('2022-08-25T03:00:00+03:00'), 0.0),
-                          EnergyData(
-                              DateTime.parse('2022-08-25T04:00:00+03:00'), 0.0),
-                          EnergyData(
-                              DateTime.parse('2022-08-25T05:00:00+03:00'), 0.2),
-                          EnergyData(
-                              DateTime.parse('2022-08-25T06:00:00+03:00'), 0.5),
-                          EnergyData(
-                              DateTime.parse('2022-08-25T07:00:00+03:00'), 0.4),
-                        ],
-                        xValueMapper: (data, _) => data.time,
-                        yValueMapper: (data, _) => data.energy,
+                        dataSource: deviceItem!.energyUsageData,
+                        xValueMapper: (data, _) => data.end!,
+                        yValueMapper: (data, _) => data.state!,
                         color: const Color.fromARGB(191, 248, 131, 17),
                         borderColor: const Color.fromARGB(255, 254, 183, 5),
                         borderWidth: 2,
-                        animationDuration: 10),
+                        animationDuration: 3000),
                   ],
                 ),
               ),
@@ -158,5 +156,21 @@ class SocketState extends State<Socket> {
         ),
       ),
     );
+  }
+
+  Widget emptyView() {
+    if (deviceItem!.energyUsageData.isEmpty) {
+      return const Text(
+        "No energy data found!",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: Color.fromARGB(55, 255, 255, 255),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            decoration: TextDecoration.none),
+      );
+    } else {
+      return Container();
+    }
   }
 }

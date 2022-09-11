@@ -1,3 +1,5 @@
+import 'package:smarthome/JSON/energy_sensor_data.dart';
+
 import 'attributes.dart';
 import 'context.dart';
 
@@ -10,6 +12,7 @@ class DeviceData {
   Context? context;
   String energy = 'Unavailable';
   String? icon;
+  List<EnergySensorData> energyUsageData = [];
 
   DeviceData(
       {this.entityId,

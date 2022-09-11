@@ -18,6 +18,7 @@ class OverViewPage extends StatefulWidget {
 
 class OverViewPageState extends State<OverViewPage> {
   List<DeviceData> deviceData = [];
+  double opacity = 0.0;
 
   @override
   void initState() {
@@ -143,7 +144,7 @@ class OverViewPageState extends State<OverViewPage> {
                         padding: const EdgeInsets.only(left: 10.0),
                         child: Text(
                           deviceData.elementAt(index).energy != 'Unavailable'
-                              ? '${deviceData.elementAt(index).energy} KWh USED'
+                              ? '${deviceData.elementAt(index).energy} kWh USED'
                               : deviceData.elementAt(index).energy,
                           style: const TextStyle(
                               color: Colors.grey,
@@ -159,6 +160,11 @@ class OverViewPageState extends State<OverViewPage> {
         ),
       );
     } else {
+      Future.delayed(
+          const Duration(milliseconds: 200),
+          () => setState(() {
+                opacity = 1.0;
+              }));
       return emptyGrid();
     }
   }
@@ -187,13 +193,18 @@ class OverViewPageState extends State<OverViewPage> {
         ),
         backgroundColor: Colors.transparent,
         body: Center(
-          child: Text(
-            "No devices available",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 16,
-                decoration: TextDecoration.none),
+          child: AnimatedOpacity(
+            duration: const Duration(seconds: 2),
+            opacity: opacity,
+            child: const Text(
+              "No devices available",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Color.fromARGB(55, 255, 255, 255),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.none),
+            ),
           ),
         ),
       ),

@@ -111,7 +111,7 @@ class DeviceGrid extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: 1),
                         child: Text(
-                          '${DashboadData().getEnergyList.elementAt(index)} KWh USED',
+                          '${DashboadData().getEnergyList.elementAt(index)} kWh USED',
                           style: const TextStyle(
                               fontSize: 12, color: Color(0xff919191)),
                         ),
