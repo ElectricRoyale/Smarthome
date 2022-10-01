@@ -59,6 +59,7 @@ class MyHomePageState extends State<MyHomePage>
           opacity: widget1Opacity,
           duration: const Duration(milliseconds: 1500),
           child: Scaffold(
+            resizeToAvoidBottomInset: false,
             backgroundColor: Colors.transparent,
             appBar: CustomAppBar(key: customAppBar, network: network),
             extendBody: true,

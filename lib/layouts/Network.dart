@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_scanner/lan_scanner.dart';
 import 'package:network_info_plus/network_info_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:smarthome/layouts/customAppBar.dart';
 import 'package:speed_test_dart/speed_test_dart.dart';
 import 'package:sprintf/sprintf.dart';
@@ -81,7 +80,6 @@ class NetworkLayout extends State<Network> {
   }
 
   void getSSID() async {
-    await Permission.location.request().isGranted;
     await networkInfo
         .getWifiName()
         .then((value) => setState(() => ssid = value!.replaceAll('"', '')));

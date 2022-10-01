@@ -1,4 +1,3 @@
-import 'dart:core';
 import 'dart:typed_data';
 
 import 'package:hive/hive.dart';
@@ -6,8 +5,7 @@ import 'package:hive/hive.dart';
 part 'UserData.g.dart';
 
 @HiveType(typeId: 0)
-class UserData extends HiveObject{
-
+class UserData extends HiveObject {
   @HiveField(0)
   late Uint8List? profileImage;
 
@@ -26,6 +24,11 @@ class UserData extends HiveObject{
   @HiveField(5)
   late String address;
 
-  UserData({required this.profileImage, this.name = 'Unknown', this.email = 'Unknown', this.birthday = 'Unknown',
-      this.handyNumber = 'Unknown', this.address = 'Unknown'});
+  UserData(
+      {required this.profileImage,
+      this.name = 'Unknown',
+      this.email = 'Unknown',
+      this.birthday = 'Unknown',
+      this.handyNumber = 'Unknown',
+      this.address = 'Unknown'});
 }

@@ -1,15 +1,22 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:hive/hive.dart';
+import 'package:smarthome/Model/weatherLocations.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:weather/weather.dart';
 
 class WeatherData {
-  final WeatherFactory _weather =
+  final WeatherFactory weather =
       WeatherFactory("ab4d16747f052431ba606ea20103f65c");
   String _icon = "assets/error.svg",
       _temperature = "-",
       _sunrise = '-',
       _sunset = '-',
+      _minTemperature = '-',
+      _maxTemperature = '-',
       _temperatureFeelsLike = '-',
       _wind = '-',
       _humidity = '-';
@@ -35,9 +42,17 @@ class WeatherData {
     _isInitialized = init();
   }
 
-  Future<void> init() async {
+  Box<WeatherLocations> weatherLocations =
+      Hive.box<WeatherLocations>('WeatherLocations');
+
+  Future<void> init({Weather? w}) async {
     forecasts.clear();
-    Weather w = await _weather.currentWeatherByCityName('Speyer');
+
+    String cityName = (weatherLocations.get('WeatherLocation') != null
+        ? weatherLocations.get('WeatherLocation')!.weatherLocation
+        : await locationName())!;
+
+    w ??= await weather.currentWeatherByCityName(cityName);
     _icon = _getIcon(w.weatherDescription!);
     _temperature = "${w.temperature!.celsius!.toStringAsPrecision(2)}°";
     _sunrise = sprintf('%02i:%02i', [w.sunrise!.hour, w.sunrise!.minute]);
@@ -47,7 +62,7 @@ class WeatherData {
     _wind = '${w.windSpeed!.toStringAsPrecision(2)} km/h';
     _humidity = '${w.humidity!.toStringAsPrecision(2)} g/m³';
 
-    List<Weather> w1 = await _weather.fiveDayForecastByCityName("Hockenheim");
+    List<Weather> w1 = await weather.fiveDayForecastByCityName(cityName);
     w1.removeWhere((element) => element.date!.day == DateTime.now().day);
     List<Map<String, dynamic>> days = [];
 
@@ -60,10 +75,8 @@ class WeatherData {
       List<int> mintemp = [];
       List<int> maxtemp = [];
       for (var element in weatherData) {
-        mintemp
-            .add(int.parse(element.tempMin!.celsius!.toStringAsPrecision(2)));
-        maxtemp
-            .add(int.parse(element.tempMax!.celsius!.toStringAsPrecision(2)));
+        mintemp.add(element.tempMin!.celsius!.round());
+        maxtemp.add(element.tempMax!.celsius!.round());
       }
 
       dayData['dayName'] =
@@ -85,6 +98,19 @@ class WeatherData {
           '${weatherData['tempMax']}°',
           '${weatherData['tempMin']}°'));
     }
+  }
+
+  Future<String> locationName() async {
+    Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.best)
+        .timeout(const Duration(seconds: 5));
+    List<Placemark> test =
+        await placemarkFromCoordinates(position.latitude, position.longitude);
+    String name = test.first.locality!;
+    WeatherLocations weatherSave =
+        WeatherLocations(weatherLocationList: [name], weatherLocation: name);
+    weatherLocations.put('WeatherLocation', weatherSave);
+    return name;
   }
 
   String _getIcon(String name) {
@@ -165,7 +191,9 @@ class WeatherData {
       case 'tornado':
         return 'assets/tornado.svg';
       default:
-        print(name);
+        if (kDebugMode) {
+          print(name);
+        }
         return 'assets/error.svg';
     }
   }
@@ -206,6 +234,10 @@ class WeatherData {
   get wind => _wind;
 
   get temperatureFeelsLike => _temperatureFeelsLike;
+
+  get minTemperature => _minTemperature;
+
+  get maxTemperature => _maxTemperature;
 
   get sunset => _sunset;
 

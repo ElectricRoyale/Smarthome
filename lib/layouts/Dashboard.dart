@@ -55,6 +55,7 @@ class Layout extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       body: LayoutBuilder(builder: (context, constraints) {
         return Column(children: [

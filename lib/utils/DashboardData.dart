@@ -212,6 +212,7 @@ class DashboadData {
         .compareTo(b.attributes!.friendlyName!.toLowerCase()));
 
     initialisation = false;
+//    _isInitialized.
   }
 
   void updateData(Map<String, dynamic> response) {

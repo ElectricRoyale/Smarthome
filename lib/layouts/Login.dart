@@ -4,6 +4,7 @@ import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_auth_invisible/flutter_local_auth_invisible.dart';
 import 'package:hive/hive.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:smarthome/layouts/Register.dart';
 import 'package:smarthome/layouts/mainlayout.dart';
 import 'package:smarthome/utils/LoadingScreen.dart';
@@ -60,6 +61,9 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
   }
 
   void biometricLogin() async {
+    await Permission.location.request().isGranted;
+    await Permission.camera.request().isGranted;
+    await Permission.storage.request().isGranted;
     if (loginData.isNotEmpty && !connectionError) {
       nameController.text = loginData.get('name');
       if (await LocalAuthentication.isDeviceSupported() &&
@@ -95,9 +99,9 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
             loadingDialog = context;
             return const LoadingDialog();
           });
-      await DashboadData().isInitialized;
-      await WeatherData().isInitialized;
       if (await MySQLHelper().login(name, password)) {
+        await DashboadData().isInitialized;
+        await WeatherData().isInitialized;
         errorDialog.dispose();
         if (!mounted) return;
         Navigator.pop(loadingDialog);
@@ -154,6 +158,7 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
         child: FadeTransition(
           opacity: _animation,
           child: Scaffold(
+            resizeToAvoidBottomInset: false,
             backgroundColor: Colors.transparent,
             body: Column(
               children: [

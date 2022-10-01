@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hive/hive.dart';
+import 'package:smarthome/Model/weatherLocations.dart';
+import 'package:smarthome/utils/locationAddDialog.dart';
 import 'package:smarthome/utils/weatherData.dart';
+import 'package:weather/weather.dart';
 
 class WeatherLayout extends StatefulWidget {
   const WeatherLayout({Key? key}) : super(key: key);
@@ -15,6 +19,9 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
       windController = TextEditingController(),
       fellTemperatureController = TextEditingController(),
       humidityController = TextEditingController();
+
+  WeatherLocations weatherLocations =
+      Hive.box<WeatherLocations>('WeatherLocations').get('WeatherLocation')!;
 
   @override
   void initState() {
@@ -42,24 +49,64 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Hockenheim",
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
+                  SizedBox(
+                    width: 235,
+                    height: 30,
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold),
+                        isExpanded: true,
+                        isDense: true,
+                        icon: const Visibility(
+                            visible: false, child: Icon(Icons.arrow_downward)),
+                        dropdownColor: const Color(0xff4a4b5e),
+                        borderRadius: BorderRadius.circular(15),
+                        items:
+                            getMenuItems(weatherLocations.weatherLocationList!),
+                        value: weatherLocations.weatherLocation,
+                        onChanged: (value) async {
+                          weatherLocations.weatherLocation = value;
+                          Hive.box<WeatherLocations>('WeatherLocations')
+                              .put('WeatherLocation', weatherLocations);
+                          await WeatherData().init();
+                          setState(() {});
+                        },
+                      ),
                     ),
                   ),
-                  IconButton(
-                      onPressed: () async {
-                        await WeatherData().init();
-                        setState(() {});
-                      },
-                      icon: const Icon(
-                        Icons.refresh,
-                        size: 30,
-                        color: Colors.white,
-                      )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                useRootNavigator: false,
+                                builder: (BuildContext context) =>
+                                    LocationAddDialog(
+                                      callback: refresh,
+                                    ));
+                          },
+                          icon: const Icon(
+                            Icons.add,
+                            size: 30,
+                            color: Colors.white,
+                          )),
+                      IconButton(
+                          onPressed: () async {
+                            await WeatherData().init();
+                            setState(() {});
+                          },
+                          icon: const Icon(
+                            Icons.refresh,
+                            size: 30,
+                            color: Colors.white,
+                          )),
+                    ],
+                  ),
                 ]),
           ),
           IntrinsicHeight(
@@ -165,7 +212,7 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
                             suffixIconConstraints: const BoxConstraints(
                                 minHeight: 36, minWidth: 36),
                             suffixIcon: SvgPicture.asset(
-                              "assets/thermometer.svg",
+                              "assets/feeling_temperature.svg",
                               width: 36,
                               height: 36,
                             ),
@@ -213,5 +260,21 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
         ],
       ),
     );
+  }
+
+  refresh(Weather data) async {
+    await WeatherData().init(w: data);
+    setState(() {});
+  }
+
+  List<DropdownMenuItem<String>> getMenuItems(List<String> locations) {
+    List<DropdownMenuItem<String>> items = [];
+    for (var element in locations) {
+      items.add(DropdownMenuItem(
+        value: element,
+        child: Text(element),
+      ));
+    }
+    return items;
   }
 }

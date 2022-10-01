@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:smarthome/Model/UserData.dart';
+import 'package:smarthome/Model/weatherLocations.dart';
 import 'package:smarthome/utils/biometricAuthentication.dart';
 
 import 'layouts/Login.dart';
@@ -18,10 +19,13 @@ import 'layouts/controllpanels/washing_machine.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  Hive.registerAdapter(UserDataAdapter());
+  Hive
+    ..registerAdapter(WeatherLocationsAdapter())
+    ..registerAdapter(UserDataAdapter());
   await Hive.openBox<UserData>('UserData');
   await Hive.openBox('LoginData');
-
+  await Hive.openBox('Settings');
+  await Hive.openBox<WeatherLocations>('WeatherLocations');
   runApp(const MyApp());
 }
 
