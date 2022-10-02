@@ -28,7 +28,7 @@ class LightnessSlider extends StatefulWidget {
   final double thumbSize;
 
   @override
-  _LightnessSliderState createState() => _LightnessSliderState();
+  State<StatefulWidget> createState() => _LightnessSliderState();
 }
 
 class _LightnessSliderState extends State<LightnessSlider>

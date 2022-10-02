@@ -17,7 +17,7 @@ class ErrorDialog extends StatelessWidget {
   BuildContext? _context;
   Function(ConnectionStatus)? _onChange;
   bool _retry = false;
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  late final StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   ErrorDialog({Key? key}) : super(key: key);
 

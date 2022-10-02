@@ -164,8 +164,8 @@ class LightState extends State<Light> {
                           style: ElevatedButton.styleFrom(
                               shape: const CircleBorder(),
                               padding: const EdgeInsets.all(20),
-                              primary: const Color(0x25ffffff),
-                              onPrimary:
+                              backgroundColor: const Color(0x25ffffff),
+                              foregroundColor:
                                   const Color(0x25ffffff) // <-- Button color
                               ),
                           child: toogle

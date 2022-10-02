@@ -388,7 +388,7 @@ class AccountPageState extends State<AccountPage> {
                   },
                   style: ElevatedButton.styleFrom(
                       shape: const StadiumBorder(),
-                      primary: const Color(0x7c292828)),
+                      backgroundColor: const Color(0x7c292828)),
                   child: const Text(
                     'Logout',
                     style: TextStyle(color: Colors.red, fontSize: 16),

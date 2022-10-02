@@ -46,7 +46,7 @@ class CircleColorPicker extends StatefulWidget {
   double get initialHue => HSLColor.fromColor(initialColor).hue;
 
   @override
-  _CircleColorPickerState createState() => _CircleColorPickerState();
+  State<StatefulWidget> createState() => _CircleColorPickerState();
 }
 
 class _CircleColorPickerState extends State<CircleColorPicker>

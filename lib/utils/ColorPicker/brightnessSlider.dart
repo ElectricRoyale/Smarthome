@@ -15,7 +15,7 @@ class BrightnessSlider extends StatefulWidget {
   final double width;
 
   @override
-  _BrightnessSliderState createState() => _BrightnessSliderState();
+  State<StatefulWidget> createState() => _BrightnessSliderState();
 }
 
 class _BrightnessSliderState extends State<BrightnessSlider> {

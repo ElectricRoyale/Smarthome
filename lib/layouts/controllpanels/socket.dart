@@ -66,8 +66,9 @@ class SocketState extends State<Socket> {
                   style: ElevatedButton.styleFrom(
                       shape: const CircleBorder(),
                       padding: const EdgeInsets.all(20),
-                      primary: const Color(0x25ffffff),
-                      onPrimary: const Color(0x25ffffff) // <-- Button color
+                      backgroundColor: const Color(0x25ffffff),
+                      foregroundColor:
+                          const Color(0x25ffffff) // <-- Button color
                       ),
                   child: toogle
                       ? const Icon(

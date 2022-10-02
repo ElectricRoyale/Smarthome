@@ -57,6 +57,8 @@ class WeatherData {
     _temperature = "${w.temperature!.celsius!.toStringAsPrecision(2)}°";
     _sunrise = sprintf('%02i:%02i', [w.sunrise!.hour, w.sunrise!.minute]);
     _sunset = sprintf('%02i:%02i', [w.sunset!.hour, w.sunset!.minute]);
+    _minTemperature = "${w.tempMin!.celsius!.toStringAsPrecision(2)}°";
+    _maxTemperature = "${w.tempMax!.celsius!.toStringAsPrecision(2)}°";
     _temperatureFeelsLike =
         '${w.tempFeelsLike!.celsius!.toStringAsPrecision(2)}°';
     _wind = '${w.windSpeed!.toStringAsPrecision(2)} km/h';

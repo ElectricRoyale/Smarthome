@@ -34,7 +34,7 @@ class Layout extends State<Dashboard> {
         'name': 'Bedroom',
         'appliances': [
           itemContainer(Icons.lightbulb_outline_rounded, 24),
-          itemContainer(MyIcons.air_conditioner, 23),
+          itemContainer(MyIcons.airConditioner, 23),
         ],
         'energyConsumption': '40 KW USED'
       });

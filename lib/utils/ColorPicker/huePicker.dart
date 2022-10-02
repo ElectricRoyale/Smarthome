@@ -31,7 +31,7 @@ class HuePicker extends StatefulWidget {
   final double thumbSize;
 
   @override
-  _HuePickerState createState() => _HuePickerState();
+  State<StatefulWidget> createState() => _HuePickerState();
 }
 
 class _HuePickerState extends State<HuePicker> with TickerProviderStateMixin {
@@ -94,7 +94,7 @@ class _HuePickerState extends State<HuePicker> with TickerProviderStateMixin {
       value: 1,
       lowerBound: 0.9,
       upperBound: 1,
-      duration: Duration(milliseconds: 50),
+      duration: const Duration(milliseconds: 50),
     );
   }
 
