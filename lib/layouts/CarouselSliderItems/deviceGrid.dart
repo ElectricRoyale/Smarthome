@@ -5,9 +5,14 @@ import '../../utils/DashboardData.dart';
 import '../../utils/constants.dart';
 import '../OverViewPage.dart';
 
-class DeviceGrid extends StatelessWidget {
+class DeviceGrid extends StatefulWidget {
   const DeviceGrid({Key? key}) : super(key: key);
 
+  @override
+  State<StatefulWidget> createState() => DeviceGridState();
+}
+
+class DeviceGridState extends State<DeviceGrid> {
   @override
   Widget build(BuildContext context) {
     return Column(

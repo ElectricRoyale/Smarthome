@@ -22,15 +22,17 @@ class Settingslayout extends State<Settings> {
       _address = 'Unknown';
 
   void setData() async {
-    var userData = Hive.box<UserData>('UserData').values.first;
-    setState(() {
-      _profileImage = userData.profileImage;
-      _name = userData.name;
-      _email = userData.email;
-    });
-    _birthday = userData.birthday;
-    _handynumber = userData.handyNumber;
-    _address = userData.address;
+    try {
+      var userData = Hive.box<UserData>('UserData').values.first;
+      setState(() {
+        _profileImage = userData.profileImage;
+        _name = userData.name;
+        _email = userData.email;
+      });
+      _birthday = userData.birthday;
+      _handynumber = userData.handyNumber;
+      _address = userData.address;
+    } catch (_) {}
   }
 
   @override

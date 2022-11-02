@@ -48,7 +48,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
   static int index = 0;
   static late AnimationController _animationController;
   SvgPicture signalStrength = SvgPicture.asset('assets/unavailable_signal.svg');
-  var ping = Ping('192.168.0.51');
+  var ping = Ping('192.168.0.152');
   late StreamSubscription<PingData> pingStream;
 
   void changeIndex(int index1) {
@@ -59,7 +59,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
   }
 
   void resumeSignalChecker() {
-    ping = Ping('192.168.0.51');
+    ping = Ping('192.168.0.152');
     checkSignalStrength();
   }
 

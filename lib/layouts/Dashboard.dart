@@ -41,15 +41,22 @@ class Layout extends State<Dashboard> {
     });
   }
 
+  void setData() async {
+    await DashboadData().isInitialized;
+    await WeatherData().isInitialized;
+    rooms.insertAll(0, DashboadData().getRooms);
+    setState(() {});
+  }
+
   @override
   void initState() {
+    setData();
     super.initState();
     Future.delayed(const Duration(hours: 1), () async {
-      DashboadData().init();
+      await DashboadData().init();
       await WeatherData().init();
       setState(() {});
     });
-    rooms.insertAll(0, DashboadData().getRooms);
   }
 
   @override

@@ -15,12 +15,12 @@ class HomeAssistantConnection {
   }
 
   final _channel = WebSocketChannel.connect(
-      Uri.parse('ws://192.168.0.29:8123/api/websocket'));
+      Uri.parse('ws://192.168.0.152:8123/api/websocket'));
 
   Future<void> init() async {
     List<Map> responses = [];
     _channel.sink.add(
-        '{"type": "auth", "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIxNDg2MDJlN2M1NTI0YjE5OGE3M2E0MDc3ZTk3Zjg1NyIsImlhdCI6MTY1NDk4MTM2MiwiZXhwIjoxOTcwMzQxMzYyfQ.qhLmeqGKP1BIPJ98p7Z5LGAtTjADQiRtlOAGec5nm-w"}');
+        '{"type": "auth", "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJmNWU0NjQwMmJiYzI0YTNkYjE5MzAzMTczMGZhNjg2OCIsImlhdCI6MTY2NTc3NDY0MiwiZXhwIjoxOTgxMTM0NjQyfQ.d7cU7XtQ4SsadgpbCJOsitLktfjj1QbgzH30m---Pm8"}');
     _channel.stream.listen((data) async {
       Map<String, dynamic> dataMap = jsonDecode(data.toString());
       if (dataMap['type'] == 'event') {

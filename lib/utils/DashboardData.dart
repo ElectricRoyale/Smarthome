@@ -80,12 +80,15 @@ class DashboadData {
     _roomDevicesMap.clear();
     for (var roomName in roomData) {
       List<DeviceData> enddevice = [];
+
       roomDevices
           .where((device) => device["area_id"] == roomName["area_id"])
           .toList()
           .forEach((device) {
-        enddevice.add(devices
-            .firstWhere((id) => id.attributes!.friendlyName == device["name"]));
+        try {
+          enddevice.add(devices.firstWhere(
+              (id) => id.attributes!.friendlyName == device["name"]));
+        } catch (_) {}
       });
       _roomDevicesMap[roomName["area_id"]] = enddevice;
     }

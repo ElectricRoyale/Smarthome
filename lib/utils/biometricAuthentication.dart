@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_auth_invisible/flutter_local_auth_invisible.dart';
+import 'package:local_auth/local_auth.dart';
+
+//import 'package:flutter_local_auth_invisible/flutter_local_auth_invisible.dart';
 
 import 'constants.dart';
 
@@ -11,7 +13,7 @@ class BiometricAuthentication extends StatefulWidget {
 }
 
 class _BiometricAuthenticationState extends State<BiometricAuthentication> {
-  //LocalAuthentication auth = LocalAuthentication();
+  LocalAuthentication auth = LocalAuthentication();
 
   @override
   Widget build(BuildContext context) {
@@ -68,14 +70,13 @@ class _BiometricAuthenticationState extends State<BiometricAuthentication> {
   }
 
   void biometricLogin() async {
-    if (await LocalAuthentication.isDeviceSupported() &&
-        await LocalAuthentication.canCheckBiometrics) {
-      if (await LocalAuthentication.authenticate(
-        localizedReason: 'Unlock the app.',
-        sensitiveTransaction: false,
-        stickyAuth: true,
-        biometricOnly: true,
-      )) {
+    if (await auth.isDeviceSupported() && await auth.canCheckBiometrics) {
+      if (await auth.authenticate(
+          localizedReason: 'Unlock the app.',
+          options: const AuthenticationOptions(
+              sensitiveTransaction: true,
+              stickyAuth: true,
+              biometricOnly: true))) {
         Navigator.pop(context);
       }
     }

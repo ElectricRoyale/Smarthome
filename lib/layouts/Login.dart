@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_auth_invisible/flutter_local_auth_invisible.dart';
+//import 'package:flutter_local_auth_invisible/flutter_local_auth_invisible.dart';
 import 'package:hive/hive.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:smarthome/layouts/Register.dart';
 import 'package:smarthome/layouts/mainlayout.dart';
@@ -42,6 +43,8 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
     curve: Curves.decelerate,
   );
 
+  LocalAuthentication auth = LocalAuthentication();
+
   @override
   void initState() {
     super.initState();
@@ -57,7 +60,7 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
   }
 
   Future<void> _cancelAuthentication() async {
-    await LocalAuthentication.stopAuthentication();
+    await auth.stopAuthentication();
   }
 
   void biometricLogin() async {
@@ -66,13 +69,14 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
     await Permission.storage.request().isGranted;
     if (loginData.isNotEmpty && !connectionError) {
       nameController.text = loginData.get('name');
-      if (await LocalAuthentication.isDeviceSupported() &&
-          await LocalAuthentication.canCheckBiometrics) {
-        if (await LocalAuthentication.authenticate(
-            localizedReason: 'Unlock the app.',
-            sensitiveTransaction: true,
-            stickyAuth: true,
-            biometricOnly: true)) {
+      if (await auth.isDeviceSupported() && await auth.canCheckBiometrics) {
+        if (await auth.authenticate(
+          localizedReason: 'Unlock the app.',
+          options: const AuthenticationOptions(
+              sensitiveTransaction: true,
+              stickyAuth: true,
+              biometricOnly: true),
+        )) {
           passwordController.text = loginData.get('password');
           login(loginData.get('name'), loginData.get('password'));
         }

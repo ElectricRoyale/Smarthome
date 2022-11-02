@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:smarthome/Model/UserData.dart';
 import 'package:smarthome/Model/weatherLocations.dart';
+import 'package:smarthome/layouts/mainlayout.dart';
 import 'package:smarthome/utils/biometricAuthentication.dart';
 
-import 'layouts/Login.dart';
 import 'layouts/controllpanels/air_conditioner.dart';
 import 'layouts/controllpanels/heating_system.dart';
 import 'layouts/controllpanels/irrigation.dart';
@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
         'washing_machine': (BuildContext ctx) => const WashingMachine(),
         'irrigation': (BuildContext ctx) => const Irrigation(),
       },
-      home: const Login(),
+      home: const MyHomePage(),
     );
   }
 }

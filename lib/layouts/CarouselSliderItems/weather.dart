@@ -267,14 +267,77 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
     setState(() {});
   }
 
+  final rightDeleteIcon = Container(
+    alignment: Alignment.centerRight,
+    child: const Icon(Icons.delete),
+  );
+
   List<DropdownMenuItem<String>> getMenuItems(List<String> locations) {
     List<DropdownMenuItem<String>> items = [];
     for (var element in locations) {
       items.add(DropdownMenuItem(
         value: element,
-        child: Text(element),
+        child: Dismissible(
+          key: Key(element),
+          confirmDismiss: (direction) {
+            return sureDialog(element);
+          },
+          direction: weatherLocations.weatherLocation == element
+              ? DismissDirection.none
+              : DismissDirection.endToStart,
+          background: rightDeleteIcon,
+          //secondaryBackground: rightDeleteIcon,
+          child: SizedBox(width: 230, child: Text(element)),
+        ),
       ));
     }
     return items;
+  }
+
+  Future<bool> sureDialog(String element) {
+    Future<bool> delete = Future.value(false);
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Delete?',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24),
+            ),
+            content: const Text(
+              'Do you really want to delete this City?',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    setState(() {
+                      weatherLocations.weatherLocationList!
+                          .removeWhere((item) => item == element);
+                    });
+                    Navigator.of(context).pop();
+                    delete = Future.value(true);
+                  },
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.white),
+                  )),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    delete = Future.value(false);
+                  },
+                  child: const Text(
+                    'Delete',
+                    style: TextStyle(color: Colors.white),
+                  )),
+            ],
+            backgroundColor: const Color(0xff4a4b5e),
+          );
+        });
+    return delete;
   }
 }
