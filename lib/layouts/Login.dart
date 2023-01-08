@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:smarthome/layouts/Register.dart';
 import 'package:smarthome/layouts/mainlayout.dart';
 import 'package:smarthome/utils/LoadingScreen.dart';
 import 'package:smarthome/utils/MySQLHelper.dart';
@@ -21,10 +20,10 @@ class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
   @override
-  LoginState createState() => LoginState();
+  State<Login> createState() => _LoginState();
 }
 
-class LoginState extends State<Login> with TickerProviderStateMixin {
+class _LoginState extends State<Login> with TickerProviderStateMixin {
   bool _isObscure = true, nameError = false, passwordError = false;
   String nameErrorText = '', passwordErrorText = '';
   final nameController = TextEditingController();
@@ -55,6 +54,7 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
         _cancelAuthentication();
       }
     });
+
     errorDialog.checkConnection();
     Future.delayed(const Duration(milliseconds: 2900), () => biometricLogin());
   }
@@ -215,6 +215,11 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
                                     BorderSide(color: Colors.red, width: 2.0),
                               ),
                             ),
+                            toolbarOptions: const ToolbarOptions(
+                                copy: true,
+                                cut: true,
+                                paste: true,
+                                selectAll: true),
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -236,7 +241,7 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
                         padding:
                             const EdgeInsets.only(top: 60, left: 28, right: 28),
                         child: Focus(
-                          child: TextField(
+                          child: TextFormField(
                             controller: passwordController,
                             obscureText: _isObscure,
                             enableSuggestions: false,
@@ -283,6 +288,11 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
                                         _isObscure = !_isObscure;
                                       });
                                     })),
+                            toolbarOptions: const ToolbarOptions(
+                                copy: true,
+                                cut: true,
+                                paste: true,
+                                selectAll: true),
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -352,7 +362,7 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
                       TextButton(
                         onPressed: () {
                           loginData.clear();
-                          _controller
+                          /*_controller
                               .reverse(from: 1.0)
                               .then((value) => Navigator.pushReplacement(
                                     context,
@@ -363,7 +373,7 @@ class LoginState extends State<Login> with TickerProviderStateMixin {
                                         transitionsBuilder: (context, animation,
                                                 secondaryAnimation, child) =>
                                             child),
-                                  ));
+                                  ));*/
                         },
                         child: const Text(
                           'SingUp',

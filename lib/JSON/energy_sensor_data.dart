@@ -1,6 +1,5 @@
 class EnergySensorData {
-  String? statisticId;
-  String? start;
+  int? start;
   DateTime? end;
   int? mean;
   int? min;
@@ -10,8 +9,7 @@ class EnergySensorData {
   double? sum;
 
   EnergySensorData(
-      {this.statisticId,
-      this.start,
+      {this.start,
       this.end,
       this.mean,
       this.min,
@@ -21,9 +19,8 @@ class EnergySensorData {
       this.sum});
 
   EnergySensorData.fromJson(Map<String, dynamic> json) {
-    statisticId = json['statistic_id'];
     start = json['start'];
-    end = DateTime.parse(json['end']);
+    end = DateTime.fromMillisecondsSinceEpoch(json['end']);
     mean = json['mean'];
     min = json['min'];
     max = json['max'];
@@ -34,7 +31,6 @@ class EnergySensorData {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['statistic_id'] = statisticId;
     data['start'] = start;
     data['end'] = end;
     data['mean'] = mean;

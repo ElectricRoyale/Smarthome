@@ -11,6 +11,7 @@ import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:smarthome/layouts/web_auth.dart';
 import 'package:smarthome/utils/MySQLHelper.dart';
 import 'package:sprintf/sprintf.dart';
 
@@ -62,6 +63,15 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
 
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+
+  final authorizationEndpoint =
+      Uri.http('homeassistantPascal:8123', '/auth/authorize', {
+    "response_type": "code",
+    "redirect_uri": "https://homeassistantpascal:8123/auth-callback",
+    "client_id": "https://homeassistantpascal:8123/",
+  });
+  final clientId = 'https://homeassistantpascal:8123/';
+  final tokenEndpoint = Uri.parse("http://homeassistantPascal:8123/auth/token");
 
   Future<void> initConnectivity() async {
     ConnectivityResult result = ConnectivityResult.none;
@@ -254,7 +264,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                         padding:
                             const EdgeInsets.only(top: 30, left: 28, right: 28),
                         child: Focus(
-                          child: TextField(
+                          child: TextFormField(
                             controller: _nameController,
                             decoration: InputDecoration(
                               focusedBorder: const OutlineInputBorder(
@@ -286,6 +296,12 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                     BorderSide(color: Colors.red, width: 2.0),
                               ),
                             ),
+                            toolbarOptions: const ToolbarOptions(
+                              copy: true,
+                              cut: true,
+                              paste: true,
+                              selectAll: true,
+                            ),
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -304,7 +320,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                         padding:
                             const EdgeInsets.only(top: 10, left: 28, right: 28),
                         child: Focus(
-                          child: TextField(
+                          child: TextFormField(
                             controller: _emailController,
                             decoration: InputDecoration(
                               focusedBorder: const OutlineInputBorder(
@@ -335,6 +351,13 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                 borderSide:
                                     BorderSide(color: Colors.red, width: 2.0),
                               ),
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                            toolbarOptions: const ToolbarOptions(
+                              copy: true,
+                              cut: true,
+                              paste: true,
+                              selectAll: true,
                             ),
                             style: const TextStyle(
                                 color: Colors.white,
@@ -483,7 +506,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                         padding:
                             const EdgeInsets.only(top: 10, left: 28, right: 28),
                         child: Focus(
-                          child: TextField(
+                          child: TextFormField(
                             controller: _passwordController,
                             obscureText: _isObscure,
                             enableSuggestions: false,
@@ -531,6 +554,12 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                     BorderSide(color: Colors.red, width: 2.0),
                               ),
                             ),
+                            toolbarOptions: const ToolbarOptions(
+                              copy: true,
+                              cut: true,
+                              paste: true,
+                              selectAll: true,
+                            ),
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -551,7 +580,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                         padding:
                             const EdgeInsets.only(top: 10, left: 28, right: 28),
                         child: Focus(
-                          child: TextField(
+                          child: TextFormField(
                             controller: _confirmPasswordController,
                             obscureText: _isObscureConfirm,
                             enableSuggestions: false,
@@ -600,6 +629,12 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                     BorderSide(color: Colors.red, width: 2.0),
                               ),
                             ),
+                            toolbarOptions: const ToolbarOptions(
+                              copy: true,
+                              cut: true,
+                              paste: true,
+                              selectAll: true,
+                            ),
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -638,16 +673,19 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                               });
                           FocusScope.of(context).unfocus();
                           if (validate()) {
+                            String? token = await Navigator.of(context).push(
+                                MaterialPageRoute<String>(
+                                    builder: (BuildContext context) {
+                              return WebAuth(
+                                  authorizationEndpoint: authorizationEndpoint,
+                                  clientId: clientId,
+                                  tokenEndpoint: tokenEndpoint);
+                            }));
                             String result = await MySQLHelper().register(
-                                _profileImageInster,
-                                _nameController.text,
-                                _emailController.text,
-                                sprintf("%02i.%02i.%04i", [
-                                  birthday.day,
-                                  birthday.month,
-                                  birthday.year
-                                ]),
-                                _passwordController.text);
+                              _nameController.text,
+                              _passwordController.text,
+                              token!,
+                            );
                             if (result == 'successful') {
                               if (!mounted) return;
                               Navigator.pop(context);
@@ -774,9 +812,9 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
 
   bool validate() {
     validateName();
-    validateEmail();
+    //validateEmail();
     validatePassword(true);
-    return !nameError && !emailError && !passwordError && !confirmPasswordError;
+    return !nameError && !passwordError && !confirmPasswordError;
   }
 
   void validateName() {
@@ -819,29 +857,21 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
     if (_passwordController.text.isNotEmpty) {
       if (RegExp(r'^(?=.*[A-Z])').hasMatch(_passwordController.text)) {
         if (RegExp(r'^(?=.*[a-z])').hasMatch(_passwordController.text)) {
-          if (RegExp(r'^(?=.*\d)').hasMatch(_passwordController.text)) {
-            if (_passwordController.text.length >= 8) {
-              if (_confirmPasswordController.text.isNotEmpty) {
-                if (_passwordController.text ==
-                        _confirmPasswordController.text ||
-                    !checkPasswordMatch) {
-                } else {
-                  setState(() {
-                    passwordError = true;
-                    passwordErrorText = 'Password don\'t be the same!';
-                  });
-                }
+          if (_passwordController.text.length >= 8) {
+            if (_confirmPasswordController.text.isNotEmpty) {
+              if (_passwordController.text == _confirmPasswordController.text ||
+                  !checkPasswordMatch) {
+              } else {
+                setState(() {
+                  passwordError = true;
+                  passwordErrorText = 'Password don\'t be the same!';
+                });
               }
-            } else {
-              setState(() {
-                passwordError = true;
-                passwordErrorText = 'Password must be at least 8 characters!';
-              });
             }
           } else {
             setState(() {
               passwordError = true;
-              passwordErrorText = 'Password must contains numbers!';
+              passwordErrorText = 'Password must be at least 8 characters!';
             });
           }
         } else {

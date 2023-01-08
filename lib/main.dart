@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:smarthome/Model/UserData.dart';
-import 'package:smarthome/Model/weatherLocations.dart';
-import 'package:smarthome/layouts/mainlayout.dart';
+import 'package:smarthome/layouts/splashscreen.dart';
 import 'package:smarthome/utils/biometricAuthentication.dart';
 
 import 'layouts/controllpanels/air_conditioner.dart';
@@ -16,16 +13,8 @@ import 'layouts/controllpanels/socket.dart';
 import 'layouts/controllpanels/video_device.dart';
 import 'layouts/controllpanels/washing_machine.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-  Hive
-    ..registerAdapter(WeatherLocationsAdapter())
-    ..registerAdapter(UserDataAdapter());
-  await Hive.openBox<UserData>('UserData');
-  await Hive.openBox('LoginData');
-  await Hive.openBox('Settings');
-  await Hive.openBox<WeatherLocations>('WeatherLocations');
   runApp(const MyApp());
 }
 
@@ -69,7 +58,7 @@ class MyApp extends StatelessWidget {
         'washing_machine': (BuildContext ctx) => const WashingMachine(),
         'irrigation': (BuildContext ctx) => const Irrigation(),
       },
-      home: const MyHomePage(),
+      home: const SplashScreen(),
     );
   }
 }

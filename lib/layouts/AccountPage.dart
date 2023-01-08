@@ -419,12 +419,13 @@ class AccountPageState extends State<AccountPage> {
                             onPressed: () {
                               setState(() => editing = false);
                               var data = UserData(
-                                  profileImage: _profileImage,
-                                  name: _nameController.text,
-                                  email: _emailController.text,
+                                //profileImage: _profileImage,
+                                name: _nameController.text,
+                                /*email: _emailController.text,
                                   birthday: _birthdayController.text,
                                   address: _addressController.text,
-                                  handyNumber: _telephonenumberController.text);
+                                  handyNumber: _telephonenumberController.text*/
+                              );
                               userData.putAt(0, data);
                               MySQLHelper().update(
                                   _profileImage,
@@ -452,10 +453,9 @@ class AccountPageState extends State<AccountPage> {
                           MaterialButton(
                             onPressed: () {
                               setState(() => editing = false);
-                              _profileImage =
-                                  userData.values.first.profileImage!;
+                              //_profileImage = userData.values.first.profileImage!;
                               _nameController.text = userData.values.first.name;
-                              _emailController.text =
+                              /*_emailController.text =
                                   userData.values.first.email;
                               _birthdayController.text =
                                   userData.values.first.birthday;
@@ -466,7 +466,7 @@ class AccountPageState extends State<AccountPage> {
                               _addressController.text =
                                   userData.values.first.address;
                               _telephonenumberController.text =
-                                  userData.values.first.handyNumber;
+                                  userData.values.first.handyNumber;*/
                             },
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,

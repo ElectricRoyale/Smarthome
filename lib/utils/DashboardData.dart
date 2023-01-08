@@ -60,7 +60,7 @@ class DashboadData {
       '{"type" : "config/area_registry/list", "id" : "${idList.elementAt(0)}"}',
       '{"type" : "config/device_registry/list", "id" : "${idList.elementAt(1)}"}',
       '{"type" : "get_states", "id" : "${idList.elementAt(2)}"}',
-      '{"id" : "${idList.elementAt(3)}","type" : "history/statistics_during_period", "period" : "hour", "start_time" : "${DateTime(dateTime.year, dateTime.month, dateTime.day - 1, dateTime.hour)}", "end_time" : "${DateTime.now().toString()}"}',
+      '{"id" : "${idList.elementAt(3)}","type" : "recorder/statistics_during_period", "period" : "hour", "start_time" : "${DateTime(dateTime.year, dateTime.month, dateTime.day - 1, dateTime.hour)}"}',
       '{"id": ${idNumber++}, "type": "subscribe_events", "event_type": "state_changed"}',
     ]);
     _isInitialized = Future.delayed(const Duration(seconds: 2));
