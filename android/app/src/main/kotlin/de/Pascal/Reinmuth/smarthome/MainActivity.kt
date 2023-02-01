@@ -7,6 +7,6 @@ import android.view.WindowManager.LayoutParams
 class MainActivity: FlutterFragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getWindow().addFlags(LayoutParams.FLAG_SECURE);
+        getWindow().addFlags(LayoutParams.FLAG_SECURE)
     }
 }

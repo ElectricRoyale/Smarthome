@@ -90,7 +90,7 @@ class MyHomePageState extends State<MyHomePage>
           end: Alignment.bottomCenter,
           colors: [
             Colors.transparent,
-            Color(0xE6000000),
+            Colors.black,
           ],
           tileMode: TileMode.decal,
         ),
@@ -105,17 +105,62 @@ class MyHomePageState extends State<MyHomePage>
         unselectedItemColor: Colors.white,
         selectedItemColor: Colors.white,
         selectedIconTheme: const IconThemeData(color: COLOR_ACCENT),
+        selectedLabelStyle: const TextStyle(
+          shadows: [
+            Shadow(
+              offset: Offset(0.0, 1.25),
+              blurRadius: 3.0,
+              color: Color.fromARGB(255, 200, 200, 200),
+            )
+          ],
+        ),
+        unselectedLabelStyle: const TextStyle(
+          shadows: [
+            Shadow(
+              offset: Offset(0.0, 1.25),
+              blurRadius: 3.0,
+              color: Color.fromARGB(255, 200, 200, 200),
+            )
+          ],
+        ),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_rounded),
+            icon: Icon(
+              Icons.dashboard_rounded,
+              shadows: [
+                Shadow(
+                  offset: Offset(0.0, 2.5),
+                  blurRadius: 3.0,
+                  color: Color.fromARGB(255, 0, 0, 0),
+                )
+              ],
+            ),
             label: 'Dashboard',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.wifi_tethering),
+            icon: Icon(
+              Icons.wifi_tethering,
+              shadows: [
+                Shadow(
+                  offset: Offset(0.0, 2.5),
+                  blurRadius: 3.0,
+                  color: Color.fromARGB(255, 0, 0, 0),
+                )
+              ],
+            ),
             label: 'Network',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(
+              Icons.settings,
+              shadows: [
+                Shadow(
+                  offset: Offset(0.0, 2.5),
+                  blurRadius: 3.0,
+                  color: Color.fromARGB(255, 0, 0, 0),
+                )
+              ],
+            ),
             label: 'Settings',
           ),
         ],

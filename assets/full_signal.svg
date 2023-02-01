@@ -1,4 +1,52 @@
-<?xml version="1.0"?>
-<svg fill="#00ff0d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
-    <path d="M 19 4 C 17.895 4 17 4.895 17 6 L 17 18 C 17 19.105 17.895 20 19 20 L 21 20 C 22.105 20 23 19.105 23 18 L 23 6 C 23 4.895 22.105 4 21 4 L 19 4 z M 11 8 C 9.895 8 9 8.895 9 10 L 9 18 C 9 19.105 9.895 20 11 20 L 13 20 C 14.105 20 15 19.105 15 18 L 15 10 C 15 8.895 14.105 8 13 8 L 11 8 z M 3 12 C 1.895 12 1 12.895 1 14 L 1 18 C 1 19.105 1.895 20 3 20 L 5 20 C 6.105 20 7 19.105 7 18 L 7 14 C 7 12.895 6.105 12 5 12 L 3 12 z"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   fill="#00ff0d"
+   viewBox="0 0 24 24"
+   width="24px"
+   height="24px"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="full_signal.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs5" />
+  <sodipodi:namedview
+     id="namedview6"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="22.686342"
+     inkscape:cx="12.738942"
+     inkscape:cy="11.108005"
+     inkscape:window-width="1920"
+     inkscape:window-height="974"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Shadow" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="Foreground">
+    <path
+       d="m 19.973,5.486 c -1.105,0 -2,0.895 -2,2 v 12 c 0,1.105 0.895,2 2,2 h 2 c 1.105,0 2,-0.895 2,-2 v -12 c 0,-1.105 -0.895,-2 -2,-2 z m -8,4 c -1.105,0 -2,0.895 -2,2 v 8 c 0,1.105 0.895,2 2,2 h 2 c 1.105,0 2,-0.895 2,-2 v -8 c 0,-1.105 -0.895,-2 -2,-2 z m -8,4 c -1.105,0 -2,0.895 -2,2 v 4 c 0,1.105 0.895,2 2,2 h 2 c 1.105,0 2,-0.895 2,-2 v -4 c 0,-1.105 -0.895,-2 -2,-2 z"
+       id="path822"
+       style="fill:#002c00;fill-opacity:1;filter:url(#filter1135)" />
+    <path
+       d="m 18,2.665 c -1.105,0 -2,0.895 -2,2 v 12 c 0,1.105 0.895,2 2,2 h 2 c 1.105,0 2,-0.895 2,-2 v -12 c 0,-1.105 -0.895,-2 -2,-2 z m -8,4 c -1.105,0 -2,0.895 -2,2 v 8 c 0,1.105 0.895,2 2,2 h 2 c 1.105,0 2,-0.895 2,-2 v -8 c 0,-1.105 -0.895,-2 -2,-2 z m -8,4 c -1.105,0 -2,0.895 -2,2 v 4 c 0,1.105 0.895,2 2,2 h 2 c 1.105,0 2,-0.895 2,-2 v -4 c 0,-1.105 -0.895,-2 -2,-2 z"
+       id="path2"
+       style="filter:url(#filter1135)" />
+  </g>
 </svg>

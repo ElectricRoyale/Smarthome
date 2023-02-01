@@ -44,7 +44,7 @@ class AccountPageState extends State<AccountPage> {
       _addressController = TextEditingController(),
       _telephonenumberController = TextEditingController();
 
-  late DateTime birthday;
+  DateTime? birthday;
   Box<UserData> userData = Hive.box<UserData>('UserData');
 
   late XFile _pickedImage;
@@ -57,8 +57,9 @@ class AccountPageState extends State<AccountPage> {
     _emailController.text = widget.email;
     _birthdayController.text = widget.birthday;
     var date = widget.birthday.split('.');
-    birthday =
-        DateTime(int.parse(date[2]), int.parse(date[1]), int.parse(date[0]));
+    birthday = date.length == 2
+        ? DateTime(int.parse(date[2]), int.parse(date[1]), int.parse(date[0]))
+        : null;
     _addressController.text = widget.address;
     _telephonenumberController.text = widget.telephonenumber;
   }

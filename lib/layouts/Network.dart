@@ -158,7 +158,16 @@ class NetworkLayout extends State<Network> {
           Container(
             decoration: BoxDecoration(
                 color: const Color(0x12ffffff),
-                borderRadius: BorderRadius.circular(20.0)),
+                borderRadius: BorderRadius.circular(20.0),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.white,
+                    blurRadius: 4,
+                    spreadRadius: 0,
+                    offset: Offset(0, 0),
+                    blurStyle: BlurStyle.outer,
+                  )
+                ]),
             margin: const EdgeInsets.only(left: 5, right: 5, top: 10),
             child: IntrinsicHeight(
               child: Row(

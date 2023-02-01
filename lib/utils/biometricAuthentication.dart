@@ -17,7 +17,6 @@ class _BiometricAuthenticationState extends State<BiometricAuthentication> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
@@ -40,10 +39,18 @@ class _BiometricAuthenticationState extends State<BiometricAuthentication> {
                     padding: EdgeInsets.only(top: constraints.maxHeight * 0.17),
                     child: const Text('The app is looked!',
                         style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 26,
-                            decoration: TextDecoration.none)),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 26,
+                          decoration: TextDecoration.none,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.0, 2.5),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            )
+                          ],
+                        )),
                   ),
                   const Padding(
                     padding: EdgeInsets.only(top: 130),
@@ -51,11 +58,29 @@ class _BiometricAuthenticationState extends State<BiometricAuthentication> {
                       Icons.fingerprint,
                       color: Colors.white,
                       size: 80,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(0.0, 2.5),
+                          blurRadius: 3.0,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        )
+                      ],
                     ),
                   ),
                   const Padding(
                       padding: EdgeInsets.only(top: 50),
-                      child: Icon(Icons.lock, color: Colors.white, size: 50)),
+                      child: Icon(
+                        Icons.lock,
+                        color: Colors.white,
+                        size: 50,
+                        shadows: [
+                          Shadow(
+                            offset: Offset(0.0, 2.5),
+                            blurRadius: 3.0,
+                            color: Color.fromARGB(255, 0, 0, 0),
+                          )
+                        ],
+                      )),
                 ],
               ),
             ),
@@ -74,9 +99,7 @@ class _BiometricAuthenticationState extends State<BiometricAuthentication> {
       if (await auth.authenticate(
           localizedReason: 'Unlock the app.',
           options: const AuthenticationOptions(
-              sensitiveTransaction: true,
-              stickyAuth: true,
-              biometricOnly: true))) {
+              stickyAuth: true, biometricOnly: true, useErrorDialogs: false))) {
         Navigator.pop(context);
       }
     }

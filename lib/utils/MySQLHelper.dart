@@ -25,16 +25,6 @@ class MySQLHelper {
     var result = await conn.query(
         'select token, name from UserData.LoginData where name like \'$name%\' and aes_decrypt(password, \'LaK&d;Y+2IT\') = \'$password\';');
     if (result.isNotEmpty) {
-      /*final data = UserData(
-          profileImage: result.first.fields['Profile_image'] != null
-              ? Uint8List.fromList(
-                  (result.first.fields['Profile_image'] as Blob).toBytes())
-              : null,
-          name: result.first.fields['Name'],
-          email: result.first.fields['Email_Address'],
-          birthday: result.first.fields['Birthday'],
-          handyNumber: result.first.fields['Telephonenumber'],
-          address: result.first.fields['Address']);*/
       final data = UserData(
           name: result.first.fields['name'],
           token: result.first.fields['token']);

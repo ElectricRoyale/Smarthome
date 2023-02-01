@@ -7,7 +7,6 @@ class LoadingDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return WillPopScope(
       onWillPop: () async => false,
       child: BackdropFilter(

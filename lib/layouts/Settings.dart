@@ -25,13 +25,13 @@ class Settingslayout extends State<Settings> {
     try {
       var userData = Hive.box<UserData>('UserData').values.first;
       setState(() {
-        //_profileImage = userData.profileImage;
+        _profileImage = userData.profileImage;
         _name = userData.name;
-        // _email = userData.email;
+        _email = userData.email;
       });
-      /*_birthday = userData.birthday;
+      _birthday = userData.birthday;
       _handynumber = userData.handyNumber;
-      _address = userData.address;*/
+      _address = userData.address;
     } catch (_) {}
   }
 

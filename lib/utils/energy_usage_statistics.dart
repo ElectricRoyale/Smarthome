@@ -14,7 +14,6 @@ class EnergyUsageStatistics extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Padding(
       padding: padding,
       child: SizedBox(

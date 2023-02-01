@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 import 'package:smarthome/Model/weatherLocations.dart';
 import 'package:smarthome/utils/locationAddDialog.dart';
 import 'package:smarthome/utils/weatherData.dart';
@@ -14,11 +15,16 @@ class WeatherLayout extends StatefulWidget {
 }
 
 class _WeatherLayoutDesign extends State<WeatherLayout> {
-  TextEditingController sunriseController = TextEditingController(),
+  TextEditingController temperatureWarmController = TextEditingController(),
+      temperatureColdController = TextEditingController(),
+      sunriseController = TextEditingController(),
       sunsetController = TextEditingController(),
       windController = TextEditingController(),
       fellTemperatureController = TextEditingController(),
-      humidityController = TextEditingController();
+      humidityController = TextEditingController(),
+      hygrometerController = TextEditingController();
+
+  DropdownButton<String>? dropdownButton;
 
   WeatherLocations weatherLocations =
       Hive.box<WeatherLocations>('WeatherLocations').get('WeatherLocation')!;
@@ -26,11 +32,16 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
   @override
   void initState() {
     super.initState();
+    temperatureWarmController.text = WeatherData().maxTemperature;
+    temperatureColdController.text = WeatherData().minTemperature;
     sunriseController.text = WeatherData().sunrise;
     sunsetController.text = WeatherData().sunset;
     windController.text = WeatherData().wind;
     fellTemperatureController.text = WeatherData().temperatureFeelsLike;
     humidityController.text = WeatherData().humidity;
+    hygrometerController.text = WeatherData().hygrometer != '-'
+        ? '${WeatherData().hygrometer} mm'
+        : WeatherData().hygrometer;
   }
 
   @override
@@ -53,7 +64,7 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
                     width: 235,
                     height: 30,
                     child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
+                      child: dropdownButton = DropdownButton<String>(
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 24,
@@ -94,6 +105,13 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
                             Icons.add,
                             size: 30,
                             color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                offset: Offset(0.0, 2.5),
+                                blurRadius: 3.0,
+                                color: Color.fromARGB(255, 0, 0, 0),
+                              )
+                            ],
                           )),
                       IconButton(
                           onPressed: () async {
@@ -104,151 +122,326 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
                             Icons.refresh,
                             size: 30,
                             color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                offset: Offset(0.0, 2.5),
+                                blurRadius: 3.0,
+                                color: Color.fromARGB(255, 0, 0, 0),
+                              )
+                            ],
                           )),
                     ],
                   ),
                 ]),
           ),
-          IntrinsicHeight(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Positioned(
-                  left: 10,
-                  bottom: -10,
-                  child: SizedBox(
-                    height: 90,
-                    width: 120,
-                    child: Column(
-                      children: [
-                        TextField(
-                          controller: sunriseController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: -10, vertical: 12),
-                            icon: SvgPicture.asset(
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                left: 10,
+                bottom: -10,
+                child: SizedBox(
+                  height: 176,
+                  width: 120,
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: temperatureWarmController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: -6, vertical: 12),
+                          icon: SimpleShadow(
+                            offset: const Offset(0, 2),
+                            opacity: 0.6,
+                            child: SvgPicture.asset(
+                              "assets/thermometer_warm.svg",
+                              width: 34,
+                              height: 34,
+                            ),
+                          ),
+                          border: InputBorder.none,
+                          isDense: true,
+                        ),
+                        textAlignVertical: TextAlignVertical.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.0, 2.5),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            )
+                          ],
+                        ),
+                      ),
+                      TextField(
+                        controller: temperatureColdController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: -6, vertical: 12),
+                          icon: SimpleShadow(
+                            offset: const Offset(0, 2),
+                            opacity: 0.6,
+                            child: SvgPicture.asset(
+                              "assets/thermometer_cold.svg",
+                              width: 34,
+                              height: 34,
+                            ),
+                          ),
+                          border: InputBorder.none,
+                          isDense: true,
+                        ),
+                        textAlignVertical: TextAlignVertical.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.0, 2.5),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            )
+                          ],
+                        ),
+                      ),
+                      TextField(
+                        controller: sunriseController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: -10, vertical: 12),
+                          icon: SimpleShadow(
+                            offset: const Offset(0, 2),
+                            opacity: 0.6,
+                            child: SvgPicture.asset(
                               "assets/sunrise.svg",
                               width: 38,
                               height: 38,
                             ),
-                            border: InputBorder.none,
-                            isDense: true,
                           ),
-                          textAlignVertical: TextAlignVertical.center,
-                          style: const TextStyle(color: Colors.white),
+                          border: InputBorder.none,
+                          isDense: true,
                         ),
-                        TextField(
-                          controller: sunsetController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: -10, vertical: 12),
-                            icon: SvgPicture.asset(
+                        textAlignVertical: TextAlignVertical.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.0, 2.5),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            )
+                          ],
+                        ),
+                      ),
+                      TextField(
+                        controller: sunsetController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: -10, vertical: 12),
+                          icon: SimpleShadow(
+                            offset: const Offset(0, 2),
+                            opacity: 0.6,
+                            child: SvgPicture.asset(
                               "assets/sunset.svg",
                               width: 38,
                               height: 38,
                             ),
-                            isDense: true,
-                            border: InputBorder.none,
                           ),
-                          textAlignVertical: TextAlignVertical.center,
-                          style: const TextStyle(color: Colors.white),
+                          isDense: true,
+                          border: InputBorder.none,
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: [
-                      SvgPicture.asset(
-                        WeatherData().icon,
-                        width: 125,
+                        textAlignVertical: TextAlignVertical.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.0, 2.5),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            )
+                          ],
+                        ),
                       ),
-                      Text(WeatherData().temperature,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
-                Positioned(
-                  right: 10,
-                  bottom: -10,
-                  child: SizedBox(
-                    height: 140,
-                    width: 120,
-                    child: Column(
-                      children: [
-                        TextField(
-                          controller: humidityController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 12),
-                            suffixIconConstraints: const BoxConstraints(
-                                minHeight: 36, minWidth: 36),
-                            suffixIcon: SvgPicture.asset(
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Column(
+                  children: [
+                    SimpleShadow(
+                      offset: const Offset(0, 2),
+                      opacity: 0.6,
+                      child: SvgPicture.asset(
+                        WeatherData().icon,
+                        width: 125,
+                      ),
+                    ),
+                    Text(WeatherData().temperature,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.0, 2.5),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            )
+                          ],
+                        )),
+                  ],
+                ),
+              ),
+              Positioned(
+                right: 10,
+                bottom: -10,
+                child: SizedBox(
+                  height: 176,
+                  width: 120,
+                  child: Wrap(
+                    children: [
+                      TextField(
+                        controller: hygrometerController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 2, vertical: 12),
+                          suffixIconConstraints:
+                              const BoxConstraints(minHeight: 36, minWidth: 24),
+                          suffixIcon: SimpleShadow(
+                            offset: const Offset(0, 2),
+                            opacity: 0.6,
+                            child: SvgPicture.asset(
                               "assets/hygrometer.svg",
+                              width: 34,
+                              height: 34,
+                            ),
+                          ),
+                          border: InputBorder.none,
+                          isDense: true,
+                        ),
+                        textAlignVertical: TextAlignVertical.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.0, 2.5),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            )
+                          ],
+                        ),
+                        textAlign: TextAlign.end,
+                      ),
+                      TextField(
+                        controller: humidityController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 1, vertical: 12),
+                          suffixIconConstraints:
+                              const BoxConstraints(minHeight: 36, minWidth: 36),
+                          suffixIcon: SimpleShadow(
+                            offset: const Offset(0, 2),
+                            opacity: 0.6,
+                            child: SvgPicture.asset(
+                              "assets/humidity.svg",
                               width: 36,
                               height: 36,
                             ),
-                            border: InputBorder.none,
-                            isDense: true,
                           ),
-                          textAlignVertical: TextAlignVertical.center,
-                          style: const TextStyle(color: Colors.white),
-                          textAlign: TextAlign.end,
+                          border: InputBorder.none,
+                          isDense: true,
                         ),
-                        TextField(
-                          controller: fellTemperatureController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 12),
-                            suffixIconConstraints: const BoxConstraints(
-                                minHeight: 36, minWidth: 36),
-                            suffixIcon: SvgPicture.asset(
+                        textAlignVertical: TextAlignVertical.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.0, 2.5),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            )
+                          ],
+                        ),
+                        textAlign: TextAlign.end,
+                      ),
+                      TextField(
+                        controller: fellTemperatureController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 1, vertical: 12),
+                          suffixIconConstraints:
+                              const BoxConstraints(minHeight: 36, minWidth: 36),
+                          suffixIcon: SimpleShadow(
+                            offset: const Offset(0, 2),
+                            opacity: 0.6,
+                            child: SvgPicture.asset(
                               "assets/feeling_temperature.svg",
                               width: 36,
                               height: 36,
                             ),
-                            border: InputBorder.none,
-                            isDense: true,
                           ),
-                          textAlignVertical: TextAlignVertical.center,
-                          style: const TextStyle(color: Colors.white),
-                          textAlign: TextAlign.end,
+                          border: InputBorder.none,
+                          isDense: true,
                         ),
-                        TextField(
-                          controller: windController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 12),
-                            suffixIconConstraints: const BoxConstraints(
-                                minHeight: 36, minWidth: 36),
-                            suffixIcon: SvgPicture.asset(
+                        textAlignVertical: TextAlignVertical.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.0, 2.5),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            )
+                          ],
+                        ),
+                        textAlign: TextAlign.end,
+                      ),
+                      TextField(
+                        controller: windController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 2, vertical: 12),
+                          suffixIconConstraints:
+                              const BoxConstraints(minHeight: 36, minWidth: 36),
+                          suffixIcon: SimpleShadow(
+                            offset: const Offset(0, 2),
+                            opacity: 0.6,
+                            child: SvgPicture.asset(
                               "assets/wind.svg",
                               width: 36,
                               height: 36,
                             ),
-                            isDense: true,
-                            border: InputBorder.none,
                           ),
-                          textAlignVertical: TextAlignVertical.center,
-                          style: const TextStyle(color: Colors.white),
-                          textAlign: TextAlign.end,
+                          isDense: true,
+                          border: InputBorder.none,
                         ),
-                      ],
-                    ),
+                        textAlignVertical: TextAlignVertical.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.0, 2.5),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            )
+                          ],
+                        ),
+                        textAlign: TextAlign.end,
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.only(left: 10, right: 10, top: 30),
@@ -279,23 +472,45 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
         value: element,
         child: Dismissible(
           key: Key(element),
-          confirmDismiss: (direction) {
-            return sureDialog(element);
+          confirmDismiss: (direction) async {
+            return await sureDialog(element);
           },
           direction: weatherLocations.weatherLocation == element
               ? DismissDirection.none
               : DismissDirection.endToStart,
           background: rightDeleteIcon,
+          onDismissed: (direction) {
+            weatherLocations.weatherLocationList!
+                .removeWhere((item) => item == element);
+            Hive.box<WeatherLocations>('WeatherLocations')
+                .put('WeatherLocation', weatherLocations);
+            dropdownButton!.items =
+                getMenuItems(weatherLocations.weatherLocationList!);
+            setState(() {});
+          },
           //secondaryBackground: rightDeleteIcon,
-          child: SizedBox(width: 230, child: Text(element)),
+          child: SizedBox(
+              width: 230,
+              child: Text(
+                element,
+                style: const TextStyle(
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0.0, 2.5),
+                      blurRadius: 3.0,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    )
+                  ],
+                ),
+              )),
         ),
       ));
     }
     return items;
   }
 
-  Future<bool> sureDialog(String element) {
-    Future<bool> delete = Future.value(false);
+  Future<bool> sureDialog(String element) async {
+    bool delete;
     showDialog(
         context: context,
         builder: (context) {
@@ -311,15 +526,13 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
               'Do you really want to delete this City?',
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(28.0))),
             actions: [
               TextButton(
                   onPressed: () {
-                    setState(() {
-                      weatherLocations.weatherLocationList!
-                          .removeWhere((item) => item == element);
-                    });
                     Navigator.of(context).pop();
-                    delete = Future.value(true);
+                    delete = false;
                   },
                   child: const Text(
                     'Cancel',
@@ -328,7 +541,7 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    delete = Future.value(false);
+                    delete = true;
                   },
                   child: const Text(
                     'Delete',
@@ -338,6 +551,6 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
             backgroundColor: const Color(0xff4a4b5e),
           );
         });
-    return delete;
+    return Future.value(true);
   }
 }

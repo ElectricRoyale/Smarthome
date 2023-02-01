@@ -9,7 +9,7 @@ import connectivity_macos
 import device_info_plus
 import geolocator_apple
 import network_info_plus
-import path_provider_macos
+import path_provider_foundation
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   ConnectivityPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlugin"))

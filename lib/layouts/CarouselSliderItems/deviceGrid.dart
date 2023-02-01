@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 
 import '../../utils/DashboardData.dart';
 import '../../utils/constants.dart';
@@ -25,9 +26,17 @@ class DeviceGridState extends State<DeviceGrid> {
                 padding: EdgeInsets.only(left: 20.0),
                 child: Text('Appliances',
                     style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24)),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(0.0, 2.5),
+                          blurRadius: 3.0,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        )
+                      ],
+                    )),
               ),
             ),
             Row(
@@ -35,11 +44,14 @@ class DeviceGridState extends State<DeviceGrid> {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(right: 5),
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: 29,
-                  ),
+                  child:
+                      Icon(Icons.add, color: Colors.white, size: 29, shadows: [
+                    Shadow(
+                      offset: Offset(0.0, 2.5),
+                      blurRadius: 3.0,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    )
+                  ]),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 30),
@@ -52,10 +64,14 @@ class DeviceGridState extends State<DeviceGrid> {
                                     const OverViewPage(
                                       name: 'ALL DEVICES',
                                     ))),
-                    child: const Icon(
-                      Icons.grid_view_rounded,
-                      color: Colors.white,
-                      size: 29,
+                    child: SimpleShadow(
+                      opacity: 1,
+                      offset: const Offset(0, 2.0),
+                      child: const Icon(
+                        Icons.grid_view_rounded,
+                        color: Colors.white,
+                        size: 29,
+                      ),
                     ),
                   ),
                 ),
@@ -96,11 +112,15 @@ class DeviceGridState extends State<DeviceGrid> {
                       Padding(
                         padding:
                             const EdgeInsets.only(top: 10, left: 10, right: 10),
-                        child: SvgPicture.asset(
-                          'assets/${APPLIANCES.elementAt(index)['icon']}',
-                          height: 64,
-                          width: 64,
-                          fit: BoxFit.scaleDown,
+                        child: SimpleShadow(
+                          opacity: 0.6,
+                          offset: const Offset(0, 2),
+                          child: SvgPicture.asset(
+                            'assets/${APPLIANCES.elementAt(index)['icon']}',
+                            height: 64,
+                            width: 64,
+                            fit: BoxFit.scaleDown,
+                          ),
                         ),
                       ),
                       Padding(
@@ -108,9 +128,17 @@ class DeviceGridState extends State<DeviceGrid> {
                         child: Text(
                           '${APPLIANCES.elementAt(index)['name']}',
                           style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                offset: Offset(0.0, 2.0),
+                                blurRadius: 3.0,
+                                color: Color.fromARGB(255, 0, 0, 0),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                       Padding(

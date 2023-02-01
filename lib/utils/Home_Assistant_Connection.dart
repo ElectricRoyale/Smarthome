@@ -14,7 +14,9 @@ class HomeAssistantConnection {
   factory HomeAssistantConnection() => _instance;
 
   HomeAssistantConnection._internal() {
-    init();
+    _channel.sink.add(
+        '{"type": "auth", "access_token": "${userData.values.first.token}"}');
+    initHomeAssistant();
   }
 
   Box<UserData> userData = Hive.box<UserData>('UserData');
@@ -22,26 +24,32 @@ class HomeAssistantConnection {
   final _channel = WebSocketChannel.connect(
       Uri.parse('ws://192.168.0.154:8123/api/websocket'));
 
-  Future<void> init() async {
-    List<Map> responses = [];
-    _channel.sink.add(
-        '{"type": "auth", "access_token": "${userData.values.first.token}"}');
-    _channel.stream.listen((data) async {
+  void initHomeAssistant() {
+    _channel.stream.listen((data) {
       Map<String, dynamic> dataMap = jsonDecode(data.toString());
       if (dataMap['type'] == 'event') {
         DashboadData().updateData(dataMap);
-      } else if (initialisation) {
-        Map dataMap = jsonDecode(data.toString());
-        if (dataMap.containsKey('id') && ids.contains(dataMap['id'])) {
-          responses.add(dataMap);
-        }
-        if (responses.length == 4) {
-          DashboadData().setData(responses);
-          responses = [];
-          initialisation = false;
-        }
       }
     });
+  }
+
+  Future<List> collectData(List query) async {
+    final channel = WebSocketChannel.connect(
+        Uri.parse('ws://192.168.0.154:8123/api/websocket'));
+    channel.sink.add(
+        '{"type": "auth", "access_token": "${userData.values.first.token}"}');
+    for (var request in query) {
+      channel.sink.add(request);
+    }
+    _channel.sink.add(
+        '{"id": ${idNumber++}, "type": "subscribe_events", "event_type": "state_changed"}');
+    int i = 0;
+    var stream = channel.stream.asBroadcastStream();
+    stream.listen((element) {
+      i++;
+      if (i == query.length + 2) channel.sink.close();
+    });
+    return await stream.toList();
   }
 
   void send(List query) {
@@ -49,4 +57,16 @@ class HomeAssistantConnection {
       _channel.sink.add(request);
     }
   }
+
+  final smbConfig = SmbConfig(
+      'Admin', 'HP,segl.Ew,awsSTdzF.DJ,düh.', 'smb:192.168.0.154', '445');
+}
+
+class SmbConfig {
+  final String username;
+  final String password;
+  final String hostname;
+  final port;
+
+  SmbConfig(this.username, this.password, this.hostname, this.port);
 }

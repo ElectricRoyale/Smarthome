@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smarthome/layouts/Dashboard.dart';
 import 'package:smarthome/my_icons_icons.dart';
+import 'package:smarthome/utils/constants.dart';
 import 'package:smarthome/utils/scrolling_text.dart';
 
 class RoomItem extends StatelessWidget {
@@ -32,16 +33,19 @@ class RoomItem extends StatelessWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xff3A64FA),
-                        Color(0xff000667),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: BackgroundRoomMap[roomItem['icon']]!.first,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0xff282828),
+                          blurRadius: 2,
+                          offset: Offset(1, 2),
+                        )
+                      ]),
                   padding: const EdgeInsets.all(5),
                   margin: const EdgeInsets.only(top: 20, left: 20),
                   height: 64,
@@ -81,11 +85,12 @@ class RoomItem extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             gradient: LinearGradient(
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
-                                colors: [Color(0xff00C385), Color(0xff44FF00)]),
+                                colors:
+                                    BackgroundRoomMap[roomItem['icon']]!.last),
                             shape: BoxShape.circle,
                           ),
                           padding: const EdgeInsets.all(4),
@@ -110,16 +115,22 @@ class RoomItem extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: Container(
                       decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Colors.white,
-                              Color(0xffFFD500),
-                              Color(0xffFFB700)
-                            ]),
-                        shape: BoxShape.circle,
-                      ),
+                          gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.white,
+                                Color(0xffFFD500),
+                                Color(0xffFFB700)
+                              ]),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xff282828),
+                              blurRadius: 4,
+                              offset: Offset(1, 2),
+                            )
+                          ]),
                       padding: const EdgeInsets.all(5),
                       margin:
                           const EdgeInsets.only(right: 20, top: 14, bottom: 14),

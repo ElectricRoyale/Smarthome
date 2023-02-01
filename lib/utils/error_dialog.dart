@@ -17,7 +17,7 @@ class ErrorDialog extends StatelessWidget {
   BuildContext? _context;
   Function(ConnectionStatus)? _onChange;
   bool _retry = false;
-  late final StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   ErrorDialog({Key? key}) : super(key: key);
 
@@ -31,8 +31,8 @@ class ErrorDialog extends StatelessWidget {
   }
 
   void checkConnection() async {
-    await Socket.connect('192.168.0.51', 80,
-            timeout: const Duration(milliseconds: 1000))
+    await Socket.connect('192.168.0.154', 22,
+            timeout: const Duration(seconds: 1))
         .then((socket) {
       if (connectionError) {
         _popDialog();
@@ -107,7 +107,6 @@ class ErrorDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return WillPopScope(
       onWillPop: () async => false,
       child: BackdropFilter(
@@ -140,7 +139,7 @@ class ErrorDialog extends StatelessWidget {
                       fontSize: 26),
                 ),
                 const Text(
-                  'No internet connection!\n Please check your wifi connection, to be able to connect to the Server!',
+                  'No Internet connection!\n Please check your Wi-Fi connection in order to be able to connect to the server.',
                   style: TextStyle(color: Colors.white, fontSize: 16),
                   textAlign: TextAlign.center,
                 ),

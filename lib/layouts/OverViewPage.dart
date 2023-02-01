@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 import 'package:smarthome/utils/globals.dart';
 
 import '../JSON/device_data.dart';
@@ -75,7 +76,16 @@ class OverViewPageState extends State<OverViewPage> {
           appBar: AppBar(
             title: Text(
               widget.name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                shadows: [
+                  Shadow(
+                    offset: Offset(0.0, 2.5),
+                    blurRadius: 3.0,
+                    color: Color.fromARGB(255, 0, 0, 0),
+                  )
+                ],
+              ),
             ),
             backgroundColor: Colors.transparent,
             elevation: 0.0,
@@ -110,31 +120,43 @@ class OverViewPageState extends State<OverViewPage> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(10.0),
-                        child: SvgPicture.asset(
-                          'assets/${deviceData.elementAt(index).icon}',
-                          fit: BoxFit.scaleDown,
-                          height: 50,
-                          width: 50,
+                        child: SimpleShadow(
+                          opacity: 0.6,
+                          offset: const Offset(0, 2),
+                          child: SvgPicture.asset(
+                            'assets/${deviceData.elementAt(index).icon}',
+                            fit: BoxFit.scaleDown,
+                            height: 50,
+                            width: 50,
+                          ),
                         ),
                       ),
                       Container(
                         width: double.maxFinite,
-                        height: 16,
+                        height: 18,
                         margin:
-                            const EdgeInsets.only(top: 5, left: 10, right: 10),
+                            const EdgeInsets.only(top: 3, left: 10, right: 10),
                         child: ScrollingText(
                           velocity: 30,
-                          maxWidth: 170,
                           startPointOffset: 3,
                           text: (deviceData
                               .elementAt(index)
                               .attributes!
                               .friendlyName)!,
+                          maxWidth: 170,
                           style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.none),
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none,
+                            shadows: [
+                              Shadow(
+                                offset: Offset(0.0, 2.5),
+                                blurRadius: 3.0,
+                                color: Color.fromARGB(255, 0, 0, 0),
+                              )
+                            ],
+                          ),
                           startAfter: const Duration(seconds: 3),
                           pauseAfterRound: const Duration(seconds: 3),
                           blankSpace: 100,

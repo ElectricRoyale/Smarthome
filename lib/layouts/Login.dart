@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_local_auth_invisible/flutter_local_auth_invisible.dart';
 import 'package:hive/hive.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -73,9 +72,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         if (await auth.authenticate(
           localizedReason: 'Unlock the app.',
           options: const AuthenticationOptions(
-              sensitiveTransaction: true,
-              stickyAuth: true,
-              biometricOnly: true),
+              stickyAuth: true, biometricOnly: true),
         )) {
           passwordController.text = loginData.get('password');
           login(loginData.get('name'), loginData.get('password'));
@@ -104,7 +101,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             return const LoadingDialog();
           });
       if (await MySQLHelper().login(name, password)) {
-        await DashboadData().isInitialized;
+        await DashboadData().init();
         await WeatherData().isInitialized;
         errorDialog.dispose();
         if (!mounted) return;
@@ -173,9 +170,17 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                         child: Text(
                           'Login',
                           style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 36),
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 36,
+                            shadows: [
+                              Shadow(
+                                offset: Offset(0.0, 2.5),
+                                blurRadius: 3.0,
+                                color: Color.fromARGB(255, 0, 0, 0),
+                              )
+                            ],
+                          ),
                         ))),
                 DelayedDisplay(
                     delay: const Duration(milliseconds: 1000),
@@ -325,30 +330,39 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       ),
                     )),
                 DelayedDisplay(
-                    delay: const Duration(milliseconds: 1750),
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.only(top: 161, left: 28, right: 28),
-                      child: TextButton(
-                        onPressed: () =>
+                  delay: const Duration(milliseconds: 1750),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(top: 161, left: 28, right: 28),
+                    child: GestureDetector(
+                        onTap: () =>
                             login(nameController.text, passwordController.text),
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(70)),
-                          backgroundColor: Colors.white,
-                          fixedSize: const Size.fromHeight(45),
-                        ),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Text(
-                                'Login',
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 17),
-                              ),
-                            ]),
-                      ),
-                    )),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(70),
+                              color: Colors.white,
+                              boxShadow: const [
+                                BoxShadow(
+                                    offset: Offset(0, 2.75),
+                                    blurRadius: 1.0,
+                                    color: Colors.black,
+                                    blurStyle: BlurStyle.solid)
+                              ]),
+                          height: const Size.fromHeight(45).height,
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Text(
+                                  'Login',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ]),
+                        )),
+                  ),
+                ),
                 DelayedDisplay(
                   delay: const Duration(milliseconds: 1950),
                   child: Row(
@@ -357,7 +371,16 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       const Text(
                         'Don\'t have an Account?',
                         style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.0, 2.5),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            )
+                          ],
+                        ),
                       ),
                       TextButton(
                         onPressed: () {
@@ -378,8 +401,16 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                         child: const Text(
                           'SingUp',
                           style: TextStyle(
-                              color: Color(0xffaf0000),
-                              fontWeight: FontWeight.bold),
+                            color: Color(0xffaf0000),
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                offset: Offset(0.0, 2.5),
+                                blurRadius: 3.0,
+                                color: Color.fromARGB(255, 0, 0, 0),
+                              )
+                            ],
+                          ),
                         ),
                       )
                     ],

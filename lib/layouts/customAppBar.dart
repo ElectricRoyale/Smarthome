@@ -59,7 +59,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
   }
 
   void resumeSignalChecker() {
-    ping = Ping('192.168.0.152');
+    ping = Ping('192.168.0.154');
     checkSignalStrength();
   }
 
@@ -153,7 +153,16 @@ class CustomAppBarLayout extends State<CustomAppBar>
             padding: const EdgeInsets.only(top: 20),
             child: Text('${pageParams.elementAt(index)['name']}',
                 style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w900),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0.0, 2.5),
+                      blurRadius: 3.0,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    )
+                  ],
+                ),
                 textScaleFactor: 1.3),
           ),
           actions: [
@@ -171,7 +180,16 @@ class CustomAppBarLayout extends State<CustomAppBar>
             padding: const EdgeInsets.only(top: 20),
             child: Text('${pageParams.elementAt(index)['name']}',
                 style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w900),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0.0, 2.5),
+                      blurRadius: 3.0,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    )
+                  ],
+                ),
                 textScaleFactor: 1.3),
           ),
         );

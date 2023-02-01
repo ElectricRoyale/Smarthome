@@ -134,10 +134,7 @@ class Layout extends State<Dashboard> {
         activeIndex: activeIndex,
         count: 5,
         effect: const ScrollingDotsEffect(
-            dotHeight: 5,
-            dotWidth: 5,
-            fixedCenter: true,
-            activeDotColor: Colors.white),
+            dotHeight: 5, dotWidth: 5, activeDotColor: Colors.white),
         onDotClicked: (index) {
           setState(() => activeIndex = index);
         },

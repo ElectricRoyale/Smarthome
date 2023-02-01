@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive/hive.dart';
+import 'package:simple_shadow/simple_shadow.dart';
 import 'package:smarthome/Model/weatherLocations.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:weather/weather.dart';
@@ -19,6 +20,7 @@ class WeatherData {
       _maxTemperature = '-',
       _temperatureFeelsLike = '-',
       _wind = '-',
+      _hygrometer = '-',
       _humidity = '-';
   final List<String> _dayNames = [
     'Mon',
@@ -60,9 +62,10 @@ class WeatherData {
     _minTemperature = "${w.tempMin!.celsius!.toStringAsPrecision(2)}°";
     _maxTemperature = "${w.tempMax!.celsius!.toStringAsPrecision(2)}°";
     _temperatureFeelsLike =
-        '${w.tempFeelsLike!.celsius!.toStringAsPrecision(2)}°';
+        '${w.tempFeelsLike!.celsius!.toStringAsPrecision(1)}°';
     _wind = '${w.windSpeed!.toStringAsPrecision(2)} km/h';
-    _humidity = '${w.humidity!.toStringAsPrecision(2)} g/m³';
+    _hygrometer = w.rainLast3Hours?.toStringAsPrecision(2) ?? '-';
+    _humidity = '${w.humidity!.toStringAsPrecision(2)}%';
 
     List<Weather> w1 = await weather.fiveDayForecastByCityName(cityName);
     w1.removeWhere((element) => element.date!.day == DateTime.now().day);
@@ -80,7 +83,6 @@ class WeatherData {
         mintemp.add(element.tempMin!.celsius!.round());
         maxtemp.add(element.tempMax!.celsius!.round());
       }
-
       dayData['dayName'] =
           dayNames.elementAt(weatherData.elementAt(0).date!.weekday - 1);
       dayData['tempMin'] =
@@ -206,23 +208,51 @@ class WeatherData {
       children: [
         Text(day,
             style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold)),
-        SvgPicture.asset(
-          icon,
-          width: 60,
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  offset: Offset(0.0, 2.5),
+                  blurRadius: 3.0,
+                  color: Color.fromARGB(255, 0, 0, 0),
+                )
+              ],
+            )),
+        SimpleShadow(
+          opacity: 0.6,
+          offset: const Offset(0, 2),
+          child: SvgPicture.asset(
+            icon,
+            width: 60,
+          ),
         ),
         Text(maxTemperature,
             style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold)),
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  offset: Offset(0.0, 2.5),
+                  blurRadius: 3.0,
+                  color: Color.fromARGB(255, 0, 0, 0),
+                )
+              ],
+            )),
         Text(minTemperature,
             style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold)),
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  offset: Offset(0.0, 2.5),
+                  blurRadius: 3.0,
+                  color: Color.fromARGB(255, 0, 0, 0),
+                )
+              ],
+            )),
       ],
     );
   }
@@ -246,6 +276,8 @@ class WeatherData {
   get sunrise => _sunrise;
 
   get temperature => _temperature;
+
+  get hygrometer => _hygrometer;
 
   String get icon => _icon;
 
