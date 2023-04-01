@@ -21,28 +21,50 @@ class HomeAssistantConnection {
 
   Box<UserData> userData = Hive.box<UserData>('UserData');
 
-  final _channel = WebSocketChannel.connect(
-      Uri.parse('ws://192.168.0.154:8123/api/websocket'));
+  var _channel = WebSocketChannel.connect(Uri.parse(
+      'ws://${Hive.box('Settings').get('host').toString().substring(Hive.box('Settings').get('host').toString().indexOf('://') + 3)}/api/websocket'));
 
-  void initHomeAssistant() {
+  void initHomeAssistant() async {
     _channel.stream.listen((data) {
       Map<String, dynamic> dataMap = jsonDecode(data.toString());
       if (dataMap['type'] == 'event') {
-        DashboadData().updateData(dataMap);
+        DashboardData().updateData(dataMap);
       }
     });
   }
 
+  Future<dynamic> reconnect() {
+    _channel.sink.close();
+    _channel = WebSocketChannel.connect(Uri.parse(
+        'ws://${Hive.box('Settings').get('host').toString().substring(Hive.box('Settings').get('host').toString().indexOf('://') + 3)}/api/websocket'));
+    _channel.sink.add(
+        '{"type": "auth", "access_token": "${userData.values.first.token}"}');
+    initHomeAssistant();
+    _channel.sink.add(
+        '{"id": ${idNumber++}, "type": "subscribe_events", "event_type": "state_changed"}');
+    var channel = WebSocketChannel.connect(Uri.parse(
+        'ws://${Hive.box('Settings').get('host').toString().substring(Hive.box('Settings').get('host').toString().indexOf('://') + 3)}/api/websocket'));
+    channel.sink.add(
+        '{"type": "auth", "access_token": "${userData.values.first.token}"}');
+    int id = idNumber++;
+    channel.sink.add('{"type" : "get_states", "id" : $id}');
+    return channel.stream
+        .firstWhere((element) => jsonDecode(element)['id'] == id);
+  }
+
   Future<List> collectData(List query) async {
-    final channel = WebSocketChannel.connect(
-        Uri.parse('ws://192.168.0.154:8123/api/websocket'));
+    var host = Hive.box('Settings').get('host').toString();
+    final channel = WebSocketChannel.connect(Uri.parse(
+        'ws://${host.substring(host.indexOf('://') + 3)}/api/websocket'));
     channel.sink.add(
         '{"type": "auth", "access_token": "${userData.values.first.token}"}');
     for (var request in query) {
       channel.sink.add(request);
     }
-    _channel.sink.add(
-        '{"id": ${idNumber++}, "type": "subscribe_events", "event_type": "state_changed"}');
+    if (query.length == 1) {
+      _channel.sink.add(
+          '{"id": ${idNumber++}, "type": "subscribe_events", "event_type": "state_changed"}');
+    }
     int i = 0;
     var stream = channel.stream.asBroadcastStream();
     stream.listen((element) {
@@ -57,16 +79,4 @@ class HomeAssistantConnection {
       _channel.sink.add(request);
     }
   }
-
-  final smbConfig = SmbConfig(
-      'Admin', 'HP,segl.Ew,awsSTdzF.DJ,düh.', 'smb:192.168.0.154', '445');
-}
-
-class SmbConfig {
-  final String username;
-  final String password;
-  final String hostname;
-  final port;
-
-  SmbConfig(this.username, this.password, this.hostname, this.port);
 }

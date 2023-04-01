@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:smarthome/utils/DashboardData.dart';
+import 'package:smarthome/utils/weatherData.dart';
 
 //import 'package:flutter_local_auth_invisible/flutter_local_auth_invisible.dart';
 
@@ -100,6 +102,8 @@ class _BiometricAuthenticationState extends State<BiometricAuthentication> {
           localizedReason: 'Unlock the app.',
           options: const AuthenticationOptions(
               stickyAuth: true, biometricOnly: true, useErrorDialogs: false))) {
+        DashboardData().reconnect();
+        WeatherData().init();
         Navigator.pop(context);
       }
     }

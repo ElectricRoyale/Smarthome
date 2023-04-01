@@ -62,7 +62,7 @@ class WeatherData {
     _minTemperature = "${w.tempMin!.celsius!.toStringAsPrecision(2)}°";
     _maxTemperature = "${w.tempMax!.celsius!.toStringAsPrecision(2)}°";
     _temperatureFeelsLike =
-        '${w.tempFeelsLike!.celsius!.toStringAsPrecision(1)}°';
+        '${w.tempFeelsLike!.celsius!.toStringAsPrecision(2)}°';
     _wind = '${w.windSpeed!.toStringAsPrecision(2)} km/h';
     _hygrometer = w.rainLast3Hours?.toStringAsPrecision(2) ?? '-';
     _humidity = '${w.humidity!.toStringAsPrecision(2)}%';

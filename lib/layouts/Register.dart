@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive/hive.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smarthome/layouts/web_auth.dart';
@@ -39,6 +40,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
       emailErrorText = '',
       passwordErrorText = '',
       confirmPasswordErrorText = '';
+
   Image _profileImage = Image.asset(
     'assets/person.png',
     fit: BoxFit.cover,
@@ -64,14 +66,21 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
-  final authorizationEndpoint =
-      Uri.http('homeassistantPascal:8123', '/auth/authorize', {
-    "response_type": "code",
-    "redirect_uri": "https://homeassistantpascal:8123/auth-callback",
-    "client_id": "https://homeassistantpascal:8123/",
-  });
-  final clientId = 'https://homeassistantpascal:8123/';
-  final tokenEndpoint = Uri.parse("http://homeassistantPascal:8123/auth/token");
+  final authorizationEndpoint = Uri.http(
+      RegExp(r'(?<host>\d+\.\d+\.\d+\.\d+:\d+)')
+          .firstMatch(Hive.box('Settings').get('host'))!
+          .namedGroup('host')!,
+      '/auth/authorize',
+      {
+        "response_type": "code",
+        "redirect_uri": "${Hive.box('Settings').get('host')}/auth-callback",
+        "client_id":
+            'http://${RegExp(r'(?<host>\d+\.\d+\.\d+\.\d+:\d+)').firstMatch(Hive.box('Settings').get('host'))!.namedGroup('host')!}',
+      });
+  final clientId =
+      'http://${RegExp(r'(?<host>\d+\.\d+\.\d+\.\d+:\d+)').firstMatch(Hive.box('Settings').get('host'))!.namedGroup('host')!}';
+  final tokenEndpoint =
+      Uri.parse("${Hive.box('Settings').get('host')}/auth/token");
 
   Future<void> initConnectivity() async {
     ConnectivityResult result = ConnectivityResult.none;
@@ -123,6 +132,8 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    print(authorizationEndpoint);
+    print(clientId);
   }
 
   @override

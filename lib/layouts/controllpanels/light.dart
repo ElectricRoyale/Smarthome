@@ -1,4 +1,3 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -60,11 +59,6 @@ class LightState extends State<Light> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
         decoration: const BoxDecoration(
@@ -87,43 +81,39 @@ class LightState extends State<Light> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left: 40.0, top: 90.0),
-                      child: DropdownButtonHideUnderline(
-                          child: Theme(
-                        data: Theme.of(context).copyWith(
-                          canvasColor: const Color(0xff4a4b5e),
-                        ),
-                        child: DropdownButton2<String>(
-                            value: _value,
-                            customButton: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: const BoxDecoration(
-                                    color: Color.fromARGB(100, 145, 145, 145),
-                                    shape: BoxShape.circle),
-                                child: _dropdownValue),
-                            dropdownWidth: 145,
-                            isExpanded: false,
-                            style: const TextStyle(color: Colors.white),
-                            dropdownDecoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15)),
-                            items: <String>['none', 'colorloop']
-                                .map<DropdownMenuItem<String>>(
-                                  (item) => DropdownMenuItem<String>(
-                                    value: item,
-                                    child: Row(children: [
-                                      _dropdownItems[item]!,
-                                      addHorizontalSpace(10),
-                                      Text(item)
-                                    ]),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (value) {
-                              setState(() => _value = value!);
-                              HomeAssistantConnection().send([
-                                '{"id": "${idNumber++}", "type": "call_service", "domain" : "light", "service": "turn_on", "service_data" : {"effect" : "$_value"}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
-                              ]);
-                            }),
-                      )),
+                      child: PopupMenuButton(
+                          initialValue: _value,
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15))),
+                          itemBuilder: (context) => ['none', 'colorloop']
+                              .map(
+                                (item) => PopupMenuItem<String>(
+                                  value: item,
+                                  child: Row(children: [
+                                    _dropdownItems[item]!,
+                                    addHorizontalSpace(10),
+                                    Text(item,
+                                        style: const TextStyle(
+                                            color: Colors.white))
+                                  ]),
+                                ),
+                              )
+                              .toList(),
+                          onSelected: (value) {
+                            setState(() => _value = value);
+                            HomeAssistantConnection().send([
+                              '{"id": ${idNumber++}, "type": "call_service", "domain" : "light", "service": "turn_on", "service_data" : {"effect" : "$_value"}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
+                            ]);
+                          },
+                          color: const Color.fromARGB(255, 82, 82, 93),
+                          clipBehavior: Clip.hardEdge,
+                          icon: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: const BoxDecoration(
+                                  color: Color.fromARGB(100, 145, 145, 145),
+                                  shape: BoxShape.circle),
+                              child: _dropdownValue)),
                     ),
                     Align(
                       alignment: Alignment.center,
@@ -132,7 +122,7 @@ class LightState extends State<Light> {
                         onChanged: (color) => setState(() {}),
                         onEnded: (color) {
                           HomeAssistantConnection().send([
-                            '{"id": "${idNumber++}", "type": "call_service", "domain" : "light", "service": "turn_on", "service_data" : {"rgb_color" : [${color.red},${color.green},${color.blue}]}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
+                            '{"id": ${idNumber++}, "type": "call_service", "domain" : "light", "service": "turn_on", "service_data" : {"rgb_color" : [${color.red},${color.green},${color.blue}]}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
                           ]);
                           deviceItem!.attributes!.rgbColor = [
                             color.red,
@@ -157,8 +147,8 @@ class LightState extends State<Light> {
                             });
                             HomeAssistantConnection().send([
                               toogle
-                                  ? '{"id": "${idNumber++}", "type": "call_service", "domain": "light", "service": "turn_on", "target": {"entity_id": "${deviceItem!.entityId}"}}'
-                                  : '{"id": "${idNumber++}", "type": "call_service", "domain": "light", "service": "turn_off", "target": {"entity_id": "${deviceItem!.entityId}"}}'
+                                  ? '{"id": ${idNumber++}, "type": "call_service", "domain": "light", "service": "turn_on", "target": {"entity_id": "${deviceItem!.entityId}"}}'
+                                  : '{"id": ${idNumber++}, "type": "call_service", "domain": "light", "service": "turn_off", "target": {"entity_id": "${deviceItem!.entityId}"}}'
                             ]);
                           },
                           style: ElevatedButton.styleFrom(

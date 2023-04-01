@@ -4,6 +4,7 @@ import 'package:simple_shadow/simple_shadow.dart';
 
 import '../../utils/DashboardData.dart';
 import '../../utils/constants.dart';
+import '../../utils/globals.dart';
 import '../OverViewPage.dart';
 
 class DeviceGrid extends StatefulWidget {
@@ -14,6 +15,18 @@ class DeviceGrid extends StatefulWidget {
 }
 
 class DeviceGridState extends State<DeviceGrid> {
+  @override
+  void initState() {
+    super.initState();
+    deviceGridRefresh = () async => setState(() {});
+  }
+
+  @override
+  void dispose() {
+    deviceGridRefresh = () async {};
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -144,7 +157,7 @@ class DeviceGridState extends State<DeviceGrid> {
                       Padding(
                         padding: const EdgeInsets.only(top: 1),
                         child: Text(
-                          '${DashboadData().getEnergyList.elementAt(index)} kWh USED',
+                          '${DashboardData().getEnergyList.elementAt(index)} kWh USED',
                           style: const TextStyle(
                               fontSize: 12, color: Color(0xff919191)),
                         ),

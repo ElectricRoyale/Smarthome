@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -24,6 +25,7 @@ class WebAuth extends StatelessWidget {
           ..setNavigationDelegate(
             NavigationDelegate(
               onPageStarted: (String url) async {
+                print(Uri.parse(url).queryParameters);
                 Map<String, dynamic> body = {
                   "grant_type": "authorization_code",
                   "code": Uri.parse(url).queryParameters['code']!,
@@ -36,8 +38,9 @@ class WebAuth extends StatelessWidget {
                     },
                     encoding: Encoding.getByName("utf-8"));
 
-                final _channel = WebSocketChannel.connect(
-                    Uri.parse('ws://192.168.0.154:8123/api/websocket'));
+                String host = Hive.box('Settings').get('host');
+                final _channel = WebSocketChannel.connect(Uri.parse(
+                    'ws://${host.substring(host.indexOf('://') + 3)}/api/websocket'));
 
                 _channel.sink.add(
                     '{"type": "auth", "access_token": "${jsonDecode(result.body)['access_token']}"}');

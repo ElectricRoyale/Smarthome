@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hive/hive.dart';
 
 import 'globals.dart';
 
@@ -31,8 +32,12 @@ class ErrorDialog extends StatelessWidget {
   }
 
   void checkConnection() async {
-    await Socket.connect('192.168.0.154', 22,
-            timeout: const Duration(seconds: 1))
+    await Socket.connect(
+            Hive.box('Settings').get('host').toString().substring(
+                Hive.box('Settings').get('host').toString().indexOf('://') + 3,
+                Hive.box('Settings').get('host').toString().lastIndexOf(':')),
+            22,
+            timeout: const Duration(seconds: 2))
         .then((socket) {
       if (connectionError) {
         _popDialog();

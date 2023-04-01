@@ -7,7 +7,9 @@ import '../Model/UserData.dart';
 
 class MySQLHelper {
   var settings = ConnectionSettings(
-      host: '192.168.0.154',
+      host: Hive.box('Settings').get('host').toString().substring(
+          Hive.box('Settings').get('host').toString().indexOf('://') + 3,
+          Hive.box('Settings').get('host').toString().lastIndexOf(':')),
       port: 3306,
       user: 'pascal',
       password: 'Electric Royale',

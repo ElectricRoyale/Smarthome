@@ -101,7 +101,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             return const LoadingDialog();
           });
       if (await MySQLHelper().login(name, password)) {
-        await DashboadData().init();
+        await DashboardData().init();
         await WeatherData().isInitialized;
         errorDialog.dispose();
         if (!mounted) return;

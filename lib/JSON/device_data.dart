@@ -13,7 +13,6 @@ class DeviceData {
   String energy = 'Unavailable';
   String? icon;
   List<EnergySensorData> energyUsageData = [];
-  String? deviceClass;
 
   DeviceData(
       {this.entityId,

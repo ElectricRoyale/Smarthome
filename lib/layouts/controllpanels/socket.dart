@@ -59,8 +59,8 @@ class SocketState extends State<Socket> {
                     });
                     HomeAssistantConnection().send([
                       toogle
-                          ? '{"id": "${idNumber++}", "type": "call_service", "domain": "switch", "service": "turn_on", "target": {"entity_id": "${deviceItem!.entityId}"}}'
-                          : '{"id": "${idNumber++}", "type": "call_service", "domain": "switch", "service": "turn_off", "target": {"entity_id": "${deviceItem!.entityId}"}}'
+                          ? '{"id": ${idNumber++}, "type": "call_service", "domain": "switch", "service": "turn_on", "target": {"entity_id": "${deviceItem!.entityId}"}}'
+                          : '{"id": ${idNumber++}, "type": "call_service", "domain": "switch", "service": "turn_off", "target": {"entity_id": "${deviceItem!.entityId}"}}'
                     ]);
                   },
                   style: ElevatedButton.styleFrom(

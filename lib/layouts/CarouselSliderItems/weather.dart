@@ -7,14 +7,16 @@ import 'package:smarthome/utils/locationAddDialog.dart';
 import 'package:smarthome/utils/weatherData.dart';
 import 'package:weather/weather.dart';
 
+import '../../utils/globals.dart';
+
 class WeatherLayout extends StatefulWidget {
   const WeatherLayout({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _WeatherLayoutDesign();
+  State<StatefulWidget> createState() => WeatherLayoutDesign();
 }
 
-class _WeatherLayoutDesign extends State<WeatherLayout> {
+class WeatherLayoutDesign extends State<WeatherLayout> {
   TextEditingController temperatureWarmController = TextEditingController(),
       temperatureColdController = TextEditingController(),
       sunriseController = TextEditingController(),
@@ -42,13 +44,19 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
     hygrometerController.text = WeatherData().hygrometer != '-'
         ? '${WeatherData().hygrometer} mm'
         : WeatherData().hygrometer;
+    weatherRefresh = () async => setState(() {});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    weatherRefresh = () async {};
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(5),
-      width: double.infinity,
       decoration: BoxDecoration(
           color: const Color(0x12ffffff),
           borderRadius: BorderRadius.circular(20.0)),
@@ -135,7 +143,7 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
                 ]),
           ),
           Stack(
-            clipBehavior: Clip.none,
+            clipBehavior: Clip.hardEdge,
             children: [
               Positioned(
                 left: 10,
@@ -484,8 +492,8 @@ class _WeatherLayoutDesign extends State<WeatherLayout> {
                 .removeWhere((item) => item == element);
             Hive.box<WeatherLocations>('WeatherLocations')
                 .put('WeatherLocation', weatherLocations);
-            dropdownButton!.items =
-                getMenuItems(weatherLocations.weatherLocationList!);
+            /*dropdownButton!.items =
+                getMenuItems(weatherLocations.weatherLocationList!);*/
             setState(() {});
           },
           //secondaryBackground: rightDeleteIcon,

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 const BACKGROUND_START = Color(0xff454549);
 const BACKGROUND_END = Color(0xff12172c);
-const COLOR_ACCENT = Color(0xff790000);
+const COLOR_ACCENT = Color(0xffb40000);
 const COLOR_BLACK = Colors.black;
 const COLOR_WHITE = Colors.white;
 
@@ -28,8 +28,8 @@ const Map<String, List<List<Color>>> BackgroundRoomMap = {
     [Color(0xffb7b7b7), Color(0xff363636)]
   ],
   'bathroom.svg': [
-    [Color(0xffffdc00), Color(0xffff0000)],
-    [Color(0xff00ffbc), Color(0xff00ffff)]
+    [Color(0xffd394ff), Color(0xff8500ff)],
+    [Color(0xff00ff00), Color(0xff008800)]
   ],
   'livingroom.svg': [
     [Color(0xffffff00), Color(0xffff5000)],

@@ -99,17 +99,17 @@ class ShutterState extends State<Shutter> {
                           switch (index) {
                             case 1:
                               HomeAssistantConnection().send([
-                                '{"id": "${idNumber++}", "type": "call_service", "domain": "cover", "service": "open_cover", "target": {"entity_id": "${deviceItem!.entityId}"}}'
+                                '{"id": ${idNumber++}, "type": "call_service", "domain": "cover", "service": "open_cover", "target": {"entity_id": "${deviceItem!.entityId}"}}'
                               ]);
                               break;
                             case 2:
                               HomeAssistantConnection().send([
-                                '{"id": "${idNumber++}", "type": "call_service", "domain": "cover", "service": "stop_cover", "target": {"entity_id": "${deviceItem!.entityId}"}}'
+                                '{"id": ${idNumber++}, "type": "call_service", "domain": "cover", "service": "stop_cover", "target": {"entity_id": "${deviceItem!.entityId}"}}'
                               ]);
                               break;
                             case 3:
                               HomeAssistantConnection().send([
-                                '{"id": "${idNumber++}", "type": "call_service", "domain": "cover", "service": "close_cover", "target": {"entity_id": "${deviceItem!.entityId}"}}'
+                                '{"id": ${idNumber++}, "type": "call_service", "domain": "cover", "service": "close_cover", "target": {"entity_id": "${deviceItem!.entityId}"}}'
                               ]);
                               break;
                           }
@@ -131,7 +131,7 @@ class ShutterState extends State<Shutter> {
                               }),
                               onChangeEnd: (double value) =>
                                   HomeAssistantConnection().send([
-                                '{"id": "${idNumber++}", "type": "call_service", "domain" : "cover", "service": "set_cover_position", "service_data" : {"position" : "${100 - value.round()}"}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
+                                '{"id": ${idNumber++}, "type": "call_service", "domain" : "cover", "service": "set_cover_position", "service_data" : {"position" : "${100 - value.round()}"}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
                               ]),
                             ))),
                   ]),

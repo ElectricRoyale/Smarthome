@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dart_ping/dart_ping.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive/hive.dart';
 import 'package:smarthome/layouts/statistics.dart';
 
 import 'Network.dart';
@@ -48,7 +49,9 @@ class CustomAppBarLayout extends State<CustomAppBar>
   static int index = 0;
   static late AnimationController _animationController;
   SvgPicture signalStrength = SvgPicture.asset('assets/unavailable_signal.svg');
-  var ping = Ping('192.168.0.154');
+  var ping = Ping(Hive.box('Settings').get('host').toString().substring(
+      Hive.box('Settings').get('host').toString().indexOf('://') + 3,
+      Hive.box('Settings').get('host').toString().lastIndexOf(':')));
   late StreamSubscription<PingData> pingStream;
 
   void changeIndex(int index1) {
@@ -59,7 +62,8 @@ class CustomAppBarLayout extends State<CustomAppBar>
   }
 
   void resumeSignalChecker() {
-    ping = Ping('192.168.0.154');
+    var host = Hive.box('Settings').get('host').toString();
+    ping = Ping(host.substring(host.indexOf('://') + 3, host.lastIndexOf(':')));
     checkSignalStrength();
   }
 

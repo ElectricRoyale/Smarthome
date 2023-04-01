@@ -58,7 +58,7 @@ class RoomItem extends StatelessWidget {
                     height: 30,
                     margin: const EdgeInsets.only(left: 20, top: 20),
                     child: ScrollingText(
-                      text: "${roomItem['name']}",
+                      roomItem['name'],
                       maxWidth: width * 0.425,
                       velocity: 30,
                       startPointOffset: 1,

@@ -26,34 +26,34 @@ class OverViewPageState extends State<OverViewPage> {
     super.initState();
     switch (widget.name) {
       case 'LIGHT':
-        deviceData.addAll(DashboadData().getLights);
+        deviceData.addAll(DashboardData().getLights);
         break;
       case 'SOCKET':
-        deviceData.addAll(DashboadData().getSockets);
+        deviceData.addAll(DashboardData().getSockets);
         break;
       case 'ROLLER SHUTTER':
-        deviceData.addAll(DashboadData().getShutters);
+        deviceData.addAll(DashboardData().getShutters);
         break;
       case 'AIR CONDITIONER':
-        deviceData.addAll(DashboadData().getAirConditioners);
+        deviceData.addAll(DashboardData().getAirConditioners);
         break;
       case 'VIDEO DEVICES':
-        deviceData.addAll(DashboadData().getVideoDevices);
+        deviceData.addAll(DashboardData().getVideoDevices);
         break;
       case 'HEATING SYSTEM':
-        deviceData.addAll(DashboadData().getHeatingSystems);
+        deviceData.addAll(DashboardData().getHeatingSystems);
         break;
       case 'KITCHEN TOOLS':
-        deviceData.addAll(DashboadData().getKitchenTools);
+        deviceData.addAll(DashboardData().getKitchenTools);
         break;
       case 'WASHING MACHINE':
-        deviceData.addAll(DashboadData().getWashingMachines);
+        deviceData.addAll(DashboardData().getWashingMachines);
         break;
       case 'IRRIGATION':
-        deviceData.addAll(DashboadData().getIrrigations);
+        deviceData.addAll(DashboardData().getIrrigations);
         break;
       case 'ALL DEVICES':
-        deviceData.addAll(DashboadData().getAllDevices);
+        deviceData.addAll(DashboardData().getAllDevices);
         break;
     }
   }
@@ -139,10 +139,7 @@ class OverViewPageState extends State<OverViewPage> {
                         child: ScrollingText(
                           velocity: 30,
                           startPointOffset: 3,
-                          text: (deviceData
-                              .elementAt(index)
-                              .attributes!
-                              .friendlyName)!,
+                          deviceData.elementAt(index).attributes!.friendlyName!,
                           maxWidth: 170,
                           style: const TextStyle(
                             color: Colors.white,
@@ -166,7 +163,7 @@ class OverViewPageState extends State<OverViewPage> {
                         padding: const EdgeInsets.only(left: 10.0),
                         child: Text(
                           deviceData.elementAt(index).energy != 'Unavailable'
-                              ? '${deviceData.elementAt(index).energy} kWh USED'
+                              ? '${double.parse(deviceData.elementAt(index).energy).toStringAsPrecision(2)} kWh USED'
                               : deviceData.elementAt(index).energy,
                           style: const TextStyle(
                               color: Colors.grey,

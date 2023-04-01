@@ -5,15 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:smarthome/JSON/energy_sensor_data.dart';
-import 'package:smarthome/utils/Home_Assistant_Connection.dart';
-import 'package:smarthome/utils/globals.dart';
 import 'package:smarthome/utils/widget_functions.dart';
 
 import '../JSON/device_data.dart';
+import '../JSON/energy_sensor_data.dart';
 import '../Model/UserData.dart';
+import 'Home_Assistant_Connection.dart';
+import 'globals.dart';
+import 'logbook_item.dart';
 
-class DashboadData {
+class DashboardData {
   final List<DeviceData> devices = [],
       _lights = [],
       _sockets = [],
@@ -36,7 +37,10 @@ class DashboadData {
       _washingMachineEnergy = 0,
       _irrigationEnergy = 0;
 
+  DeviceData? _spotify, _spotifySubstitute;
   final List<String> _energyList = List.filled(9, '0.0');
+
+  List<LogbookItem> _logbook = [];
 
   final List _roomList = [];
   final Map<String, List<DeviceData>> _roomDevicesMap = {};
@@ -45,38 +49,44 @@ class DashboadData {
 
   BuildContext? context;
 
-  static final DashboadData _instance = DashboadData._internal();
+  static final DashboardData _instance = DashboardData._internal();
 
-  factory DashboadData() => _instance;
+  factory DashboardData() => _instance;
 
-  DashboadData._internal() {
+  DashboardData._internal() {
     init();
   }
 
   Future<void> init() async {
     initialisation = true;
     List<int> idList = [];
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
       idList.add(idNumber++);
     }
     ids = idList;
-    DateTime dateTime = DateTime.now();
     List responses = await HomeAssistantConnection().collectData([
-      '{"type" : "config/area_registry/list", "id" : "${idList.elementAt(0)}"}',
-      '{"type" : "config/entity_registry/list", "id" : "${idList.elementAt(1)}"}',
-      '{"type" : "get_states", "id" : "${idList.elementAt(2)}"}',
-      '{"id" : "${idList.elementAt(3)}","type" : "recorder/statistics_during_period", "period" : "hour", "start_time" : "${DateTime(dateTime.year, dateTime.month, dateTime.day - 1, dateTime.hour)}"}',
+      '{"type" : "config/area_registry/list", "id" : ${idList.elementAt(0)}}',
+      '{"type" : "config/entity_registry/list", "id" : ${idList.elementAt(1)}}',
+      '{"type" : "get_states", "id" : ${idList.elementAt(2)}}',
     ]);
     List roomData = jsonDecode(responses[2])["result"];
     List roomDevices = jsonDecode(responses[3])["result"];
     List deviceData = jsonDecode(responses[4])["result"];
-    Map<String, dynamic> energySensorResponseData =
-        jsonDecode(responses[5])["result"];
-    allDevices.clear();
+    List<String> sensors = [];
     devices.clear();
     for (var element in deviceData) {
       devices.add(DeviceData.fromJson(element));
     }
+    devices
+        .where((element) =>
+            element.entityId!.startsWith('sensor.') &&
+            element.entityId!.endsWith('_energy'))
+        .forEach((deviceData) => sensors.add(deviceData.entityId!));
+    List historyResponse = await HomeAssistantConnection().collectData([
+      '{"type" : "recorder/statistics_during_period", "id" : 1, "period" : "hour", "start_time" : "${DateTime.now().subtract(const Duration(days: 1))}", "statistic_ids": ["${sensors.join('", "')}"]}'
+    ]);
+    Map<String, dynamic> energySensorResponseData =
+        jsonDecode(historyResponse[2])["result"];
     _roomDevicesMap.clear();
     for (var roomName in roomData) {
       List<DeviceData> enddevice = [];
@@ -88,89 +98,88 @@ class DashboadData {
         try {
           DeviceData deviceData =
               devices.firstWhere((id) => id.entityId == device["entity_id"]);
-          deviceData.deviceClass =
-              device['icon'].toString().replaceAll('mdi:', '');
           enddevice.add(deviceData);
         } catch (_) {}
       });
       _roomDevicesMap[roomName["area_id"]] = enddevice;
     }
 
+    allDevices.clear();
+
     _lights.clear();
-    _lights.addAll(
-        devices.where((element) => element.deviceClass == ('lightbulb')));
+    _lights.addAll(devices
+        .where((element) => element.attributes!.deviceClass == ('light')));
     for (var element in _lights) {
       element.icon = 'light.svg';
     }
     allDevices.addAll(_lights);
     _sockets.clear();
-    _sockets.addAll(
-        devices.where((element) => element.deviceClass == ('power-socket-de')));
+    _sockets.addAll(devices
+        .where((element) => element.attributes!.deviceClass == ('socket')));
     for (var element in _sockets) {
       element.icon = 'socket.svg';
     }
     allDevices.addAll(_sockets);
     _shutters.clear();
-    _shutters.addAll(
-        devices.where((element) => element.deviceClass == ('window-shutter')));
+    _shutters.addAll(devices
+        .where((element) => element.attributes!.deviceClass == ('shutter')));
     for (var element in _shutters) {
       element.icon = 'shutter.svg';
     }
     allDevices.addAll(_shutters);
     _airConditioners.clear();
-    _airConditioners
-        .addAll(devices.where((element) => element.deviceClass == ('fan')));
+    _airConditioners.addAll(
+        devices.where((element) => element.attributes!.deviceClass == ('fan')));
     for (var element in _airConditioners) {
       element.icon = 'Air_conditioner.svg';
     }
     allDevices.addAll(_airConditioners);
     _videoDevices.clear();
-    _videoDevices.addAll(
-        devices.where((element) => element.deviceClass == ('television')));
+    _videoDevices.addAll(devices.where(
+        (element) => element.attributes!.deviceClass == ('media_player')));
     for (var element in _videoDevices) {
       element.icon = 'television.svg';
       break;
     }
     allDevices.addAll(_videoDevices);
     _heatingSystems.clear();
-    _heatingSystems
-        .addAll(devices.where((element) => element.deviceClass == ('hvac')));
+    _heatingSystems.addAll(devices.where(
+        (element) => element.attributes!.deviceClass == ('heating_system')));
     for (var element in _heatingSystems) {
       element.icon = 'heating_system.svg';
     }
     allDevices.addAll(_heatingSystems);
+
     _kitchenTools.clear();
-    _kitchenTools
-        .addAll(devices.where((element) => element.deviceClass == ('kitchen')));
+    _kitchenTools.addAll(devices
+        .where((element) => element.attributes!.deviceClass == ('kitchen')));
     for (var element in _kitchenTools) {
       element.icon = 'kitchen_tools.svg';
     }
     allDevices.addAll(_kitchenTools);
     _washingMachines.clear();
-    _washingMachines.addAll(
-        devices.where((element) => element.deviceClass == ('washing_machine')));
+    _washingMachines.addAll(devices.where(
+        (element) => element.attributes!.deviceClass == ('washing_machine')));
     for (var element in _washingMachines) {
       element.icon = 'washing_machine.svg';
     }
     allDevices.addAll(_washingMachines);
     _irrigation.clear();
-    _irrigation.addAll(
-        devices.where((element) => element.deviceClass == ('irrigation')));
+    _irrigation.addAll(devices
+        .where((element) => element.attributes!.deviceClass == ('irrigation')));
     for (var element in _irrigation) {
       element.icon = 'garden.svg';
     }
-    allDevices.addAll(_heatingSystems);
+    allDevices.addAll(_washingMachines);
 
     Map<String, List<EnergySensorData>> energySensorData = {};
     energySensorResponseData.forEach((key, value) {
       List<EnergySensorData> list = [];
-      if (key.endsWith('energy')) {
-        value.forEach((v) {
-          list.add(EnergySensorData.fromJson(v));
-        });
-        energySensorData[
-            key.substring(key.indexOf('.') + 1, key.indexOf('_energy'))] = list;
-      }
+      value.forEach((v) {
+        list.add(EnergySensorData.fromJson(v));
+      });
+      energySensorData[
+          key.substring(key.indexOf('.') + 1, key.indexOf('_energy'))] = list;
     });
     energySensorData.forEach((key, value) {
       allDevices
@@ -222,47 +231,103 @@ class DashboadData {
     Box<UserData> userDataBox = Hive.box<UserData>('UserData');
     UserData userData = userDataBox.getAt(0)!;
     Response imageResponse = await get(Uri.parse(
-        'http://192.168.0.154:8123${devices.singleWhere((element) => element.attributes!.friendlyName == userData.name).attributes!.entityPicture!}'));
+        '${Hive.box('Settings').get('host')}${devices.singleWhere((element) => element.attributes!.friendlyName == userData.name).attributes!.entityPicture!}'));
     userData.profileImage = imageResponse.bodyBytes;
     userDataBox.putAt(0, userData);
 
-    initialisation = false;
+    Response errorLog = await get(
+        Uri.parse('${Hive.box('Settings').get('host')}/api/error_log'),
+        headers: {
+          'Authorization':
+              'Bearer ${Hive.box<UserData>('UserData').values.first.token}',
+          'Content-Type': 'application/json'
+        });
+    RegExp regExp = RegExp(
+        r'(?<timestamp>\d+-\d+-\d+ \d+:\d+:\d+\.\d+) (?<status>.+) \(.+\) \[.*?\] (?<message>.+)',
+        multiLine: true);
+    regExp.allMatches(utf8.decode(errorLog.bodyBytes)).forEach((element) {
+      _logbook.add(LogbookItem(
+          DateTime.parse('${element.namedGroup('timestamp')!}+00:00').toUtc(),
+          element.namedGroup('status')!,
+          element.namedGroup('message')!));
+    });
+
+    Response stateLog = await get(
+        Uri.parse(
+            '${Hive.box('Settings').get('host')}/api/logbook/${DateTime.now().subtract(const Duration(hours: 3))}?end_time=${DateTime.now()}'),
+        headers: {
+          'Authorization':
+              'Bearer ${Hive.box<UserData>('UserData').values.first.token}',
+          'Content-Type': 'application/json'
+        });
+    List logs = jsonDecode(utf8.decode(stateLog.bodyBytes));
+    for (var value in logs) {
+      _logbook.add(LogbookItem(
+          DateTime.parse(value['when']).toUtc(),
+          'INFO',
+          value['state'] != null
+              ? (value['name'] + ' changed state to ' + value['state'])
+              : (value['name'] + value['message'])));
+    }
+    _logbook.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+    try {
+      _spotify = devices.firstWhere(
+          (element) => element.entityId!.contains('media_player.spotify'));
+      _spotifySubstitute = devices.firstWhere(
+          (element) => element.entityId!.contains('update.spotify'));
+    } catch (_) {}
+
     _isInitialized = Future.value(true);
   }
 
-  void updateData(Map<String, dynamic> response) {
+  void updateData(Map<String, dynamic> response) async {
     try {
       DeviceData deviceData =
           DeviceData.fromJson(response['event']['data']['new_state']);
-      allDevices
-          .elementAt(allDevices
+      devices
+          .elementAt(devices
               .indexWhere((element) => element.entityId == deviceData.entityId))
           .update(deviceData);
-      if (!deviceData.entityId!.contains('sensor')) onUpdate!.call();
+      refresh();
+      if (!deviceData.entityId!.contains('sensor.')) onUpdate!.call();
     } catch (_) {}
+  }
+
+  void reconnect() async {
+    List updateData =
+        jsonDecode(await HomeAssistantConnection().reconnect())['result'];
+    for (var data in updateData) {
+      DeviceData deviceData = DeviceData.fromJson(data);
+      devices
+          .elementAt(devices
+              .indexWhere((element) => element.entityId == deviceData.entityId))
+          .update(deviceData);
+    }
+    refresh();
   }
 
   List<Widget> roomDeviceIcons(String roomName) {
     List<Widget> items = [];
     for (var device in _roomDevicesMap[roomName]!) {
       IconData icon;
-      switch (device.deviceClass) {
-        case 'lightbulb':
+      switch (device.attributes!.deviceClass) {
+        case 'light':
           icon = Icons.lightbulb_outlined;
           break;
-        case 'power-socket-de':
+        case 'socket':
           icon = MdiIcons.powerSocketDe;
           break;
-        case 'window-shutter':
+        case 'shutter':
           icon = MdiIcons.windowShutter;
           break;
         case 'fan':
           icon = MdiIcons.airConditioner;
           break;
-        case 'television':
+        case 'media_player':
           icon = Icons.tv_rounded;
           break;
-        case 'hvac':
+        case 'heating_system':
           icon = Icons.hvac_outlined;
           break;
         case 'kitchen':
@@ -324,7 +389,17 @@ class DashboadData {
 
   List<DeviceData> get getAllDevices => allDevices;
 
+  DeviceData? get getSpotify => _spotify;
+
+  DeviceData? get getSpotifySubstitute => _spotifySubstitute;
+
   List get getRooms => _roomList;
 
   Future get isInitialized => _isInitialized!;
+
+  List<LogbookItem> get getLogbook => _logbook;
+
+  set logbook(List<LogbookItem> value) {
+    _logbook = value;
+  }
 }

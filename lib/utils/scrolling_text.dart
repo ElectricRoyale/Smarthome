@@ -53,9 +53,9 @@ class IntegralCurve extends Curve {
 }
 
 class ScrollingText extends StatefulWidget {
-  ScrollingText({
+  ScrollingText(
+    this.text, {
     Key? key,
-    required this.text,
     this.style,
     this.textScaleFactor,
     this.textDirection = TextDirection.ltr,

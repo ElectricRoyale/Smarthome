@@ -105,7 +105,7 @@ class _CircleColorPickerState extends State<CircleColorPicker>
                   brightness: widget.brightness,
                   onEnded: () {
                     HomeAssistantConnection().send([
-                      '{"id": "${idNumber++}", "type": "call_service", "domain" : "light", "service": "turn_on", "service_data" : {"brightness_pct" : "${brightnessValue.round()}"}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
+                      '{"id": ${idNumber++}, "type": "call_service", "domain" : "light", "service": "turn_on", "service_data" : {"brightness_pct" : "${brightnessValue.round()}"}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
                     ]);
                   },
                 ),

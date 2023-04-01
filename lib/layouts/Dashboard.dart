@@ -1,6 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:smarthome/layouts/CarouselSliderItems/deviceGrid.dart';
 import 'package:smarthome/layouts/RoomItem.dart';
 import 'package:smarthome/utils/DashboardData.dart';
 import 'package:smarthome/utils/weatherData.dart';
@@ -8,6 +7,10 @@ import 'package:smarthome/utils/widget_functions.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../my_icons_icons.dart';
+import 'CarouselSliderItems/Spotify_controll.dart';
+import 'CarouselSliderItems/deviceGrid.dart';
+import 'CarouselSliderItems/logbook.dart';
+import 'CarouselSliderItems/media.dart';
 import 'CarouselSliderItems/weather.dart';
 
 class Dashboard extends StatefulWidget {
@@ -18,8 +21,11 @@ class Dashboard extends StatefulWidget {
 }
 
 class Layout extends State<Dashboard> {
-  DeviceGrid deviceGrid = const DeviceGrid();
-  WeatherLayout weather = const WeatherLayout();
+  LogbookLayout logbook = LogbookLayout();
+  MediaLayout media = MediaLayout();
+  DeviceGrid deviceGrid = DeviceGrid();
+  WeatherLayout weather = WeatherLayout();
+  SpotifyControllLayout spotifyControll = SpotifyControllLayout();
 
   final List rooms = [
     {'name': 'add'}
@@ -42,9 +48,9 @@ class Layout extends State<Dashboard> {
   }
 
   void setData() async {
-    await DashboadData().isInitialized;
+    await DashboardData().isInitialized;
     await WeatherData().isInitialized;
-    rooms.insertAll(0, DashboadData().getRooms);
+    rooms.insertAll(0, DashboardData().getRooms);
     setState(() {});
   }
 
@@ -53,7 +59,7 @@ class Layout extends State<Dashboard> {
     setData();
     super.initState();
     Future.delayed(const Duration(hours: 1), () async {
-      await DashboadData().init();
+      await DashboardData().init();
       await WeatherData().init();
       setState(() {});
     });
@@ -96,31 +102,18 @@ class Layout extends State<Dashboard> {
             child: CarouselSlider(
                 options: CarouselOptions(
                     height: constraints.maxHeight * 0.55,
+                    enableInfiniteScroll: false,
+                    scrollPhysics: const BouncingScrollPhysics(),
                     viewportFraction: 1,
                     initialPage: 2,
                     onPageChanged: (index, reason) =>
                         setState(() => activeIndex = index)),
                 items: [
-                  Container(
-                    margin: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                        color: const Color(0x12ffffff),
-                        borderRadius: BorderRadius.circular(20.0)),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                        color: const Color(0x12ffffff),
-                        borderRadius: BorderRadius.circular(20.0)),
-                  ),
+                  logbook,
+                  media,
                   deviceGrid,
                   weather,
-                  Container(
-                    margin: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                        color: const Color(0x12ffffff),
-                        borderRadius: BorderRadius.circular(20.0)),
-                  )
+                  if (DashboardData().getSpotify != null) spotifyControll,
                 ]),
           ),
           addVerticalSpace(6),

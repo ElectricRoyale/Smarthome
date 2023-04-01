@@ -10,6 +10,20 @@ bool initialisation = false;
 List<int> ids = [];
 Function? onUpdate;
 
+Function logbookRefresh = () async {};
+Function mediaRefresh = () async {};
+Function deviceGridRefresh = () async {};
+Function weatherRefresh = () async {};
+Function spotifyControllRefresh = () async {};
+
+void refresh() {
+  logbookRefresh.call();
+  mediaRefresh.call();
+  deviceGridRefresh.call();
+  weatherRefresh.call();
+  spotifyControllRefresh.call();
+}
+
 class EnergyData {
   final double? energy;
   final DateTime time;
