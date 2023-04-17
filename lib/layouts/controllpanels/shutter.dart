@@ -1,5 +1,6 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../utils/Home_Assistant_Connection.dart';
 import '../../utils/constants.dart';
@@ -116,24 +117,66 @@ class ShutterState extends State<Shutter> {
                         },
                       ),
                     ),
-                    RotatedBox(
-                        quarterTurns: 1,
-                        child: SliderTheme(
-                            data: const SliderThemeData(),
-                            child: Slider(
-                              max: 100.0,
-                              value: 100 -
-                                  deviceItem!.attributes!.currentPosition!
-                                      .toDouble(),
-                              onChanged: (double value) => setState(() {
-                                deviceItem!.attributes!.currentPosition =
-                                    100 - value.round();
-                              }),
-                              onChangeEnd: (double value) =>
-                                  HomeAssistantConnection().send([
-                                '{"id": ${idNumber++}, "type": "call_service", "domain" : "cover", "service": "set_cover_position", "service_data" : {"position" : "${100 - value.round()}"}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
-                              ]),
-                            ))),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      child: Stack(alignment: Alignment.center, children: [
+                        SvgPicture.asset(
+                          'assets/window.svg',
+                          width: MediaQuery.of(context).size.width * 0.2,
+                          height: MediaQuery.of(context).size.height * 0.2,
+                          fit: BoxFit.scaleDown,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 50.0, left: 2.0, right: 2.0, bottom: 30.0),
+                          child: Container(
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.vertical(
+                                    bottom: Radius.circular(12))),
+                            clipBehavior: Clip.hardEdge,
+                            child: RotatedBox(
+                              quarterTurns: 1,
+                              child: SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                  trackHeight: 120,
+                                  thumbShape: SliderComponentShape.noOverlay,
+                                  overlayShape: SliderComponentShape.noOverlay,
+                                  inactiveTrackColor: Colors.transparent,
+                                  valueIndicatorShape:
+                                      SliderComponentShape.noOverlay,
+                                  trackShape:
+                                      const GradientRectangularSliderTrackShape(),
+                                ),
+                                child: Slider(
+                                  max: 100.0,
+                                  min: 0,
+                                  value: 100 -
+                                      deviceItem!.attributes!.currentPosition!
+                                          .toDouble(),
+                                  onChanged: (double value) => setState(() {
+                                    deviceItem!.attributes!.currentPosition =
+                                        100 - value.round();
+                                  }),
+                                  onChangeEnd: (double value) =>
+                                      HomeAssistantConnection().send([
+                                    '{"id": ${idNumber++}, "type": "call_service", "domain" : "cover", "service": "set_cover_position", "service_data" : {"position" : "${100 - value.round()}"}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
+                                  ]),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            '${deviceItem!.attributes!.currentPosition}%',
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ]),
+                    ),
                   ]),
             ),
             const Divider(
@@ -151,5 +194,201 @@ class ShutterState extends State<Shutter> {
         ),
       ),
     );
+  }
+}
+
+class GradientRectangularSliderTrackShape extends SliderTrackShape
+    with BaseSliderTrackShape {
+  /// Creates a slider track that draws 2 rectangles.
+  const GradientRectangularSliderTrackShape();
+
+  @override
+  void paint(
+    PaintingContext context,
+    Offset offset, {
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required Animation<double> enableAnimation,
+    required TextDirection textDirection,
+    required Offset thumbCenter,
+    Offset? secondaryOffset,
+    bool isDiscrete = false,
+    bool isEnabled = false,
+  }) {
+    assert(context != null);
+    assert(offset != null);
+    assert(parentBox != null);
+    assert(sliderTheme != null);
+    assert(sliderTheme.disabledActiveTrackColor != null);
+    assert(sliderTheme.disabledInactiveTrackColor != null);
+    assert(sliderTheme.activeTrackColor != null);
+    assert(sliderTheme.inactiveTrackColor != null);
+    assert(sliderTheme.thumbShape != null);
+    assert(enableAnimation != null);
+    assert(textDirection != null);
+    assert(thumbCenter != null);
+    assert(isEnabled != null);
+    assert(isDiscrete != null);
+    // If the slider [SliderThemeData.trackHeight] is less than or equal to 0,
+    // then it makes no difference whether the track is painted or not,
+    // therefore the painting can be a no-op.
+    if (sliderTheme.trackHeight! <= 0) {
+      return;
+    }
+
+    LinearGradient gradient = const LinearGradient(colors: [
+      Color(0xffc3834d),
+      Color(0xffc3834d),
+      Color(0xff7a5230),
+      Color(0xff7a5230),
+      Color(0xffc3834d),
+      Color(0xffc3834d),
+      Color(0xff7a5230),
+      Color(0xff7a5230),
+      Color(0xffc3834d),
+      Color(0xffc3834d),
+      Color(0xff7a5230),
+      Color(0xff7a5230),
+      Color(0xffc3834d),
+      Color(0xffc3834d),
+      Color(0xff7a5230),
+      Color(0xff7a5230),
+      Color(0xffc3834d),
+      Color(0xffc3834d),
+      Color(0xff7a5230),
+      Color(0xff7a5230),
+      Color(0xffc3834d),
+      Color(0xffc3834d),
+      Color(0xff7a5230),
+      Color(0xff7a5230),
+      Color(0xffc3834d),
+      Color(0xffc3834d),
+      Color(0xff7a5230),
+      Color(0xff7a5230),
+      Color(0xffc3834d),
+      Color(0xffc3834d),
+      Color(0xff7a5230),
+      Color(0xff7a5230),
+      Color(0xffc3834d),
+      Color(0xffc3834d),
+      Color(0xff7a5230),
+      Color(0xff7a5230),
+      Color(0xffc3834d),
+      Color(0xffc3834d),
+      Color(0xff7a5230),
+      Color(0xff7a5230),
+    ], stops: [
+      0.0,
+      0.05,
+      0.05,
+      0.1,
+      0.1,
+      0.15,
+      0.15,
+      0.2,
+      0.2,
+      0.25,
+      0.25,
+      0.3,
+      0.3,
+      0.35,
+      0.35,
+      0.4,
+      0.4,
+      0.45,
+      0.45,
+      0.5,
+      0.5,
+      0.55,
+      0.55,
+      0.6,
+      0.6,
+      0.65,
+      0.65,
+      0.7,
+      0.7,
+      0.75,
+      0.75,
+      0.8,
+      0.8,
+      0.85,
+      0.85,
+      0.9,
+      0.9,
+      0.95,
+      0.95,
+      1
+    ]);
+
+    final Rect trackRect = getPreferredRect(
+      parentBox: parentBox,
+      offset: offset,
+      sliderTheme: sliderTheme,
+      isEnabled: isEnabled,
+      isDiscrete: isDiscrete,
+    );
+
+    // Assign the track segment paints, which are left: active, right: inactive,
+    // but reversed for right to left text.
+    final ColorTween activeTrackColorTween = ColorTween(
+        begin: sliderTheme.disabledActiveTrackColor,
+        end: sliderTheme.activeTrackColor);
+    final ColorTween inactiveTrackColorTween = ColorTween(
+        begin: sliderTheme.disabledInactiveTrackColor,
+        end: sliderTheme.inactiveTrackColor);
+    final Paint activePaint = Paint()
+      ..shader = gradient.createShader(trackRect)
+      ..color = activeTrackColorTween.evaluate(enableAnimation)!;
+    final Paint inactivePaint = Paint()
+      ..color = inactiveTrackColorTween.evaluate(enableAnimation)!;
+    final Paint leftTrackPaint;
+    final Paint rightTrackPaint;
+    switch (textDirection) {
+      case TextDirection.ltr:
+        leftTrackPaint = activePaint;
+        rightTrackPaint = inactivePaint;
+        break;
+      case TextDirection.rtl:
+        leftTrackPaint = inactivePaint;
+        rightTrackPaint = activePaint;
+        break;
+    }
+
+    final Rect leftTrackSegment = Rect.fromLTRB(
+        trackRect.left, trackRect.top, thumbCenter.dx, trackRect.bottom);
+    if (!leftTrackSegment.isEmpty) {
+      context.canvas.drawRect(leftTrackSegment, leftTrackPaint);
+    }
+    final Rect rightTrackSegment = Rect.fromLTRB(
+        thumbCenter.dx, trackRect.top, trackRect.right, trackRect.bottom);
+    if (!rightTrackSegment.isEmpty) {
+      context.canvas.drawRect(rightTrackSegment, rightTrackPaint);
+    }
+
+    final bool showSecondaryTrack = (secondaryOffset != null) &&
+        ((textDirection == TextDirection.ltr)
+            ? (secondaryOffset.dx > thumbCenter.dx)
+            : (secondaryOffset.dx < thumbCenter.dx));
+
+    if (showSecondaryTrack) {
+      final ColorTween secondaryTrackColorTween = ColorTween(
+          begin: sliderTheme.disabledSecondaryActiveTrackColor,
+          end: sliderTheme.secondaryActiveTrackColor);
+      final Paint secondaryTrackPaint = Paint()
+        ..color = secondaryTrackColorTween.evaluate(enableAnimation)!;
+      final Rect secondaryTrackSegment = Rect.fromLTRB(
+        (textDirection == TextDirection.ltr)
+            ? thumbCenter.dx
+            : secondaryOffset.dx,
+        trackRect.top,
+        (textDirection == TextDirection.ltr)
+            ? secondaryOffset.dx
+            : thumbCenter.dx,
+        trackRect.bottom,
+      );
+      if (!secondaryTrackSegment.isEmpty) {
+        context.canvas.drawRect(secondaryTrackSegment, secondaryTrackPaint);
+      }
+    }
   }
 }

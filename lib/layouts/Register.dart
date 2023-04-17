@@ -16,6 +16,7 @@ import 'package:smarthome/layouts/web_auth.dart';
 import 'package:smarthome/utils/MySQLHelper.dart';
 import 'package:sprintf/sprintf.dart';
 
+import '../generated/l10n.dart';
 import '../utils/LoadingScreen.dart';
 import '../utils/constants.dart';
 import 'Login.dart';
@@ -46,7 +47,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
     fit: BoxFit.cover,
   );
   late XFile _pickedImage;
-  Uint8List? _profileImageInster;
+  //Uint8List? _profileImageInster;
   DateTime birthday = DateTime(2000, 1, 1);
   final _nameController = TextEditingController(),
       _emailController = TextEditingController(),
@@ -106,22 +107,19 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
         if (connectionError) {
           Navigator.pop(context);
         }
-        connectionErrorDialog(
-            'No internet connection! Please turn on your wifi, for connecting to server!');
+        connectionError = false;
         break;
       case ConnectivityResult.none:
         if (connectionError) {
           Navigator.pop(context);
         }
-        connectionErrorDialog(
-            'No internet connection! Please check your wifi, for connecting to server!');
+        connectionErrorDialog(S.of(context).connectionerrorMessage);
         break;
       default:
         if (connectionError) {
           Navigator.pop(context);
         }
-        connectionErrorDialog(
-            'No internet connection! Please check your wifi, for connecting to server!');
+        connectionErrorDialog(S.of(context).connectionerrorMessage);
         break;
     }
   }
@@ -132,8 +130,6 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
-    print(authorizationEndpoint);
-    print(clientId);
   }
 
   @override
@@ -148,6 +144,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final delegate = S.of(context);
     return Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -165,13 +162,12 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
             backgroundColor: Colors.transparent,
             body: Column(
               children: [
-                const DelayedDisplay(
-                    delay: Duration(),
+                DelayedDisplay(
                     child: Padding(
-                        padding: EdgeInsets.only(top: 130),
+                        padding: const EdgeInsets.only(top: 130),
                         child: Text(
-                          'Register',
-                          style: TextStyle(
+                          delegate.titleRegister,
+                          style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w900,
                               fontSize: 36),
@@ -221,9 +217,9 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                               ),
                                               iconSize: 70,
                                             ),
-                                            const Text(
-                                              'Gallery',
-                                              style: TextStyle(
+                                            Text(
+                                              delegate.gallery,
+                                              style: const TextStyle(
                                                   color: Colors.white),
                                             )
                                           ]),
@@ -247,9 +243,9 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                               ),
                                               iconSize: 70,
                                             ),
-                                            const Text(
-                                              'Camera',
-                                              style: TextStyle(
+                                            Text(
+                                              delegate.camera,
+                                              style: const TextStyle(
                                                   color: Colors.white),
                                             )
                                           ]),
@@ -290,7 +286,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                 borderSide:
                                     BorderSide(color: Colors.white, width: 2.0),
                               ),
-                              hintText: 'First name, Last name',
+                              hintText: delegate.registerFieldHintName,
                               hintStyle: const TextStyle(color: Colors.white),
                               prefixIcon: const Icon(
                                 Icons.person,
@@ -306,12 +302,6 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                 borderSide:
                                     BorderSide(color: Colors.red, width: 2.0),
                               ),
-                            ),
-                            toolbarOptions: const ToolbarOptions(
-                              copy: true,
-                              cut: true,
-                              paste: true,
-                              selectAll: true,
                             ),
                             style: const TextStyle(
                                 color: Colors.white,
@@ -346,7 +336,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                 borderSide:
                                     BorderSide(color: Colors.white, width: 2.0),
                               ),
-                              hintText: 'E-Mail Address',
+                              hintText: delegate.registerFieldHintEmail,
                               hintStyle: const TextStyle(color: Colors.white),
                               prefixIcon: const Icon(
                                 Icons.person,
@@ -364,12 +354,6 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                               ),
                             ),
                             keyboardType: TextInputType.emailAddress,
-                            toolbarOptions: const ToolbarOptions(
-                              copy: true,
-                              cut: true,
-                              paste: true,
-                              selectAll: true,
-                            ),
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -434,13 +418,13 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                   imageHeader: const AssetImage(
                                       'assets/datepickerbackground.png'),
                                   customWeekDays: [
-                                    "SUN",
-                                    "MON",
-                                    "TUE",
-                                    "WED",
-                                    "THU",
-                                    "FRI",
-                                    "SAT"
+                                    delegate.sun,
+                                    delegate.mon,
+                                    delegate.tue,
+                                    delegate.wed,
+                                    delegate.thu,
+                                    delegate.fri,
+                                    delegate.sat,
                                   ],
                                   styleDatePicker:
                                       MaterialRoundedDatePickerStyle(
@@ -534,7 +518,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                 borderSide:
                                     BorderSide(color: Colors.white, width: 2.0),
                               ),
-                              hintText: 'Password',
+                              hintText: delegate.registerFieldHintPassword,
                               hintStyle: const TextStyle(color: Colors.white),
                               prefixIcon: const Icon(
                                 Icons.security,
@@ -564,12 +548,6 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                 borderSide:
                                     BorderSide(color: Colors.red, width: 2.0),
                               ),
-                            ),
-                            toolbarOptions: const ToolbarOptions(
-                              copy: true,
-                              cut: true,
-                              paste: true,
-                              selectAll: true,
                             ),
                             style: const TextStyle(
                                 color: Colors.white,
@@ -608,7 +586,8 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                 borderSide:
                                     BorderSide(color: Colors.white, width: 2.0),
                               ),
-                              hintText: 'Confirm Password',
+                              hintText:
+                                  delegate.registerFieldHintConfirmPassword,
                               hintStyle: const TextStyle(color: Colors.white),
                               prefixIcon: const Icon(
                                 Icons.security,
@@ -640,12 +619,6 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                     BorderSide(color: Colors.red, width: 2.0),
                               ),
                             ),
-                            toolbarOptions: const ToolbarOptions(
-                              copy: true,
-                              cut: true,
-                              paste: true,
-                              selectAll: true,
-                            ),
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -663,8 +636,8 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                               confirmPasswordErrorText =
                                   _passwordController.text ==
                                           _confirmPasswordController.text
-                                      ? 'Password don\'t be the same!'
-                                      : 'This field can\'t be empty!';
+                                      ? delegate.registerFieldErrorPassword
+                                      : delegate.registerFieldErrorEmpty;
                             });
                           },
                         ))),
@@ -719,10 +692,13 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                               Navigator.pop(context);
                               setState(() {
                                 result == 'failed'
-                                    ? registerErrorDialog('Registration failed',
-                                        'Oops, something went wrong!')
-                                    : registerErrorDialog('Duplicated user',
-                                        'This username already exist! Please, take another Name!');
+                                    ? registerErrorDialog(
+                                        delegate.registerErrorFailed,
+                                        delegate.registerErrorFailedMessage)
+                                    : registerErrorDialog(
+                                        delegate.registerErrorUserDuplicated,
+                                        delegate
+                                            .registerErrorUserDuplicatedMessage);
                                 result == 'isDuplicated'
                                     ? nameError = true
                                     : null;
@@ -739,10 +715,10 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                         ),
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children: [
                               Text(
-                                'Register',
-                                style: TextStyle(
+                                delegate.titleRegister,
+                                style: const TextStyle(
                                     color: Colors.black, fontSize: 17),
                               ),
                             ]),
@@ -765,9 +741,9 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                           child),
                                 ));
                       },
-                      child: const Text(
-                        'Have already an Account',
-                        style: TextStyle(
+                      child: Text(
+                        delegate.registerAlreadyHaveAccount,
+                        style: const TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       )),
                 )
@@ -779,6 +755,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
 
   Future<void> _cropImage(File pickeImage, BuildContext context) async {
     Navigator.pop(context);
+    final delegate = S.of(context);
     final imageFile = await ImageCropper().cropImage(
       sourcePath: pickeImage.path,
       aspectRatioPresets: Platform.isAndroid
@@ -802,20 +779,20 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
       cropStyle: CropStyle.circle,
       uiSettings: [
         AndroidUiSettings(
-            toolbarTitle: 'Cropper',
+            toolbarTitle: delegate.titleImageCropper,
             toolbarColor: Colors.deepOrange,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false),
         IOSUiSettings(
-          title: 'Cropper',
+          title: delegate.titleImageCropper,
         )
       ],
       compressQuality: 100,
     );
-    _profileImageInster = await imageFile!.readAsBytes();
+    //_profileImageInster = await imageFile!.readAsBytes();
     _profileImage = Image.file(
-      File(imageFile.path),
+      File(imageFile!.path),
       fit: BoxFit.cover,
     );
     setState(() {});
@@ -834,13 +811,13 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
       } else {
         setState(() {
           nameError = true;
-          nameErrorText = 'Please, enter your first and last name!';
+          nameErrorText = S.of(context).registerFieldErrorName;
         });
       }
     } else {
       setState(() {
         nameError = true;
-        nameErrorText = 'This filed can\'t be empty!';
+        nameErrorText = S.of(context).registerFieldErrorEmpty;
       });
     }
   }
@@ -853,13 +830,13 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
       } else {
         setState(() {
           emailError = true;
-          emailErrorText = 'Please, enter correct email address!';
+          emailErrorText = S.of(context).registerFieldErrorEmail;
         });
       }
     } else {
       setState(() {
         emailError = true;
-        emailErrorText = 'This filed can\'t be empty!';
+        emailErrorText = S.of(context).registerFieldErrorEmpty;
       });
     }
   }
@@ -875,39 +852,42 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
               } else {
                 setState(() {
                   passwordError = true;
-                  passwordErrorText = 'Password don\'t be the same!';
+                  passwordErrorText = S.of(context).registerFieldErrorPassword;
                 });
               }
             }
           } else {
             setState(() {
               passwordError = true;
-              passwordErrorText = 'Password must be at least 8 characters!';
+              passwordErrorText =
+                  S.of(context).registerFieldErrorPasswordLength;
             });
           }
         } else {
           setState(() {
             passwordError = true;
-            passwordErrorText = 'Password must contains lower case letters!';
+            passwordErrorText =
+                S.of(context).registerFieldErrorPasswordCharactersLow;
           });
         }
       } else {
         setState(() {
           passwordError = true;
-          passwordErrorText = 'Password must contains capital letters!';
+          passwordErrorText =
+              S.of(context).registerFieldErrorPasswordCharactersCapital;
         });
       }
     } else {
       setState(() {
         passwordError = true;
-        passwordErrorText = 'This filed can\'t be empty!';
+        passwordErrorText = S.of(context).registerFieldErrorEmpty;
       });
     }
     if (_confirmPasswordController.text.isNotEmpty || !checkPasswordMatch) {
     } else {
       setState(() {
         confirmPasswordError = true;
-        confirmPasswordErrorText = 'This filed can\'t be empty!';
+        confirmPasswordErrorText = S.of(context).registerFieldErrorEmpty;
       });
     }
   }
@@ -919,6 +899,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
         barrierDismissible: false,
         useRootNavigator: false,
         builder: (BuildContext context) {
+          final delegate = S.of(context);
           return WillPopScope(
             onWillPop: () async => false,
             child: BackdropFilter(
@@ -943,9 +924,9 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'Connection error',
-                        style: TextStyle(
+                      Text(
+                        delegate.connectionerrorTitle,
+                        style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 26),
@@ -977,7 +958,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                 margin: const EdgeInsets.symmetric(horizontal: 5),
                 decoration: BoxDecoration(
                     borderRadius: const BorderRadius.all(Radius.circular(16)),
-                    color: ThemeData.dark().backgroundColor),
+                    color: const ColorScheme.dark().background),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,

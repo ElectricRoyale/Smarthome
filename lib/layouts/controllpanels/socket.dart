@@ -13,7 +13,7 @@ class Socket extends StatefulWidget {
 }
 
 class SocketState extends State<Socket> {
-  bool toogle = deviceItem!.state == 'on';
+  bool toggle = deviceItem!.state == 'on';
   double? energy = 0.7;
 
   @override
@@ -24,7 +24,7 @@ class SocketState extends State<Socket> {
 
   void refresh() {
     setState(() {
-      toogle = deviceItem!.state == 'on';
+      toggle = deviceItem!.state == 'on';
     });
   }
 
@@ -55,10 +55,10 @@ class SocketState extends State<Socket> {
               child: ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      toogle = !toogle;
+                      toggle = !toggle;
                     });
                     HomeAssistantConnection().send([
-                      toogle
+                      toggle
                           ? '{"id": ${idNumber++}, "type": "call_service", "domain": "switch", "service": "turn_on", "target": {"entity_id": "${deviceItem!.entityId}"}}'
                           : '{"id": ${idNumber++}, "type": "call_service", "domain": "switch", "service": "turn_off", "target": {"entity_id": "${deviceItem!.entityId}"}}'
                     ]);
@@ -70,7 +70,7 @@ class SocketState extends State<Socket> {
                       foregroundColor:
                           const Color(0x25ffffff) // <-- Button color
                       ),
-                  child: toogle
+                  child: toggle
                       ? const Icon(
                           Icons.bolt,
                           color: Color.fromARGB(255, 254, 183, 5),

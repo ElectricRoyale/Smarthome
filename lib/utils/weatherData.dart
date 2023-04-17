@@ -9,6 +9,8 @@ import 'package:smarthome/Model/weatherLocations.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:weather/weather.dart';
 
+import '../generated/l10n.dart';
+
 class WeatherData {
   final WeatherFactory weather =
       WeatherFactory("ab4d16747f052431ba606ea20103f65c");
@@ -22,33 +24,32 @@ class WeatherData {
       _wind = '-',
       _hygrometer = '-',
       _humidity = '-';
-  final List<String> _dayNames = [
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat',
-    'Sun'
-  ];
-
-  Future? _isInitialized;
 
   final List<Widget> _forecasts = [];
+
+  Future<bool>? _isInitialized;
 
   static final WeatherData _instance = WeatherData._internal();
 
   factory WeatherData() => _instance;
 
-  WeatherData._internal() {
-    _isInitialized = init();
-  }
+  WeatherData._internal();
 
   Box<WeatherLocations> weatherLocations =
       Hive.box<WeatherLocations>('WeatherLocations');
 
-  Future<void> init({Weather? w}) async {
+  Future<void> init(BuildContext context, {Weather? w}) async {
     forecasts.clear();
+
+    List<String> dayNames = [
+      S.of(context).sun,
+      S.of(context).mon,
+      S.of(context).tue,
+      S.of(context).wed,
+      S.of(context).thu,
+      S.of(context).fri,
+      S.of(context).sat,
+    ];
 
     String cityName = (weatherLocations.get('WeatherLocation') != null
         ? weatherLocations.get('WeatherLocation')!.weatherLocation
@@ -102,6 +103,7 @@ class WeatherData {
           '${weatherData['tempMax']}°',
           '${weatherData['tempMin']}°'));
     }
+    _isInitialized = Future.value(true);
   }
 
   Future<String> locationName() async {
@@ -118,7 +120,7 @@ class WeatherData {
   }
 
   String _getIcon(String name) {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case 'clear sky':
         return "assets/sun.svg";
       case 'few clouds':
@@ -168,22 +170,22 @@ class WeatherData {
         return 'assets/cloud_lightning.svg';
       case 'freezing rain':
         return 'assets/hail.svg';
-      case 'Sleet':
-      case 'Light shower sleet':
-      case 'Shower sleet':
-      case 'Light rain and snow':
-      case 'Rain and snow':
+      case 'sleet':
+      case 'light shower sleet':
+      case 'shower sleet':
+      case 'light rain and snow':
+      case 'rain and snow':
         return 'assets/sleet.svg';
       case 'light snow':
         return 'assets/light_snow.svg';
-      case 'Snow':
-      case 'Heavy snow':
+      case 'snow':
+      case 'heavy snow':
         return 'assets/snow.svg';
-      case 'Shower snow':
-      case 'Heavy shower snow':
+      case 'shower snow':
+      case 'heavy shower snow':
         return 'assets/snow_storm.svg';
-      case 'Haze':
-      case 'Smoke':
+      case 'haze':
+      case 'smoke':
       case 'volcanic ash':
       case 'mist':
       case 'fog':
@@ -258,8 +260,6 @@ class WeatherData {
   }
 
   List<Widget> get forecasts => _forecasts;
-
-  List<String> get dayNames => _dayNames;
 
   get humidity => _humidity;
 

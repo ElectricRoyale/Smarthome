@@ -7,6 +7,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:smarthome/utils/widget_functions.dart';
 
+import '../generated/l10n.dart';
 import '../utils/constants.dart';
 
 class DiscoveryPage extends StatefulWidget {
@@ -45,6 +46,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final delegate = S.of(context);
     return Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -71,11 +73,11 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                   ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Text(
-                  'Select your Home Assistant Server',
-                  style: TextStyle(
+                  delegate.discoverySelectServer,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
@@ -136,9 +138,9 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                           useRootNavigator: false,
                           builder: (BuildContext context) => manualAddDialog());
                     },
-                    child: const Text(
-                      'Enter address manually',
-                      style: TextStyle(fontSize: 15.0),
+                    child: Text(
+                      delegate.discoveryEnterManual,
+                      style: const TextStyle(fontSize: 15.0),
                     )),
               ),
             ],
@@ -186,8 +188,9 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
   }
 
   Widget manualAddDialog() {
-    return StatefulBuilder(
-      builder: (context, setState) => BackdropFilter(
+    return StatefulBuilder(builder: (context, setState) {
+      final delegate = S.of(context);
+      return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
         child: Dialog(
           insetPadding: const EdgeInsets.all(23.0),
@@ -202,11 +205,11 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 8.0),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
-                    'Enter your address',
-                    style: TextStyle(
+                    delegate.discoveryDialogMessage,
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold),
@@ -274,7 +277,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

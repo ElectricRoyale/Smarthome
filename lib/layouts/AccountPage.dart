@@ -15,6 +15,7 @@ import 'package:smarthome/utils/globals.dart' as globals;
 import 'package:smarthome/utils/widget_functions.dart';
 import 'package:sprintf/sprintf.dart';
 
+import '../generated/l10n.dart';
 import '../utils/constants.dart';
 
 class AccountPage extends StatefulWidget {
@@ -77,6 +78,7 @@ class AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
+    final delegate = S.of(context);
     return Scaffold(
         extendBody: true,
         body: Container(
@@ -146,9 +148,9 @@ class AccountPageState extends State<AccountPage> {
                                               ),
                                               iconSize: 70,
                                             ),
-                                            const Text(
-                                              'Gallery',
-                                              style: TextStyle(
+                                            Text(
+                                              delegate.gallery,
+                                              style: const TextStyle(
                                                   color: Colors.white),
                                             )
                                           ]),
@@ -178,9 +180,9 @@ class AccountPageState extends State<AccountPage> {
                                               ),
                                               iconSize: 70,
                                             ),
-                                            const Text(
-                                              'Camera',
-                                              style: TextStyle(
+                                            Text(
+                                              delegate.camera,
+                                              style: const TextStyle(
                                                   color: Colors.white),
                                             )
                                           ]),
@@ -229,13 +231,13 @@ class AccountPageState extends State<AccountPage> {
                       TextField(
                         controller: _emailController,
                         readOnly: !editing,
-                        decoration: const InputDecoration(
-                          icon: Icon(
+                        decoration: InputDecoration(
+                          icon: const Icon(
                             Icons.email,
                             color: Colors.white,
                           ),
-                          labelText: 'Email Address:',
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelText: delegate.accountLabelEmail,
+                          labelStyle: const TextStyle(color: Colors.white),
                           border: InputBorder.none,
                         ),
                         style:
@@ -258,13 +260,13 @@ class AccountPageState extends State<AccountPage> {
                               imageHeader: const AssetImage(
                                   'assets/datepickerbackground.png'),
                               customWeekDays: [
-                                "SUN",
-                                "MON",
-                                "TUE",
-                                "WED",
-                                "THU",
-                                "FRI",
-                                "SAT"
+                                delegate.sun,
+                                delegate.mon,
+                                delegate.tue,
+                                delegate.wed,
+                                delegate.thu,
+                                delegate.fri,
+                                delegate.sat,
                               ],
                               styleDatePicker: MaterialRoundedDatePickerStyle(
                                 textStyleDayButton: const TextStyle(
@@ -329,13 +331,13 @@ class AccountPageState extends State<AccountPage> {
                             });
                           });
                         },
-                        decoration: const InputDecoration(
-                          icon: Icon(
+                        decoration: InputDecoration(
+                          icon: const Icon(
                             Icons.calendar_month,
                             color: Colors.white,
                           ),
-                          labelText: 'Birthday:',
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelText: delegate.accountLabelBirthday,
+                          labelStyle: const TextStyle(color: Colors.white),
                           border: InputBorder.none,
                         ),
                         style:
@@ -344,13 +346,13 @@ class AccountPageState extends State<AccountPage> {
                       TextField(
                         controller: _addressController,
                         readOnly: !editing,
-                        decoration: const InputDecoration(
-                          icon: Icon(
+                        decoration: InputDecoration(
+                          icon: const Icon(
                             Icons.location_on,
                             color: Colors.white,
                           ),
-                          labelText: 'Address:',
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelText: delegate.accountLabelAddress,
+                          labelStyle: const TextStyle(color: Colors.white),
                           border: InputBorder.none,
                         ),
                         style:
@@ -360,13 +362,13 @@ class AccountPageState extends State<AccountPage> {
                       TextField(
                         controller: _telephonenumberController,
                         readOnly: !editing,
-                        decoration: const InputDecoration(
-                          icon: Icon(
+                        decoration: InputDecoration(
+                          icon: const Icon(
                             Icons.phone,
                             color: Colors.white,
                           ),
-                          labelText: 'Telephonenumber:',
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelText: delegate.accountLabelTelephone,
+                          labelStyle: const TextStyle(color: Colors.white),
                           border: InputBorder.none,
                         ),
                         style:
@@ -390,9 +392,9 @@ class AccountPageState extends State<AccountPage> {
                   style: ElevatedButton.styleFrom(
                       shape: const StadiumBorder(),
                       backgroundColor: const Color(0x7c292828)),
-                  child: const Text(
-                    'Logout',
-                    style: TextStyle(color: Colors.red, fontSize: 16),
+                  child: Text(
+                    delegate.accountLogout,
+                    style: const TextStyle(color: Colors.red, fontSize: 16),
                   ),
                 ),
               ),
@@ -439,14 +441,14 @@ class AccountPageState extends State<AccountPage> {
                             },
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(
+                              children: [
+                                const Icon(
                                   Icons.save,
                                   color: Colors.white,
                                 ),
                                 Text(
-                                  'Save',
-                                  style: TextStyle(color: Colors.white),
+                                  delegate.accountSave,
+                                  style: const TextStyle(color: Colors.white),
                                 )
                               ],
                             ),
@@ -471,14 +473,14 @@ class AccountPageState extends State<AccountPage> {
                             },
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(
+                              children: [
+                                const Icon(
                                   Icons.cancel_outlined,
                                   color: Colors.white,
                                 ),
                                 Text(
-                                  'Cancel',
-                                  style: TextStyle(color: Colors.white),
+                                  delegate.accountCancel,
+                                  style: const TextStyle(color: Colors.white),
                                 )
                               ],
                             ),
@@ -491,14 +493,14 @@ class AccountPageState extends State<AccountPage> {
                             },
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(
+                              children: [
+                                const Icon(
                                   Icons.edit,
                                   color: Colors.white,
                                 ),
                                 Text(
-                                  'Edit',
-                                  style: TextStyle(color: Colors.white),
+                                  delegate.accountEdit,
+                                  style: const TextStyle(color: Colors.white),
                                 )
                               ],
                             ),
@@ -508,6 +510,7 @@ class AccountPageState extends State<AccountPage> {
   }
 
   Future<void> _cropImage(File pickeImage, BuildContext context) async {
+    final delegate = S.of(context);
     final imageFile = await ImageCropper().cropImage(
       sourcePath: pickeImage.path,
       aspectRatioPresets: Platform.isAndroid
@@ -531,13 +534,13 @@ class AccountPageState extends State<AccountPage> {
       cropStyle: CropStyle.circle,
       uiSettings: [
         AndroidUiSettings(
-            toolbarTitle: 'Cropper',
+            toolbarTitle: delegate.titleImageCropper,
             toolbarColor: Colors.deepOrange,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false),
         IOSUiSettings(
-          title: 'Cropper',
+          title: delegate.titleImageCropper,
         )
       ],
       compressQuality: 100,

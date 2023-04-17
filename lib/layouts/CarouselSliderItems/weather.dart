@@ -7,6 +7,7 @@ import 'package:smarthome/utils/locationAddDialog.dart';
 import 'package:smarthome/utils/weatherData.dart';
 import 'package:weather/weather.dart';
 
+import '../../generated/l10n.dart';
 import '../../utils/globals.dart';
 
 class WeatherLayout extends StatefulWidget {
@@ -25,8 +26,6 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
       fellTemperatureController = TextEditingController(),
       humidityController = TextEditingController(),
       hygrometerController = TextEditingController();
-
-  DropdownButton<String>? dropdownButton;
 
   WeatherLocations weatherLocations =
       Hive.box<WeatherLocations>('WeatherLocations').get('WeatherLocation')!;
@@ -72,7 +71,7 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                     width: 235,
                     height: 30,
                     child: DropdownButtonHideUnderline(
-                      child: dropdownButton = DropdownButton<String>(
+                      child: DropdownButton(
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 24,
@@ -90,7 +89,7 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                           weatherLocations.weatherLocation = value;
                           Hive.box<WeatherLocations>('WeatherLocations')
                               .put('WeatherLocation', weatherLocations);
-                          await WeatherData().init();
+                          await WeatherData().init(context);
                           setState(() {});
                         },
                       ),
@@ -123,7 +122,7 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                           )),
                       IconButton(
                           onPressed: () async {
-                            await WeatherData().init();
+                            await WeatherData().init(context);
                             setState(() {});
                           },
                           icon: const Icon(
@@ -464,7 +463,7 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
   }
 
   refresh(Weather data) async {
-    await WeatherData().init(w: data);
+    await WeatherData().init(context, w: data);
     setState(() {});
   }
 
@@ -522,17 +521,18 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
     showDialog(
         context: context,
         builder: (context) {
+          final delegate = S.of(context);
           return AlertDialog(
-            title: const Text(
-              'Delete?',
-              style: TextStyle(
+            title: Text(
+              delegate.weatherDialogDeleteTitle,
+              style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 24),
             ),
-            content: const Text(
-              'Do you really want to delete this City?',
-              style: TextStyle(color: Colors.white, fontSize: 16),
+            content: Text(
+              delegate.weatherDialogDeleteMessage,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(28.0))),
@@ -542,18 +542,18 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                     Navigator.of(context).pop();
                     delete = false;
                   },
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(color: Colors.white),
+                  child: Text(
+                    delegate.weatherDialogDeleteButtonCancel,
+                    style: const TextStyle(color: Colors.white),
                   )),
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                     delete = true;
                   },
-                  child: const Text(
-                    'Delete',
-                    style: TextStyle(color: Colors.white),
+                  child: Text(
+                    delegate.weatherDialogDeleteButtonDelete,
+                    style: const TextStyle(color: Colors.white),
                   )),
             ],
             backgroundColor: const Color(0xff4a4b5e),

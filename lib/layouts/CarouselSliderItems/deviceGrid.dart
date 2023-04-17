@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
+import '../../generated/l10n.dart';
 import '../../utils/DashboardData.dart';
 import '../../utils/constants.dart';
 import '../../utils/globals.dart';
@@ -29,16 +30,17 @@ class DeviceGridState extends State<DeviceGrid> {
 
   @override
   Widget build(BuildContext context) {
+    final delegate = S.of(context);
     return Column(
       children: [
         Stack(
           children: [
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: EdgeInsets.only(left: 20.0),
-                child: Text('Appliances',
-                    style: TextStyle(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Text(delegate.devicegridAppliances,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
@@ -74,8 +76,9 @@ class DeviceGridState extends State<DeviceGrid> {
                         PageRouteBuilder(
                             pageBuilder:
                                 (context, animation, secondAnimation) =>
-                                    const OverViewPage(
-                                      name: 'ALL DEVICES',
+                                    OverViewPage(
+                                      name: delegate.devicegridAllDevices,
+                                      groupName: 'ALL DEVICES',
                                     ))),
                     child: SimpleShadow(
                       opacity: 1,
@@ -117,7 +120,9 @@ class DeviceGridState extends State<DeviceGrid> {
                       PageRouteBuilder(
                           pageBuilder: (context, animation, secondAnimation) =>
                               OverViewPage(
-                                name: (APPLIANCES.elementAt(index)['name'])!,
+                                name: (APPLIANCES(context, index)['name'])!,
+                                groupName:
+                                    (APPLIANCES(context, index)['groupName'])!,
                               ))),
                   borderRadius: BorderRadius.circular(20.0),
                   child: Column(
@@ -129,7 +134,7 @@ class DeviceGridState extends State<DeviceGrid> {
                           opacity: 0.6,
                           offset: const Offset(0, 2),
                           child: SvgPicture.asset(
-                            'assets/${APPLIANCES.elementAt(index)['icon']}',
+                            'assets/${APPLIANCES(context, index)['icon']}',
                             height: 64,
                             width: 64,
                             fit: BoxFit.scaleDown,
@@ -139,7 +144,7 @@ class DeviceGridState extends State<DeviceGrid> {
                       Padding(
                         padding: const EdgeInsets.only(top: 7),
                         child: Text(
-                          '${APPLIANCES.elementAt(index)['name']}',
+                          APPLIANCES(context, index)['name'],
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.white,
@@ -157,7 +162,8 @@ class DeviceGridState extends State<DeviceGrid> {
                       Padding(
                         padding: const EdgeInsets.only(top: 1),
                         child: Text(
-                          '${DashboardData().getEnergyList.elementAt(index)} kWh USED',
+                          DashboardData().getEnergyList.elementAt(index) +
+                              delegate.devicegridUsage,
                           style: const TextStyle(
                               fontSize: 12, color: Color(0xff919191)),
                         ),

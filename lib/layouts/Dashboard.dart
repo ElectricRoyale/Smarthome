@@ -59,8 +59,8 @@ class Layout extends State<Dashboard> {
     setData();
     super.initState();
     Future.delayed(const Duration(hours: 1), () async {
-      await DashboardData().init();
-      await WeatherData().init();
+      await DashboardData().init(context);
+      await WeatherData().init(context);
       setState(() {});
     });
   }

@@ -10,6 +10,7 @@ import 'package:smarthome/utils/LoadingScreen.dart';
 import 'package:smarthome/utils/MySQLHelper.dart';
 import 'package:smarthome/utils/error_dialog.dart';
 
+import '../generated/l10n.dart';
 import '../utils/DashboardData.dart';
 import '../utils/constants.dart';
 import '../utils/globals.dart';
@@ -70,7 +71,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       nameController.text = loginData.get('name');
       if (await auth.isDeviceSupported() && await auth.canCheckBiometrics) {
         if (await auth.authenticate(
-          localizedReason: 'Unlock the app.',
+          localizedReason: S.of(context).biometricLocalizedReason,
           options: const AuthenticationOptions(
               stickyAuth: true, biometricOnly: true),
         )) {
@@ -101,8 +102,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             return const LoadingDialog();
           });
       if (await MySQLHelper().login(name, password)) {
-        await DashboardData().init();
-        await WeatherData().isInitialized;
+        await DashboardData().init(context);
+        await WeatherData().init(context);
         errorDialog.dispose();
         if (!mounted) return;
         Navigator.pop(loadingDialog);
@@ -145,6 +146,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final delegate = S.of(context);
     return Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -163,13 +165,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             backgroundColor: Colors.transparent,
             body: Column(
               children: [
-                const DelayedDisplay(
-                    delay: Duration(),
+                DelayedDisplay(
+                    delay: const Duration(),
                     child: Padding(
-                        padding: EdgeInsets.only(top: 130),
+                        padding: const EdgeInsets.only(top: 130),
                         child: Text(
-                          'Login',
-                          style: TextStyle(
+                          delegate.titleLogin,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w900,
                             fontSize: 36,
@@ -203,7 +205,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                 borderSide:
                                     BorderSide(color: Colors.white, width: 2.0),
                               ),
-                              hintText: 'Name',
+                              hintText: delegate.loginFieldHintName,
                               hintStyle: const TextStyle(color: Colors.white),
                               prefixIcon: const Icon(
                                 Icons.person,
@@ -220,11 +222,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                     BorderSide(color: Colors.red, width: 2.0),
                               ),
                             ),
-                            toolbarOptions: const ToolbarOptions(
-                                copy: true,
-                                cut: true,
-                                paste: true,
-                                selectAll: true),
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -236,7 +233,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                               nameError = hasFocus
                                   ? false
                                   : nameController.text.isEmpty;
-                              nameErrorText = 'Flied can\'t be empty!';
+                              nameErrorText = delegate.loginFieldErrorEmpty;
                             });
                           },
                         ))),
@@ -263,7 +260,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                   borderSide: BorderSide(
                                       color: Colors.white, width: 2.0),
                                 ),
-                                hintText: 'Password',
+                                hintText: delegate.loginFieldHintPassword,
                                 hintStyle: const TextStyle(color: Colors.white),
                                 prefixIcon: const Icon(
                                   Icons.security,
@@ -293,11 +290,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                         _isObscure = !_isObscure;
                                       });
                                     })),
-                            toolbarOptions: const ToolbarOptions(
-                                copy: true,
-                                cut: true,
-                                paste: true,
-                                selectAll: true),
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -309,7 +301,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                               passwordError = hasFocus
                                   ? false
                                   : passwordController.text.isEmpty;
-                              passwordErrorText = 'Flied can\'t be empty!';
+                              passwordErrorText = delegate.loginFieldErrorEmpty;
                             });
                           },
                         ))),
@@ -319,10 +311,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       padding: const EdgeInsets.only(right: 43, top: 5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
-                        children: const [
+                        children: [
                           Text(
-                            'Forgot Password?',
-                            style: TextStyle(
+                            delegate.loginPasswordForgot,
+                            style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),
                           )
@@ -351,10 +343,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           height: const Size.fromHeight(45).height,
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
+                              children: [
                                 Text(
-                                  'Login',
-                                  style: TextStyle(
+                                  delegate.titleLogin,
+                                  style: const TextStyle(
                                       color: Colors.black,
                                       fontSize: 17,
                                       fontWeight: FontWeight.bold),
@@ -368,9 +360,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'Don\'t have an Account?',
-                        style: TextStyle(
+                      Text(
+                        delegate.loginDontHaveAccount,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           shadows: [
@@ -398,9 +390,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                             child),
                                   ));*/
                         },
-                        child: const Text(
-                          'SingUp',
-                          style: TextStyle(
+                        child: Text(
+                          delegate.loginSignUp,
+                          style: const TextStyle(
                             color: Color(0xffaf0000),
                             fontWeight: FontWeight.bold,
                             shadows: [

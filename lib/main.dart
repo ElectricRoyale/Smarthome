@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:smarthome/layouts/splashscreen.dart';
 import 'package:smarthome/utils/biometricAuthentication.dart';
 
+import 'generated/l10n.dart';
 import 'layouts/controllpanels/air_conditioner.dart';
 import 'layouts/controllpanels/heating_system.dart';
 import 'layouts/controllpanels/irrigation.dart';
@@ -44,7 +46,9 @@ class MyApp extends StatelessWidget {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
         overlays: [SystemUiOverlay.top]);
     return MaterialApp(
-      theme: ThemeData(),
+      theme: ThemeData(
+          colorScheme:
+              ColorScheme.fromSwatch().copyWith(secondary: Colors.white)),
       routes: {
         'biometricAuthentication': (BuildContext ctx) =>
             const BiometricAuthentication(),
@@ -58,6 +62,13 @@ class MyApp extends StatelessWidget {
         'washing_machine': (BuildContext ctx) => const WashingMachine(),
         'irrigation': (BuildContext ctx) => const Irrigation(),
       },
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: S.delegate.supportedLocales,
       home: const SplashScreen(),
     );
   }

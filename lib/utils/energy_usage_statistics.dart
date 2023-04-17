@@ -4,6 +4,7 @@ import 'package:smarthome/JSON/device_data.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../JSON/energy_sensor_data.dart';
+import '../generated/l10n.dart';
 
 class EnergyUsageStatistics extends StatelessWidget {
   final DeviceData data;
@@ -14,13 +15,14 @@ class EnergyUsageStatistics extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final delegate = S.of(context);
     return Padding(
       padding: padding,
       child: SizedBox(
         height: 175,
         child: SfCartesianChart(
           primaryXAxis: DateTimeAxis(
-            name: 'Time',
+            name: delegate.energystatisticsAxisLableX,
             labelStyle: const TextStyle(color: Colors.white),
             intervalType: DateTimeIntervalType.hours,
             dateFormat: DateFormat.E().add_Hm(),
@@ -32,14 +34,14 @@ class EnergyUsageStatistics extends StatelessWidget {
           ),
           annotations: [
             CartesianChartAnnotation(
-                widget: emptyView(),
+                widget: emptyView(context),
                 coordinateUnit: CoordinateUnit.percentage,
                 region: AnnotationRegion.plotArea,
                 y: '50%',
                 x: '50%')
           ],
           primaryYAxis: NumericAxis(
-            name: 'Energy Consumption',
+            name: delegate.energystatisticsAxisLableY,
             title: AxisTitle(
                 text: 'kWh',
                 textStyle: const TextStyle(color: Colors.white, fontSize: 10)),
@@ -58,7 +60,7 @@ class EnergyUsageStatistics extends StatelessWidget {
           tooltipBehavior: TooltipBehavior(enable: true),
           series: <SplineAreaSeries<EnergySensorData, DateTime>>[
             SplineAreaSeries(
-                name: 'Energy Consumption',
+                name: delegate.energystatisticsAxisLableLine,
                 splineType: SplineType.monotonic,
                 dataSource: data.energyUsageData,
                 xValueMapper: (data, _) => data.end!,
@@ -73,12 +75,12 @@ class EnergyUsageStatistics extends StatelessWidget {
     );
   }
 
-  Widget emptyView() {
+  Widget emptyView(BuildContext context) {
     if (data.energyUsageData.isEmpty) {
-      return const Text(
-        "No energy data found!",
+      return Text(
+        S.of(context).energystatisticsEmpty,
         textAlign: TextAlign.center,
-        style: TextStyle(
+        style: const TextStyle(
             color: Color.fromARGB(55, 255, 255, 255),
             fontSize: 16,
             fontWeight: FontWeight.bold,

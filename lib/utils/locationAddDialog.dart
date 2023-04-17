@@ -9,6 +9,8 @@ import 'package:smarthome/utils/weatherData.dart';
 import 'package:smarthome/utils/widget_functions.dart';
 import 'package:weather/weather.dart';
 
+import '../generated/l10n.dart';
+
 class LocationAddDialog extends StatefulWidget {
   final Function(Weather) callback;
   const LocationAddDialog({Key? key, required this.callback}) : super(key: key);
@@ -23,6 +25,7 @@ class LocationAddDialogState extends State<LocationAddDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final delegate = S.of(context);
     return StatefulBuilder(
       builder: (context, setState) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
@@ -39,11 +42,11 @@ class LocationAddDialogState extends State<LocationAddDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 8.0),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
-                    'Add City name',
-                    style: TextStyle(
+                    delegate.locationadddialogHeading,
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold),
@@ -71,7 +74,7 @@ class LocationAddDialogState extends State<LocationAddDialog> {
                             borderSide:
                                 BorderSide(color: Colors.white, width: 2.0),
                           ),
-                          hintText: 'City name',
+                          hintText: delegate.locationadddialogHint,
                           hintStyle: const TextStyle(color: Colors.white),
                           prefixIcon: IconButton(
                             onPressed: () async {
@@ -95,7 +98,7 @@ class LocationAddDialogState extends State<LocationAddDialog> {
                           contentPadding: const EdgeInsets.all(0),
                           isDense: true,
                           errorText:
-                              error ? 'This place could not be found.' : null,
+                              error ? delegate.locationadddialogError : null,
                           errorBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(15)),
                             borderSide:

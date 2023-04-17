@@ -6,6 +6,7 @@ import 'package:smarthome/utils/Home_Assistant_Connection.dart';
 import 'package:smarthome/utils/constants.dart';
 
 import '../../utils/globals.dart';
+import '../../utils/scrolling_text.dart';
 
 class SpotifyControllLayout extends StatefulWidget {
   const SpotifyControllLayout({Key? key}) : super(key: key);
@@ -65,37 +66,54 @@ class SpotifyControllLayoutDesign extends State<SpotifyControllLayout> {
             ),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 14.0, horizontal: 30.0),
+                  const EdgeInsets.symmetric(vertical: 6.0, horizontal: 30.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Column(
                     children: [
-                      Text(
-                        spotify!.attributes!.mediaTitle ?? '',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          shadows: [
-                            Shadow(
-                              offset: Offset(0.0, 2.0),
-                              blurRadius: 3.0,
-                              color: Color.fromARGB(255, 0, 0, 0),
-                            )
-                          ],
-                          overflow: TextOverflow.ellipsis,
+                      Container(
+                        width: MediaQuery.of(context).size.width - 70,
+                        height: 25,
+                        alignment: Alignment.center,
+                        child: ScrollingText(
+                          (spotify!.attributes!.mediaTitle ?? ' '),
+                          maxWidth: MediaQuery.of(context).size.width - 80,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            shadows: [
+                              Shadow(
+                                offset: Offset(0.0, 2.0),
+                                blurRadius: 3.0,
+                                color: Color.fromARGB(255, 0, 0, 0),
+                              )
+                            ],
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          startAfter: const Duration(seconds: 3),
+                          pauseAfterRound: const Duration(seconds: 3),
+                          blankSpace: 100,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        spotify!.attributes!.mediaArtist ?? '',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
+                      Container(
+                        width: MediaQuery.of(context).size.width - 80,
+                        height: 17,
+                        alignment: Alignment.center,
+                        child: ScrollingText(
+                          (spotify!.attributes!.mediaArtist ?? ' '),
+                          maxWidth: MediaQuery.of(context).size.width - 80,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          startAfter: const Duration(seconds: 3),
+                          pauseAfterRound: const Duration(seconds: 3),
+                          blankSpace: 100,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),

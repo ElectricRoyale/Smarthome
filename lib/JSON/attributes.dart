@@ -12,11 +12,13 @@ class Attributes {
   String? effect;
   String? repeat;
   bool? shuffle;
+  bool? isVolumeMuted;
   String? mediaPlaylist;
   String? mediaTitle;
   String? mediaArtist;
   double? mediaPosition;
   double? mediaDuration;
+  List? sourceList;
 
   Attributes(
       {this.currentPosition,
@@ -32,11 +34,13 @@ class Attributes {
       this.effect,
       this.repeat,
       this.shuffle,
+      this.isVolumeMuted,
       this.mediaPlaylist,
       this.mediaTitle,
       this.mediaArtist,
       this.mediaPosition,
-      this.mediaDuration});
+      this.mediaDuration,
+      this.sourceList});
 
   Attributes.fromJson(Map<String, dynamic> json) {
     currentPosition = json['current_position'];
@@ -52,11 +56,13 @@ class Attributes {
     effect = json['effect'];
     repeat = json['repeat'];
     shuffle = json['shuffle'];
+    isVolumeMuted = json['is_volume_muted'];
     mediaPlaylist = json['media_playlist'];
     mediaTitle = json['media_title'];
     mediaArtist = json['media_artist'];
     mediaPosition = json['media_position'];
     mediaDuration = json['media_duration'];
+    sourceList = json['source_list'];
   }
 
   void update(Attributes attributes) {
@@ -70,14 +76,16 @@ class Attributes {
     unitOfMeasurement = attributes.unitOfMeasurement;
     rgbColor = attributes.rgbColor ?? rgbColor;
     brightness = attributes.brightness ?? brightness;
-    effect = attributes.effect ?? effect;
+    effect = attributes.effect;
     repeat = attributes.repeat;
     shuffle = attributes.shuffle;
+    isVolumeMuted = attributes.isVolumeMuted;
     mediaPlaylist = attributes.mediaPlaylist;
     mediaTitle = attributes.mediaTitle;
     mediaArtist = attributes.mediaArtist;
     mediaPosition = attributes.mediaPosition;
     mediaDuration = attributes.mediaDuration;
+    sourceList = attributes.sourceList;
   }
 
   Map<String, dynamic> toJson() {
@@ -95,11 +103,13 @@ class Attributes {
     data['effect'] = effect;
     data['repeat'] = repeat;
     data['shuffle'] = shuffle;
+    data['is_volume_muted'] = isVolumeMuted;
     data['media_playlist'] = mediaPlaylist;
     data['media_title'] = mediaTitle;
     data['media_artist'] = mediaArtist;
     data['media_position'] = mediaPosition;
     data['media_duration'] = mediaDuration;
+    data['source_list'] = sourceList;
     return data;
   }
 }

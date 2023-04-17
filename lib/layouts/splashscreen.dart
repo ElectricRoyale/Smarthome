@@ -44,8 +44,10 @@ class _SplashScreenState extends State<SplashScreen> {
     bool isEmpty = await MySQLHelper().isEmpty();
 
     if (!mounted) return;
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (BuildContext context) =>
+    Navigator.of(context).pushReplacement(PageRouteBuilder(
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
+        pageBuilder: (context, animation1, animation2) =>
             isEmpty ? const Register() : const Login()));
   }
 

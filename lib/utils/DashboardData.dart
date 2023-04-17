@@ -10,6 +10,7 @@ import 'package:smarthome/utils/widget_functions.dart';
 import '../JSON/device_data.dart';
 import '../JSON/energy_sensor_data.dart';
 import '../Model/UserData.dart';
+import '../generated/l10n.dart';
 import 'Home_Assistant_Connection.dart';
 import 'globals.dart';
 import 'logbook_item.dart';
@@ -47,17 +48,13 @@ class DashboardData {
 
   Future? _isInitialized;
 
-  BuildContext? context;
-
   static final DashboardData _instance = DashboardData._internal();
 
   factory DashboardData() => _instance;
 
-  DashboardData._internal() {
-    init();
-  }
+  DashboardData._internal();
 
-  Future<void> init() async {
+  Future<void> init(BuildContext context) async {
     initialisation = true;
     List<int> idList = [];
     for (int i = 0; i < 3; i++) {
@@ -69,9 +66,9 @@ class DashboardData {
       '{"type" : "config/entity_registry/list", "id" : ${idList.elementAt(1)}}',
       '{"type" : "get_states", "id" : ${idList.elementAt(2)}}',
     ]);
-    List roomData = jsonDecode(responses[2])["result"];
-    List roomDevices = jsonDecode(responses[3])["result"];
-    List deviceData = jsonDecode(responses[4])["result"];
+    List roomData = jsonDecode(responses.elementAt(2))["result"];
+    List roomDevices = jsonDecode(responses.elementAt(3))["result"];
+    List deviceData = jsonDecode(responses.elementAt(4))["result"];
     List<String> sensors = [];
     devices.clear();
     for (var element in deviceData) {
@@ -221,7 +218,8 @@ class DashboardData {
         'icon': '${value['picture']}',
         'name': '${value['name']}',
         'appliances': roomDeviceIcons(value["area_id"]),
-        'energyConsumption': '${energy.toStringAsPrecision(2)} KW USED'
+        'energyConsumption':
+            energy.toStringAsPrecision(2) + S.of(context).devicegridUsage
       });
     }
     allDevices.sort((a, b) => a.attributes!.friendlyName!
@@ -266,7 +264,7 @@ class DashboardData {
           DateTime.parse(value['when']).toUtc(),
           'INFO',
           value['state'] != null
-              ? (value['name'] + ' changed state to ' + value['state'])
+              ? (value['name'] + S.of(context).logbook + value['state'])
               : (value['name'] + value['message'])));
     }
     _logbook.sort((a, b) => b.timestamp.compareTo(a.timestamp));

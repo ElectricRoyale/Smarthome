@@ -8,6 +8,8 @@ import 'package:smarthome/utils/constants.dart';
 import 'package:smarthome/utils/error_dialog.dart';
 import 'package:smarthome/utils/globals.dart';
 
+import '../generated/l10n.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
@@ -82,6 +84,7 @@ class MyHomePageState extends State<MyHomePage>
   }
 
   Widget _bottomNavigationBar() {
+    final delegate = S.of(context);
     return Container(
       padding: const EdgeInsets.only(top: 12),
       decoration: const BoxDecoration(
@@ -123,8 +126,8 @@ class MyHomePageState extends State<MyHomePage>
             )
           ],
         ),
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
             icon: Icon(
               Icons.dashboard_rounded,
               shadows: [
@@ -138,7 +141,7 @@ class MyHomePageState extends State<MyHomePage>
             label: 'Dashboard',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
+            icon: const Icon(
               Icons.wifi_tethering,
               shadows: [
                 Shadow(
@@ -148,10 +151,10 @@ class MyHomePageState extends State<MyHomePage>
                 )
               ],
             ),
-            label: 'Network',
+            label: delegate.titleNetwork,
           ),
           BottomNavigationBarItem(
-            icon: Icon(
+            icon: const Icon(
               Icons.settings,
               shadows: [
                 Shadow(
@@ -161,7 +164,7 @@ class MyHomePageState extends State<MyHomePage>
                 )
               ],
             ),
-            label: 'Settings',
+            label: delegate.titleSettings,
           ),
         ],
       ),

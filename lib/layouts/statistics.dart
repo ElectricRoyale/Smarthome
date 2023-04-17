@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../generated/l10n.dart';
 import '../utils/constants.dart';
 
 class Statistics extends StatelessWidget {
@@ -7,6 +8,7 @@ class Statistics extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final delegate = S.of(context);
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(

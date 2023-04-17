@@ -6,25 +6,29 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
 import 'package:smarthome/layouts/statistics.dart';
 
+import '../generated/l10n.dart';
 import 'Network.dart';
 
-var pageParams = [
-  {
-    'name': 'Rooms',
-    'icon': 'assets/house_app_icon.svg',
-    'layout': CustomAppBarIcons.appBarWithIcons
-  },
-  {
-    'name': 'Network',
-    'icon': 'assets/refresh.svg',
-    'layout': CustomAppBarIcons.appBarWithIcons
-  },
-  {
-    'name': 'Settings',
-    'con': '',
-    'layout': CustomAppBarIcons.appBarWithoutIcons
-  },
-];
+Map pageParams(BuildContext context, int index) {
+  List pages = [
+    {
+      'name': S.of(context).titleRooms,
+      'icon': 'assets/house_app_icon.svg',
+      'layout': CustomAppBarIcons.appBarWithIcons
+    },
+    {
+      'name': S.of(context).titleNetwork,
+      'icon': 'assets/refresh.svg',
+      'layout': CustomAppBarIcons.appBarWithIcons
+    },
+    {
+      'name': S.of(context).titleSettings,
+      'icon': '',
+      'layout': CustomAppBarIcons.appBarWithoutIcons
+    },
+  ];
+  return pages.elementAt(index);
+}
 
 enum CustomAppBarIcons {
   appBarWithIcons,
@@ -111,7 +115,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
 
   @override
   Widget build(BuildContext context) {
-    switch (pageParams.elementAt(index)['layout']) {
+    switch (pageParams(context, index)['layout']) {
       case CustomAppBarIcons.appBarWithIcons:
         return AppBar(
           backgroundColor: Colors.transparent,
@@ -124,7 +128,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
                       Tween(begin: 0.0, end: 1.0).animate(_animationController),
                   child: IconButton(
                       icon: SvgPicture.asset(
-                          '${pageParams.elementAt(index)['icon']}',
+                          '${pageParams(context, index)['icon']}',
                           height: 30,
                           width: 30,
                           fit: BoxFit.scaleDown),
@@ -155,7 +159,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
           titleSpacing: 0,
           title: Padding(
             padding: const EdgeInsets.only(top: 20),
-            child: Text('${pageParams.elementAt(index)['name']}',
+            child: Text('${pageParams(context, index)['name']}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
@@ -182,7 +186,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
           centerTitle: true,
           title: Padding(
             padding: const EdgeInsets.only(top: 20),
-            child: Text('${pageParams.elementAt(index)['name']}',
+            child: Text('${pageParams(context, index)['name']}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,

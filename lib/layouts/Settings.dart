@@ -6,6 +6,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:smarthome/Model/UserData.dart';
 import 'package:smarthome/layouts/AccountPage.dart';
 
+import '../generated/l10n.dart';
+
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
 
@@ -37,6 +39,7 @@ class Settingslayout extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
+    final delegate = S.of(context);
     return Scaffold(
         backgroundColor: Colors.transparent,
         body: ListView(

@@ -1,12 +1,16 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:smarthome/utils/widget_functions.dart';
+
+import '../generated/l10n.dart';
 
 class LoadingDialog extends StatelessWidget {
   const LoadingDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final delegate = S.of(context);
     return WillPopScope(
       onWillPop: () async => false,
       child: BackdropFilter(
@@ -20,16 +24,17 @@ class LoadingDialog extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              CircularProgressIndicator(
+            children: [
+              const CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+              addHorizontalSpace(30),
               DefaultTextStyle(
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
-                  child: Text('   Loading...'))
+                  child: Text(delegate.loading))
             ],
           ),
         ),

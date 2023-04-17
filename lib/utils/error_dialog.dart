@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 
+import '../generated/l10n.dart';
 import 'globals.dart';
 
 enum ConnectionStatus { connected, connectionLost, unknown }
@@ -112,6 +113,7 @@ class ErrorDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final delegate = S.of(context);
     return WillPopScope(
       onWillPop: () async => false,
       child: BackdropFilter(
@@ -136,22 +138,22 @@ class ErrorDialog extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Connection error',
-                  style: TextStyle(
+                Text(
+                  delegate.connectionerrorTitle,
+                  style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 26),
                 ),
-                const Text(
-                  'No Internet connection!\n Please check your Wi-Fi connection in order to be able to connect to the server.',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                Text(
+                  delegate.connectionerrorMessage,
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
                 if (_retry)
                   TextButton(
                       onPressed: () => checkConnection(),
-                      child: const Text('Retry')),
+                      child: Text(delegate.retry)),
               ],
             ),
           ]),

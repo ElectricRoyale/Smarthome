@@ -1,6 +1,9 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+
+import '../generated/l10n.dart';
 
 const BACKGROUND_START = Color(0xff454549);
 const BACKGROUND_END = Color(0xff12172c);
@@ -41,59 +44,201 @@ const Map<String, List<List<Color>>> BackgroundRoomMap = {
   ]
 };
 
-const APPLIANCES = [
-  {
-    'icon': 'light.svg',
-    'name': 'LIGHT',
-    'group': 'switch',
-    'energyConsumption': '0 KW USED'
-  },
-  {
-    'icon': 'socket.svg',
-    'name': 'SOCKET',
-    'group': 'switch',
-    'energyConsumption': '0 KW USED'
-  },
-  {
-    'icon': 'shutter.svg',
-    'name': 'ROLLER SHUTTER',
-    'group': 'cover',
-    'energyConsumption': '0 KW USED'
-  },
-  {
-    'icon': 'Air_conditioner.svg',
-    'name': 'AIR CONDITIONER',
-    'group': 'air_conditioner',
-    'energyConsumption': '0 KW USED'
-  },
-  {
-    'icon': 'television.svg',
-    'name': 'VIDEO DEVICES',
-    'group': 'switch',
-    'energyConsumption': '0 KW USED'
-  },
-  {
-    'icon': 'heating_system.svg',
-    'name': 'HEATING SYSTEM',
-    'group': 'switch',
-    'energyConsumption': '0 KW USED'
-  },
-  {
-    'icon': 'kitchen_tools.svg',
-    'name': 'KITCHEN TOOLS',
-    'group': 'switch',
-    'energyConsumption': '0 KW USED'
-  },
-  {
-    'icon': 'washing_machine.svg',
-    'name': 'WASHING MACHINE',
-    'group': 'switch',
-    'energyConsumption': '0 KW USED'
-  },
-  {
-    'icon': 'garden.svg',
-    'name': 'IRRIGATION',
-    'group': 'switch',
-    'energyConsumption': '0 KW USED'
-  },
+Map APPLIANCES(BuildContext context, int index) {
+  List appliances = [
+    {
+      'icon': 'light.svg',
+      'name': S.of(context).appliancesLight,
+      'groupName': 'LIGHT',
+      'group': 'switch',
+      'energyConsumption': '0 KW USED'
+    },
+    {
+      'icon': 'socket.svg',
+      'name': S.of(context).appliancesSocket,
+      'groupName': 'SOCKET',
+      'group': 'switch',
+      'energyConsumption': '0 KW USED'
+    },
+    {
+      'icon': 'shutter.svg',
+      'name': S.of(context).appliancesShutter,
+      'groupName': 'ROLLER SHUTTER',
+      'group': 'cover',
+      'energyConsumption': '0 KW USED'
+    },
+    {
+      'icon': 'Air_conditioner.svg',
+      'name': S.of(context).appliancesAirConditioner,
+      'groupName': 'AIR CONDITIONER',
+      'group': 'air_conditioner',
+      'energyConsumption': '0 KW USED'
+    },
+    {
+      'icon': 'television.svg',
+      'name': S.of(context).appliancesVideoDevices,
+      'groupName': 'VIDEO DEVICES',
+      'group': 'switch',
+      'energyConsumption': '0 KW USED'
+    },
+    {
+      'icon': 'heating_system.svg',
+      'name': S.of(context).appliancesHeatingSystem,
+      'groupName': 'HEATING SYSTEM',
+      'group': 'switch',
+      'energyConsumption': '0 KW USED'
+    },
+    {
+      'icon': 'kitchen_tools.svg',
+      'name': S.of(context).appliancesKitchenTools,
+      'groupName': 'KITCHEN TOOLS',
+      'group': 'switch',
+      'energyConsumption': '0 KW USED'
+    },
+    {
+      'icon': 'washing_machine.svg',
+      'name': S.of(context).appliancesWashingMachine,
+      'groupName': 'WASHING MACHINE',
+      'group': 'switch',
+      'energyConsumption': '0 KW USED'
+    },
+    {
+      'icon': 'garden.svg',
+      'name': S.of(context).appliancesIrrigation,
+      'groupName': 'IRRIGATION',
+      'group': 'switch',
+      'energyConsumption': '0 KW USED'
+    },
+  ];
+  return appliances.elementAt(index);
+}
+
+final List<String> effectNames = [
+  'none',
+  'blue_fade',
+  'blue_strobe',
+  'colorjump',
+  'colorloop',
+  'colorstrobe',
+  'cyan_fade',
+  'cyan_strobe',
+  'gb_cross_fade',
+  'green_fade',
+  'green_strobe',
+  'purple_fade',
+  'purple_strobe',
+  'rb_cross_fade',
+  'red_fade',
+  'red_strobe',
+  'rg_cross_fade',
+  'white_fade',
+  'white_strobe',
+  'yellow_fade',
+  'yellow_strobe'
 ];
+final Map<String, Widget> dropdownItems = {
+  'none': const SizedBox(
+    width: 24,
+    height: 24,
+  ),
+  'blue_fade': SvgPicture.asset(
+    'assets/blue_fade.svg',
+    width: 24,
+    height: 24,
+  ),
+  'blue_strobe': SvgPicture.asset(
+    'assets/blue_strobe.svg',
+    width: 24,
+    height: 24,
+  ),
+  'colorjump': SvgPicture.asset(
+    'assets/colorjump.svg',
+    width: 24,
+    height: 24,
+  ),
+  'colorloop': SvgPicture.asset(
+    'assets/colorloop.svg',
+    width: 24,
+    height: 24,
+  ),
+  'colorstrobe': SvgPicture.asset(
+    'assets/colorstrobe.svg',
+    width: 24,
+    height: 24,
+  ),
+  'cyan_fade': SvgPicture.asset(
+    'assets/cyan_fade.svg',
+    width: 24,
+    height: 24,
+  ),
+  'cyan_strobe': SvgPicture.asset(
+    'assets/cyan_strobe.svg',
+    width: 24,
+    height: 24,
+  ),
+  'gb_cross_fade': SvgPicture.asset(
+    'assets/gb_cross_fade.svg',
+    width: 24,
+    height: 24,
+  ),
+  'green_fade': SvgPicture.asset(
+    'assets/green_fade.svg',
+    width: 24,
+    height: 24,
+  ),
+  'green_strobe': SvgPicture.asset(
+    'assets/green_strobe.svg',
+    width: 24,
+    height: 24,
+  ),
+  'purple_fade': SvgPicture.asset(
+    'assets/purple_fade.svg',
+    width: 24,
+    height: 24,
+  ),
+  'purple_strobe': SvgPicture.asset(
+    'assets/purple_strobe.svg',
+    width: 24,
+    height: 24,
+  ),
+  'rb_cross_fade': SvgPicture.asset(
+    'assets/rb_cross_fade.svg',
+    width: 24,
+    height: 24,
+  ),
+  'red_fade': SvgPicture.asset(
+    'assets/red_fade.svg',
+    width: 24,
+    height: 24,
+  ),
+  'red_strobe': SvgPicture.asset(
+    'assets/red_strobe.svg',
+    width: 24,
+    height: 24,
+  ),
+  'rg_cross_fade': SvgPicture.asset(
+    'assets/rg_cross_fade.svg',
+    width: 24,
+    height: 24,
+  ),
+  'white_fade': SvgPicture.asset(
+    'assets/white_fade.svg',
+    width: 24,
+    height: 24,
+  ),
+  'white_strobe': SvgPicture.asset(
+    'assets/white_strobe.svg',
+    width: 24,
+    height: 24,
+  ),
+  'yellow_fade': SvgPicture.asset(
+    'assets/yellow_fade.svg',
+    width: 24,
+    height: 24,
+  ),
+  'yellow_strobe': SvgPicture.asset(
+    'assets/yellow_strobe.svg',
+    width: 24,
+    height: 24,
+  ),
+};

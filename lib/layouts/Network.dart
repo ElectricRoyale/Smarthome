@@ -12,6 +12,8 @@ import 'package:speed_test_dart/speed_test_dart.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:wifi_info_plugin_plus/wifi_info_plugin_plus.dart';
 
+import '../generated/l10n.dart';
+
 class Network extends StatefulWidget {
   const Network({Key? key}) : super(key: key);
 
@@ -123,7 +125,10 @@ class NetworkLayout extends State<Network> {
             });
           }).catchError((error) {
             debugPrint(error.toString());
-            Map<String, String> deviceData = {'name': 'Unknown', 'ip': host.ip};
+            Map<String, String> deviceData = {
+              'name': S.of(context).unknown,
+              'ip': host.ip
+            };
             setState(() {
               devices.add(deviceData);
               devices = devices.map((item) => jsonEncode(item)).toList();
@@ -150,6 +155,7 @@ class NetworkLayout extends State<Network> {
 
   @override
   Widget build(BuildContext context) {
+    final delegate = S.of(context);
     this.context = context;
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -209,11 +215,12 @@ class NetworkLayout extends State<Network> {
                     flex: 3,
                     child: Column(
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 21, bottom: 8),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 21, bottom: 8),
                           child: Text(
-                            'Speed',
-                            style: TextStyle(color: Colors.white, fontSize: 14),
+                            delegate.speed,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 14),
                           ),
                         ),
                         Padding(
@@ -293,7 +300,8 @@ class NetworkLayout extends State<Network> {
                     Text(
                       '${devices.elementAt(index)['name']}',
                       style: TextStyle(
-                          color: devices.elementAt(index)['name'] != 'Unknown'
+                          color: devices.elementAt(index)['name'] !=
+                                  delegate.unknown
                               ? Colors.white
                               : const Color.fromARGB(255, 240, 0, 0),
                           fontWeight: FontWeight.bold,

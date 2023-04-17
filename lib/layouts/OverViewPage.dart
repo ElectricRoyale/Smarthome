@@ -4,14 +4,16 @@ import 'package:simple_shadow/simple_shadow.dart';
 import 'package:smarthome/utils/globals.dart';
 
 import '../JSON/device_data.dart';
+import '../generated/l10n.dart';
 import '../utils/DashboardData.dart';
 import '../utils/constants.dart';
 import '../utils/scrolling_text.dart';
 
 class OverViewPage extends StatefulWidget {
-  final String name;
+  final String name, groupName;
 
-  const OverViewPage({Key? key, required this.name}) : super(key: key);
+  const OverViewPage({Key? key, required this.name, required this.groupName})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => OverViewPageState();
@@ -24,7 +26,7 @@ class OverViewPageState extends State<OverViewPage> {
   @override
   void initState() {
     super.initState();
-    switch (widget.name) {
+    switch (widget.groupName) {
       case 'LIGHT':
         deviceData.addAll(DashboardData().getLights);
         break;
@@ -93,8 +95,8 @@ class OverViewPageState extends State<OverViewPage> {
           ),
           backgroundColor: Colors.transparent,
           body: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200,
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: MediaQuery.of(context).size.width / 2,
                 childAspectRatio: 3.25 / 2,
                 crossAxisSpacing: 15,
                 mainAxisSpacing: 15),
@@ -163,8 +165,10 @@ class OverViewPageState extends State<OverViewPage> {
                         padding: const EdgeInsets.only(left: 10.0),
                         child: Text(
                           deviceData.elementAt(index).energy != 'Unavailable'
-                              ? '${double.parse(deviceData.elementAt(index).energy).toStringAsPrecision(2)} kWh USED'
-                              : deviceData.elementAt(index).energy,
+                              ? double.parse(deviceData.elementAt(index).energy)
+                                      .toStringAsPrecision(2) +
+                                  S.of(context).devicegridUsage
+                              : S.of(context).unavailable,
                           style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 12,
@@ -215,10 +219,10 @@ class OverViewPageState extends State<OverViewPage> {
           child: AnimatedOpacity(
             duration: const Duration(seconds: 2),
             opacity: opacity,
-            child: const Text(
-              "No devices available",
+            child: Text(
+              S.of(context).noDevicesAvailable,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                   color: Color.fromARGB(55, 255, 255, 255),
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
