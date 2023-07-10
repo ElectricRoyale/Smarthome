@@ -1,27 +1,23 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
+import 'package:smarthome/layouts/error_dialog.dart';
 
-import '../generated/l10n.dart';
 import 'globals.dart';
 
 enum ConnectionStatus { connected, connectionLost, unknown }
 
-class ErrorDialog extends StatelessWidget {
+class ConnectionManager {
   final Connectivity _connectivity = Connectivity();
-  BuildContext? _context;
+  late BuildContext _context;
   Function(ConnectionStatus)? _onChange;
   bool _retry = false;
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
-
-  ErrorDialog({Key? key}) : super(key: key);
 
   void initialize(BuildContext context,
       {Function(ConnectionStatus connectionStatus)? onChange}) {
@@ -37,7 +33,7 @@ class ErrorDialog extends StatelessWidget {
             Hive.box('Settings').get('host').toString().substring(
                 Hive.box('Settings').get('host').toString().indexOf('://') + 3,
                 Hive.box('Settings').get('host').toString().lastIndexOf(':')),
-            22,
+            8123,
             timeout: const Duration(seconds: 2))
         .then((socket) {
       if (connectionError) {
@@ -73,16 +69,17 @@ class ErrorDialog extends StatelessWidget {
         }
         break;
       case ConnectivityResult.mobile:
-        _onChange!(ConnectionStatus.connectionLost);
-        debugPrint('connection Error');
-        if (!connectionError) _showDialog();
+        _popDialog();
+        _onChange!(ConnectionStatus.connected);
         break;
       case ConnectivityResult.none:
+        _popDialog();
         _onChange!(ConnectionStatus.connectionLost);
         debugPrint('connection Error');
         if (!connectionError) _showDialog();
         break;
       default:
+        _popDialog();
         _onChange!(ConnectionStatus.unknown);
         debugPrint('connection Error');
         if (!connectionError) _showDialog();
@@ -93,72 +90,22 @@ class ErrorDialog extends StatelessWidget {
   void _showDialog() {
     connectionError = true;
     showDialog(
-        context: _context!,
+        context: _context,
         barrierDismissible: false,
         useRootNavigator: true,
-        builder: (BuildContext context) => build(context));
+        builder: (BuildContext context) =>
+            ErrorDialog(_retry, checkConnection));
   }
 
   void _popDialog() {
     if (connectionError) {
       connectionError = false;
-      Navigator.of(_context!, rootNavigator: true).pop();
+      Navigator.of(_context, rootNavigator: true).pop();
     }
   }
 
   void dispose() {
     _connectivitySubscription.cancel();
     _popDialog();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final delegate = S.of(context);
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
-        child: Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          child: Stack(children: [
-            Align(
-                child: Padding(
-                    padding: const EdgeInsets.only(bottom: 240),
-                    child: SvgPicture.asset(
-                      'assets/error.svg',
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
-                    ))),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  delegate.connectionerrorTitle,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 26),
-                ),
-                Text(
-                  delegate.connectionerrorMessage,
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                  textAlign: TextAlign.center,
-                ),
-                if (_retry)
-                  TextButton(
-                      onPressed: () => checkConnection(),
-                      child: Text(delegate.retry)),
-              ],
-            ),
-          ]),
-        ),
-      ),
-    );
   }
 }

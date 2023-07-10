@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:smarthome/layouts/Dashboard.dart';
-import 'package:smarthome/layouts/Network.dart';
-import 'package:smarthome/layouts/Settings.dart';
-import 'package:smarthome/layouts/customAppBar.dart';
+import 'package:smarthome/layouts/custom_app_bar.dart';
+import 'package:smarthome/layouts/dashboard.dart';
+import 'package:smarthome/layouts/network.dart';
+import 'package:smarthome/layouts/settings.dart';
+import 'package:smarthome/utils/connection_manager.dart';
 import 'package:smarthome/utils/constants.dart';
-import 'package:smarthome/utils/error_dialog.dart';
 import 'package:smarthome/utils/globals.dart';
 
 import '../generated/l10n.dart';
@@ -22,7 +22,7 @@ class MyHomePageState extends State<MyHomePage>
   int _selectedIndex = 0;
   final network = GlobalKey<NetworkLayout>();
   final customAppBar = GlobalKey<CustomAppBarLayout>();
-  ErrorDialog errorDialog = ErrorDialog();
+  ConnectionManager errorDialog = ConnectionManager();
 
   bool dashboardIsInit = false,
       networkIsInit = false,
@@ -63,7 +63,9 @@ class MyHomePageState extends State<MyHomePage>
           child: Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: Colors.transparent,
-            appBar: CustomAppBar(key: customAppBar, network: network),
+            appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(70.0),
+                child: CustomAppBar(key: customAppBar, network: network)),
             extendBody: true,
             body: SafeArea(
               bottom: false,

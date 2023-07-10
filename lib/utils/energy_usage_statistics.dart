@@ -7,7 +7,7 @@ import '../JSON/energy_sensor_data.dart';
 import '../generated/l10n.dart';
 
 class EnergyUsageStatistics extends StatelessWidget {
-  final DeviceData data;
+  final DeviceData? data;
   final EdgeInsetsGeometry padding;
   const EnergyUsageStatistics(
       {Key? key, required this.data, this.padding = EdgeInsets.zero})
@@ -62,7 +62,7 @@ class EnergyUsageStatistics extends StatelessWidget {
             SplineAreaSeries(
                 name: delegate.energystatisticsAxisLableLine,
                 splineType: SplineType.monotonic,
-                dataSource: data.energyUsageData,
+                dataSource: data?.energyUsageData ?? [],
                 xValueMapper: (data, _) => data.end!,
                 yValueMapper: (data, _) => data.state!,
                 color: const Color.fromARGB(191, 248, 131, 17),
@@ -76,7 +76,7 @@ class EnergyUsageStatistics extends StatelessWidget {
   }
 
   Widget emptyView(BuildContext context) {
-    if (data.energyUsageData.isEmpty) {
+    if (data != null && data!.energyUsageData.isEmpty) {
       return Text(
         S.of(context).energystatisticsEmpty,
         textAlign: TextAlign.center,

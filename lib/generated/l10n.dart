@@ -380,6 +380,26 @@ class S {
     );
   }
 
+  /// `Unavailable`
+  String get unavailableTitle {
+    return Intl.message(
+      'Unavailable',
+      name: 'unavailableTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No connection to the unit could be established! Please check the connection of the unit!`
+  String get unavailableMessage {
+    return Intl.message(
+      'No connection to the unit could be established! Please check the connection of the unit!',
+      name: 'unavailableMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Appliances`
   String get devicegridAppliances {
     return Intl.message(
@@ -865,6 +885,16 @@ class S {
     return Intl.message(
       'No devices available',
       name: 'noDevicesAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change Server address`
+  String get changeServerAddress {
+    return Intl.message(
+      'Change Server address',
+      name: 'changeServerAddress',
       desc: '',
       args: [],
     );

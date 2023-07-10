@@ -1,13 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
-import 'package:smarthome/layouts/discovery_page.dart';
+import 'dart:ui';
 
-import '../Model/UserData.dart';
-import '../Model/weatherLocations.dart';
-import '../utils/MySQLHelper.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:hive_flutter/adapters.dart';
+
+import '../Model/user_data.dart';
+import '../Model/weather_locations.dart';
+import '../generated/l10n.dart';
+import '../layouts/discovery_page.dart';
 import '../utils/constants.dart';
-import 'Login.dart';
-import 'Register.dart';
+import '../utils/my_sql_helper.dart';
+import 'login.dart';
+import 'register.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -35,12 +39,20 @@ class _SplashScreenState extends State<SplashScreen> {
     await Hive.openBox('Settings');
     await Hive.openBox<WeatherLocations>('WeatherLocations');
 
+    await connection();
+  }
+
+  Future<void> connection() async {
     if (!mounted) return;
     if (Hive.box('Settings').get('host') == null) {
       await Navigator.of(context).push(MaterialPageRoute(
           builder: (BuildContext context) => const DiscoveryPage()));
     }
 
+    if (!(await MySQLHelper().canConnect())) {
+      onConnectionFailed();
+      return;
+    }
     bool isEmpty = await MySQLHelper().isEmpty();
 
     if (!mounted) return;
@@ -49,6 +61,69 @@ class _SplashScreenState extends State<SplashScreen> {
         reverseTransitionDuration: Duration.zero,
         pageBuilder: (context, animation1, animation2) =>
             isEmpty ? const Register() : const Login()));
+  }
+
+  void onConnectionFailed() {
+    final delegate = S.of(context);
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => WillPopScope(
+              onWillPop: () async => false,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
+                child: Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  child: Stack(children: [
+                    Align(
+                        child: Padding(
+                            padding: const EdgeInsets.only(bottom: 240),
+                            child: SvgPicture.asset(
+                              'assets/error.svg',
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                            ))),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          delegate.connectionerrorTitle,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 26),
+                        ),
+                        Text(
+                          delegate.connectionerrorMessage,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              connection();
+                              Navigator.pop(context);
+                            },
+                            child: Text(delegate.retry)),
+                        TextButton(
+                            onPressed: () {
+                              Hive.box('Settings').delete('host');
+                              connection();
+                              Navigator.pop(context);
+                            },
+                            child: Text(delegate.changeServerAddress)),
+                      ],
+                    ),
+                  ]),
+                ),
+              ),
+            ));
   }
 
   @override

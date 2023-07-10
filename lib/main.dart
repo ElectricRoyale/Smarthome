@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:smarthome/layouts/splashscreen.dart';
-import 'package:smarthome/utils/biometricAuthentication.dart';
+import 'package:smarthome/utils/biometric_authentication.dart';
 
 import 'generated/l10n.dart';
 import 'layouts/controllpanels/air_conditioner.dart';
@@ -47,8 +47,11 @@ class MyApp extends StatelessWidget {
         overlays: [SystemUiOverlay.top]);
     return MaterialApp(
       theme: ThemeData(
-          colorScheme:
-              ColorScheme.fromSwatch().copyWith(secondary: Colors.white)),
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSwatch(
+            brightness: Brightness.dark,
+            accentColor: Colors.white,
+          )),
       routes: {
         'biometricAuthentication': (BuildContext ctx) =>
             const BiometricAuthentication(),

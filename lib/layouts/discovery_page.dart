@@ -33,9 +33,6 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
     await discovery.ready;
     discovery.eventStream!.listen((event) {
       if (event.type == BonsoirDiscoveryEventType.discoveryServiceResolved) {
-        print(event.service!.attributes!['external_url'] != ''
-            ? event.service!.attributes!['external_url']
-            : event.service!.attributes!['internal_url']);
         setState(() {
           discoveryList.add(event.service!);
         });
@@ -66,7 +63,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                 padding: const EdgeInsets.only(top: 80.0, bottom: 20),
                 child: SimpleShadow(
                   offset: const Offset(0, 2),
-                  child: const Icon(
+                  child: Icon(
                     MdiIcons.homeSearch,
                     size: 70,
                     color: Colors.white,
@@ -226,25 +223,25 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                       child: TextField(
                         autofocus: true,
                         controller: _hostController,
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
+                        decoration: InputDecoration(
+                          focusedBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(15)),
                             borderSide:
                                 BorderSide(color: Colors.white, width: 2.0),
                           ),
-                          enabledBorder: OutlineInputBorder(
+                          enabledBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(15)),
                             borderSide:
                                 BorderSide(color: Colors.white, width: 2.0),
                           ),
                           hintText: 'http:ipAddress:8123',
-                          hintStyle: TextStyle(color: Colors.white),
+                          hintStyle: const TextStyle(color: Colors.white),
                           prefixIcon: Icon(
                             MdiIcons.ipNetworkOutline,
                             color: Colors.white,
                             size: 30,
                           ),
-                          contentPadding: EdgeInsets.all(0),
+                          contentPadding: const EdgeInsets.all(0),
                           isDense: true,
                         ),
                         style: const TextStyle(

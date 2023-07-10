@@ -5,16 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:smarthome/layouts/mainlayout.dart';
-import 'package:smarthome/utils/LoadingScreen.dart';
-import 'package:smarthome/utils/MySQLHelper.dart';
-import 'package:smarthome/utils/error_dialog.dart';
+import 'package:smarthome/layouts/register.dart';
+import 'package:smarthome/utils/connection_manager.dart';
 
 import '../generated/l10n.dart';
-import '../utils/DashboardData.dart';
+import '../layouts/mainlayout.dart';
 import '../utils/constants.dart';
+import '../utils/dashboard_data.dart';
 import '../utils/globals.dart';
-import '../utils/weatherData.dart';
+import '../utils/loading_screen.dart';
+import '../utils/my_sql_helper.dart';
+import '../utils/weather_data.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -25,10 +26,14 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> with TickerProviderStateMixin {
   bool _isObscure = true, nameError = false, passwordError = false;
-  String nameErrorText = '', passwordErrorText = '';
+  String nameErrorText = '',
+      passwordErrorText = '',
+      usageUnit = '',
+      logbookChange = '';
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
-  ErrorDialog errorDialog = ErrorDialog();
+  ConnectionManager errorDialog = ConnectionManager();
+  List<String> dayNames = [];
 
   Box loginData = Hive.box('LoginData');
 
@@ -49,21 +54,39 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     super.initState();
     errorDialog.initialize(context, onChange: (connectionStatus) {
       if (connectionStatus == ConnectionStatus.connected) {
-        biometricLogin();
+        biometricLogin(S.of(context).biometricLocalizedReason);
       } else {
         _cancelAuthentication();
       }
     });
 
     errorDialog.checkConnection();
-    Future.delayed(const Duration(milliseconds: 2900), () => biometricLogin());
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      biometricAuthentication();
+    });
+  }
+
+  void biometricAuthentication() {
+    Future.delayed(const Duration(milliseconds: 2900),
+        () => biometricLogin(S.of(context).biometricLocalizedReason));
+    usageUnit = S.of(context).devicegridUsage;
+    logbookChange = S.of(context).logbook;
+    dayNames = [
+      S.of(context).sun,
+      S.of(context).mon,
+      S.of(context).tue,
+      S.of(context).wed,
+      S.of(context).thu,
+      S.of(context).fri,
+      S.of(context).sat,
+    ];
   }
 
   Future<void> _cancelAuthentication() async {
     await auth.stopAuthentication();
   }
 
-  void biometricLogin() async {
+  void biometricLogin(String localizationReason) async {
     await Permission.location.request().isGranted;
     await Permission.camera.request().isGranted;
     await Permission.storage.request().isGranted;
@@ -71,7 +94,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       nameController.text = loginData.get('name');
       if (await auth.isDeviceSupported() && await auth.canCheckBiometrics) {
         if (await auth.authenticate(
-          localizedReason: S.of(context).biometricLocalizedReason,
+          localizedReason: localizationReason,
           options: const AuthenticationOptions(
               stickyAuth: true, biometricOnly: true),
         )) {
@@ -102,8 +125,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             return const LoadingDialog();
           });
       if (await MySQLHelper().login(name, password)) {
-        await DashboardData().init(context);
-        await WeatherData().init(context);
+        await DashboardData().init(usageUnit, logbookChange);
+        await WeatherData().init(dayNames);
         errorDialog.dispose();
         if (!mounted) return;
         Navigator.pop(loadingDialog);
@@ -119,7 +142,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                               child),
                 ));
       } else {
-        Navigator.pop(loadingDialog);
+        closeLoadingScreen();
         setState(() {
           nameError = true;
           nameErrorText = 'Username and Password doesn\'t match';
@@ -129,6 +152,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         });
       }
     } else {
+      closeLoadingScreen();
       if (nameController.text.isEmpty) {
         setState(() {
           nameError = true;
@@ -142,6 +166,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         });
       }
     }
+  }
+
+  void closeLoadingScreen() {
+    Navigator.pop(loadingDialog);
   }
 
   @override
@@ -377,7 +405,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       TextButton(
                         onPressed: () {
                           loginData.clear();
-                          /*_controller
+                          _controller
                               .reverse(from: 1.0)
                               .then((value) => Navigator.pushReplacement(
                                     context,
@@ -388,7 +416,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                         transitionsBuilder: (context, animation,
                                                 secondaryAnimation, child) =>
                                             child),
-                                  ));*/
+                                  ));
                         },
                         child: Text(
                           delegate.loginSignUp,

@@ -7,16 +7,16 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:smarthome/Model/UserData.dart';
-import 'package:smarthome/layouts/Login.dart';
-import 'package:smarthome/layouts/mainlayout.dart';
-import 'package:smarthome/utils/MySQLHelper.dart';
-import 'package:smarthome/utils/globals.dart' as globals;
-import 'package:smarthome/utils/widget_functions.dart';
 import 'package:sprintf/sprintf.dart';
 
+import '../Model/user_data.dart';
 import '../generated/l10n.dart';
+import '../layouts/login.dart';
+import '../layouts/mainlayout.dart';
 import '../utils/constants.dart';
+import '../utils/globals.dart' as globals;
+import '../utils/my_sql_helper.dart';
+import '../utils/widget_functions.dart';
 
 class AccountPage extends StatefulWidget {
   final Uint8List profileimage;
@@ -63,11 +63,6 @@ class AccountPageState extends State<AccountPage> {
         : null;
     _addressController.text = widget.address;
     _telephonenumberController.text = widget.telephonenumber;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   void onItemTap(int index) {

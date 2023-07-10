@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../generated/l10n.dart';
 import '../../utils/globals.dart';
 import '../../utils/scrolling_text.dart';
 
@@ -28,7 +27,6 @@ class MediaLayoutDesign extends State<MediaLayout> {
 
   @override
   Widget build(BuildContext context) {
-    final delegate = S.of(context);
     return Container(
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
@@ -40,18 +38,22 @@ class MediaLayoutDesign extends State<MediaLayout> {
             childAspectRatio: 3 / 2,
             crossAxisSpacing: 15,
             mainAxisSpacing: 15),
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         itemCount: mediaList.length,
         itemBuilder: (ctx, index) => InkWell(
+          borderRadius: BorderRadius.circular(15),
           onTap: () {},
           child: Stack(alignment: Alignment.topCenter, children: [
-            const Icon(
-              Icons.folder,
-              size: 120,
-              color: Color.fromARGB(255, 102, 102, 122),
+            const Positioned(
+              top: -10,
+              child: Icon(
+                Icons.folder,
+                size: 120,
+                color: Color.fromARGB(255, 102, 102, 122),
+              ),
             ),
             Positioned(
-              bottom: 2,
+              bottom: 5,
               child: Container(
                 width: (MediaQuery.of(context).size.width / 2 - 40),
                 height: 22,

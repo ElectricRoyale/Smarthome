@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
-import 'package:smarthome/utils/DashboardData.dart';
+import 'package:smarthome/utils/dashboard_data.dart';
 import 'package:smarthome/utils/logbook_item.dart';
 
-import '../../Model/UserData.dart';
+import '../../Model/user_data.dart';
 import '../../utils/globals.dart';
 
 class LogbookLayout extends StatefulWidget {
@@ -85,17 +85,35 @@ class LogbookLayoutDesign extends State<LogbookLayout> {
         onRefresh: refreshLog,
         color: Colors.white,
         backgroundColor: const Color(0xff4a4b5e),
-        child: ListView.separated(
-            itemBuilder: (context, index) => logbook.elementAt(index),
-            separatorBuilder: (context, index) => const Divider(
-                  color: Colors.white,
-                  indent: 10,
-                  endIndent: 10,
-                  thickness: 1.1,
-                ),
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.only(top: 10, bottom: 10),
-            itemCount: logbook.length),
+        child: ShaderMask(
+          shaderCallback: (Rect rect) => const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.grey,
+              Colors.transparent,
+              Colors.transparent,
+              Colors.grey,
+            ],
+            stops: [
+              0.0,
+              0.035,
+              0.965,
+              1.0
+            ], // 10% purple, 80% transparent, 10% purple
+          ).createShader(rect),
+          blendMode: BlendMode.dstOut,
+          child: ListView.separated(
+              itemBuilder: (context, index) => logbook.elementAt(index),
+              separatorBuilder: (context, index) => const Divider(
+                    color: Colors.white,
+                    indent: 10,
+                    endIndent: 10,
+                    thickness: 1.1,
+                  ),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              itemCount: logbook.length),
+        ),
       ),
     );
   }

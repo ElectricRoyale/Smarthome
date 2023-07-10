@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'weatherLocations.dart';
+part of 'weather_locations.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator

@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:hive/hive.dart';
+import 'package:http/http.dart';
 import 'package:mysql1/mysql1.dart';
+import 'package:smarthome/utils/system_specific_data.dart';
 
-import '../Model/UserData.dart';
+import '../Model/user_data.dart';
 
 class MySQLHelper {
   var settings = ConnectionSettings(
@@ -13,8 +16,18 @@ class MySQLHelper {
       port: 3306,
       user: 'pascal',
       password: 'Electric Royale',
-      db: 'UserData');
+      db: 'UserData',
+      timeout: const Duration(seconds: 5));
   late MySqlConnection conn;
+
+  Future<bool> canConnect() async {
+    try {
+      conn = await MySqlConnection.connect(settings);
+    } catch (_) {
+      return false;
+    }
+    return true;
+  }
 
   Future<bool> isEmpty() async {
     conn = await MySqlConnection.connect(settings);
@@ -25,7 +38,8 @@ class MySQLHelper {
   Future<bool> login(String name, String password) async {
     conn = await MySqlConnection.connect(settings);
     var result = await conn.query(
-        'select token, name from UserData.LoginData where name like \'$name%\' and aes_decrypt(password, \'LaK&d;Y+2IT\') = \'$password\';');
+        "select token, name from UserData.LoginData where name like '$name%' and aes_decrypt(password, 'LaK&d;Y+2IT') = ?;",
+        [password]);
     if (result.isNotEmpty) {
       final data = UserData(
           name: result.first.fields['name'],
@@ -41,7 +55,27 @@ class MySQLHelper {
     }
   }
 
-  Future<String> register(String name, String password, String token) async {
+  Future<String> register(String name, String password,
+      Uri registrationEndpoint, String token) async {
+    SystemSpecificData specificData =
+        await SystemSpecificData().getSystemSpecificData();
+    await post(registrationEndpoint,
+        body: jsonEncode({
+          "device_id": specificData.deviceId,
+          "app_id": specificData.appId,
+          "app_name": specificData.appName,
+          "app_version": specificData.appVersion,
+          "device_name": specificData.deviceName,
+          "manufacturer": specificData.manufacturer,
+          "model": specificData.model,
+          "os_name": specificData.osName,
+          "os_version": specificData.osVersion,
+          "supports_encryption": specificData.supportEncryption,
+        }),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        });
     conn = await MySqlConnection.connect(settings);
     var rs =
         await conn.query('select Name from LoginData where Name = ?', [name]);

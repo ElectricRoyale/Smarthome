@@ -52,6 +52,8 @@ class _BrightnessSliderState extends State<BrightnessSlider> {
             onHorizontalDragUpdate: (DragUpdateDetails details) {
               _colorChangeHandler(details.localPosition.dx);
             },
+            onHorizontalDragEnd: (DragEndDetails details) => widget.onEnded(),
+            onTap: () => widget.onEnded(),
             onTapDown: (TapDownDetails details) {
               _colorChangeHandler(details.localPosition.dx);
             },

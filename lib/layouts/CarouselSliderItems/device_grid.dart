@@ -3,10 +3,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
 import '../../generated/l10n.dart';
-import '../../utils/DashboardData.dart';
 import '../../utils/constants.dart';
+import '../../utils/dashboard_data.dart';
 import '../../utils/globals.dart';
-import '../OverViewPage.dart';
+import '../overview_page.dart';
 
 class DeviceGrid extends StatefulWidget {
   const DeviceGrid({Key? key}) : super(key: key);
@@ -72,14 +72,15 @@ class DeviceGridState extends State<DeviceGrid> {
                   padding: const EdgeInsets.only(right: 30),
                   child: InkWell(
                     onTap: () => Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                            pageBuilder:
-                                (context, animation, secondAnimation) =>
-                                    OverViewPage(
-                                      name: delegate.devicegridAllDevices,
-                                      groupName: 'ALL DEVICES',
-                                    ))),
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => OverViewPage(
+                          name: delegate.devicegridAllDevices,
+                          groupName: 'ALL DEVICES',
+                        ),
+                        settings: const RouteSettings(name: 'overviewpage'),
+                      ),
+                    ),
                     child: SimpleShadow(
                       opacity: 1,
                       offset: const Offset(0, 2.0),
@@ -116,14 +117,15 @@ class DeviceGridState extends State<DeviceGrid> {
                 ),
                 child: InkWell(
                   onTap: () => Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                          pageBuilder: (context, animation, secondAnimation) =>
-                              OverViewPage(
-                                name: (APPLIANCES(context, index)['name'])!,
-                                groupName:
-                                    (APPLIANCES(context, index)['groupName'])!,
-                              ))),
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OverViewPage(
+                        name: (appliances(context, index)['name'])!,
+                        groupName: (appliances(context, index)['groupName'])!,
+                      ),
+                      settings: const RouteSettings(name: 'overviewpage'),
+                    ),
+                  ),
                   borderRadius: BorderRadius.circular(20.0),
                   child: Column(
                     children: [
@@ -134,7 +136,7 @@ class DeviceGridState extends State<DeviceGrid> {
                           opacity: 0.6,
                           offset: const Offset(0, 2),
                           child: SvgPicture.asset(
-                            'assets/${APPLIANCES(context, index)['icon']}',
+                            'assets/${appliances(context, index)['icon']}',
                             height: 64,
                             width: 64,
                             fit: BoxFit.scaleDown,
@@ -144,7 +146,7 @@ class DeviceGridState extends State<DeviceGrid> {
                       Padding(
                         padding: const EdgeInsets.only(top: 7),
                         child: Text(
-                          APPLIANCES(context, index)['name'],
+                          appliances(context, index)['name'],
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.white,

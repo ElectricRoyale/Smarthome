@@ -44,7 +44,7 @@ const Map<String, List<List<Color>>> BackgroundRoomMap = {
   ]
 };
 
-Map APPLIANCES(BuildContext context, int index) {
+Map appliances(BuildContext context, int index) {
   List appliances = [
     {
       'icon': 'light.svg',

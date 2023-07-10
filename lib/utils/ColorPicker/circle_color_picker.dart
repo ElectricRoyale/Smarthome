@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:smarthome/utils/ColorPicker/brightnessSlider.dart';
+import 'package:smarthome/utils/ColorPicker/brightness_slider.dart';
 import 'package:smarthome/utils/widget_functions.dart';
 
-import '../Home_Assistant_Connection.dart';
 import '../globals.dart';
-import 'colorPickerController.dart';
-import 'huePicker.dart';
-import 'lightnessSlider.dart';
+import '../home_assistant_connection.dart';
+import 'color_picker_controller.dart';
+import 'hue_picker.dart';
+import 'lightness_slider.dart';
 
 class CircleColorPicker extends StatefulWidget {
   const CircleColorPicker({
@@ -105,7 +105,7 @@ class _CircleColorPickerState extends State<CircleColorPicker>
                   brightness: widget.brightness,
                   onEnded: () {
                     HomeAssistantConnection().send([
-                      '{"id": ${idNumber++}, "type": "call_service", "domain" : "light", "service": "turn_on", "service_data" : {"brightness_pct" : "${brightnessValue.round()}"}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
+                      '{"id": ${idNumber++}, "type": "call_service", "domain" : "light", "service": "turn_on", "service_data" : {"brightness_pct" : ${brightnessValue.round()}}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
                     ]);
                   },
                 ),

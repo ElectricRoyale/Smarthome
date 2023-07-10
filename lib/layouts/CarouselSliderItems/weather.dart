@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 import 'package:simple_shadow/simple_shadow.dart';
-import 'package:smarthome/Model/weatherLocations.dart';
-import 'package:smarthome/utils/locationAddDialog.dart';
-import 'package:smarthome/utils/weatherData.dart';
+import 'package:smarthome/Model/weather_locations.dart';
+import 'package:smarthome/utils/location_add_dialog.dart';
+import 'package:smarthome/utils/weather_data.dart';
 import 'package:weather/weather.dart';
 
 import '../../generated/l10n.dart';
@@ -27,23 +27,36 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
       humidityController = TextEditingController(),
       hygrometerController = TextEditingController();
 
+  List<String> dayNames = [];
+
   WeatherLocations weatherLocations =
       Hive.box<WeatherLocations>('WeatherLocations').get('WeatherLocation')!;
 
   @override
   void initState() {
     super.initState();
-    temperatureWarmController.text = WeatherData().maxTemperature;
-    temperatureColdController.text = WeatherData().minTemperature;
-    sunriseController.text = WeatherData().sunrise;
-    sunsetController.text = WeatherData().sunset;
-    windController.text = WeatherData().wind;
-    fellTemperatureController.text = WeatherData().temperatureFeelsLike;
-    humidityController.text = WeatherData().humidity;
-    hygrometerController.text = WeatherData().hygrometer != '-'
-        ? '${WeatherData().hygrometer} mm'
-        : WeatherData().hygrometer;
-    weatherRefresh = () async => setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      temperatureWarmController.text = WeatherData().maxTemperature;
+      temperatureColdController.text = WeatherData().minTemperature;
+      sunriseController.text = WeatherData().sunrise;
+      sunsetController.text = WeatherData().sunset;
+      windController.text = WeatherData().wind;
+      fellTemperatureController.text = WeatherData().temperatureFeelsLike;
+      humidityController.text = WeatherData().humidity;
+      hygrometerController.text = WeatherData().hygrometer != '-'
+          ? '${WeatherData().hygrometer} mm'
+          : WeatherData().hygrometer;
+      dayNames = [
+        S.of(context).sun,
+        S.of(context).mon,
+        S.of(context).tue,
+        S.of(context).wed,
+        S.of(context).thu,
+        S.of(context).fri,
+        S.of(context).sat,
+      ];
+      weatherRefresh = () async => setState(() {});
+    });
   }
 
   @override
@@ -89,7 +102,7 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                           weatherLocations.weatherLocation = value;
                           Hive.box<WeatherLocations>('WeatherLocations')
                               .put('WeatherLocation', weatherLocations);
-                          await WeatherData().init(context);
+                          await WeatherData().init(dayNames);
                           setState(() {});
                         },
                       ),
@@ -122,7 +135,7 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                           )),
                       IconButton(
                           onPressed: () async {
-                            await WeatherData().init(context);
+                            await WeatherData().init(dayNames);
                             setState(() {});
                           },
                           icon: const Icon(
@@ -142,11 +155,12 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                 ]),
           ),
           Stack(
-            clipBehavior: Clip.hardEdge,
+            clipBehavior: Clip.none,
             children: [
               Positioned(
                 left: 10,
                 bottom: -10,
+                top: -11,
                 child: SizedBox(
                   height: 176,
                   width: 120,
@@ -307,6 +321,7 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
               Positioned(
                 right: 10,
                 bottom: -10,
+                top: -11,
                 child: SizedBox(
                   height: 176,
                   width: 120,
@@ -463,7 +478,7 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
   }
 
   refresh(Weather data) async {
-    await WeatherData().init(context, w: data);
+    await WeatherData().init(dayNames, w: data);
     setState(() {});
   }
 
@@ -517,7 +532,7 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
   }
 
   Future<bool> sureDialog(String element) async {
-    bool delete;
+    //bool delete;
     showDialog(
         context: context,
         builder: (context) {
@@ -540,7 +555,7 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    delete = false;
+                    //delete = false;
                   },
                   child: Text(
                     delegate.weatherDialogDeleteButtonCancel,
@@ -549,7 +564,7 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    delete = true;
+                    //delete = true;
                   },
                   child: Text(
                     delegate.weatherDialogDeleteButtonDelete,

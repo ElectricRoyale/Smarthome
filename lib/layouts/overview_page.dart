@@ -5,8 +5,8 @@ import 'package:smarthome/utils/globals.dart';
 
 import '../JSON/device_data.dart';
 import '../generated/l10n.dart';
-import '../utils/DashboardData.dart';
 import '../utils/constants.dart';
+import '../utils/dashboard_data.dart';
 import '../utils/scrolling_text.dart';
 
 class OverViewPage extends StatefulWidget {
@@ -26,38 +26,7 @@ class OverViewPageState extends State<OverViewPage> {
   @override
   void initState() {
     super.initState();
-    switch (widget.groupName) {
-      case 'LIGHT':
-        deviceData.addAll(DashboardData().getLights);
-        break;
-      case 'SOCKET':
-        deviceData.addAll(DashboardData().getSockets);
-        break;
-      case 'ROLLER SHUTTER':
-        deviceData.addAll(DashboardData().getShutters);
-        break;
-      case 'AIR CONDITIONER':
-        deviceData.addAll(DashboardData().getAirConditioners);
-        break;
-      case 'VIDEO DEVICES':
-        deviceData.addAll(DashboardData().getVideoDevices);
-        break;
-      case 'HEATING SYSTEM':
-        deviceData.addAll(DashboardData().getHeatingSystems);
-        break;
-      case 'KITCHEN TOOLS':
-        deviceData.addAll(DashboardData().getKitchenTools);
-        break;
-      case 'WASHING MACHINE':
-        deviceData.addAll(DashboardData().getWashingMachines);
-        break;
-      case 'IRRIGATION':
-        deviceData.addAll(DashboardData().getIrrigations);
-        break;
-      case 'ALL DEVICES':
-        deviceData.addAll(DashboardData().getAllDevices);
-        break;
-    }
+    deviceData.addAll(DashboardData().categoryMap[widget.groupName]!);
   }
 
   @override
@@ -103,6 +72,7 @@ class OverViewPageState extends State<OverViewPage> {
             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 20),
             itemCount: deviceData.length,
             itemBuilder: (ctx, index) => InkWell(
+              borderRadius: BorderRadius.circular(15),
               onTap: () {
                 deviceItem = deviceData.elementAt(index);
                 Navigator.pushNamed(
@@ -130,6 +100,11 @@ class OverViewPageState extends State<OverViewPage> {
                             fit: BoxFit.scaleDown,
                             height: 50,
                             width: 50,
+                            colorFilter: deviceData.elementAt(index).state ==
+                                    'unavailable'
+                                ? const ColorFilter.mode(
+                                    Colors.grey, BlendMode.saturation)
+                                : null,
                           ),
                         ),
                       ),
@@ -164,13 +139,22 @@ class OverViewPageState extends State<OverViewPage> {
                       Padding(
                         padding: const EdgeInsets.only(left: 10.0),
                         child: Text(
-                          deviceData.elementAt(index).energy != 'Unavailable'
-                              ? double.parse(deviceData.elementAt(index).energy)
-                                      .toStringAsPrecision(2) +
-                                  S.of(context).devicegridUsage
+                          deviceData.elementAt(index).state != 'unavailable'
+                              ? double.tryParse(
+                                          deviceData.elementAt(index).energy) !=
+                                      null
+                                  ? double.parse(deviceData
+                                              .elementAt(index)
+                                              .energy)
+                                          .toStringAsPrecision(2) +
+                                      S.of(context).devicegridUsage
+                                  : ''
                               : S.of(context).unavailable,
-                          style: const TextStyle(
-                              color: Colors.grey,
+                          style: TextStyle(
+                              color: deviceData.elementAt(index).state !=
+                                      'unavailable'
+                                  ? Colors.grey
+                                  : Colors.red,
                               fontSize: 12,
                               decoration: TextDecoration.none),
                           maxLines: 1,

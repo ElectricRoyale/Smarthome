@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive/hive.dart';
-import 'package:smarthome/Model/weatherLocations.dart';
-import 'package:smarthome/utils/weatherData.dart';
+import 'package:smarthome/Model/weather_locations.dart';
+import 'package:smarthome/utils/weather_data.dart';
 import 'package:smarthome/utils/widget_functions.dart';
 import 'package:weather/weather.dart';
 

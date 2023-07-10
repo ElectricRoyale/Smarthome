@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:smarthome/JSON/device_data.dart';
-import 'package:smarthome/utils/DashboardData.dart';
-import 'package:smarthome/utils/Home_Assistant_Connection.dart';
-import 'package:smarthome/utils/constants.dart';
 
+import '../../JSON/device_data.dart';
+import '../../utils/constants.dart';
+import '../../utils/dashboard_data.dart';
 import '../../utils/globals.dart';
+import '../../utils/home_assistant_connection.dart';
 import '../../utils/scrolling_text.dart';
 
 class SpotifyControllLayout extends StatefulWidget {

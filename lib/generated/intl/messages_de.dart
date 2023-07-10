@@ -53,6 +53,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "biometricScreenHeading":
             MessageLookupByLibrary.simpleMessage("Die App ist gesperrt!"),
         "camera": MessageLookupByLibrary.simpleMessage("Kamera"),
+        "changeServerAddress":
+            MessageLookupByLibrary.simpleMessage("Server Adresse ändern"),
         "connectionerrorMessage": MessageLookupByLibrary.simpleMessage(
             "Keine Internetverbindung! Bitte Überprüfen Sie ihre Verbindung, um sich mit dem Server verbinden zu können!"),
         "connectionerrorTitle":
@@ -60,8 +62,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "devicegridAllDevices":
             MessageLookupByLibrary.simpleMessage("ALLE GERÄTE"),
         "devicegridAppliances": MessageLookupByLibrary.simpleMessage("Geräte"),
-        "devicegridUsage":
-            MessageLookupByLibrary.simpleMessage(" kWh VERBRAUCHT"),
+        "devicegridUsage": MessageLookupByLibrary.simpleMessage(" kWh GENUTZT"),
         "discoveryDialogMessage":
             MessageLookupByLibrary.simpleMessage("Adresse eingeben"),
         "discoveryEnterManual":
@@ -96,7 +97,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Passwort"),
         "loginPasswordForgot":
             MessageLookupByLibrary.simpleMessage("Passwort vergessen?"),
-        "loginSignUp": MessageLookupByLibrary.simpleMessage("Anmelden"),
+        "loginSignUp": MessageLookupByLibrary.simpleMessage("Registrieren"),
         "mon": MessageLookupByLibrary.simpleMessage("Mo"),
         "noDevicesAvailable": MessageLookupByLibrary.simpleMessage(
             "Es sind keine Geräte Vorhanden"),
@@ -148,6 +149,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "titleSettings": MessageLookupByLibrary.simpleMessage("Einstellungen"),
         "tue": MessageLookupByLibrary.simpleMessage("Di"),
         "unavailable": MessageLookupByLibrary.simpleMessage("Nicht Verfügbar"),
+        "unavailableMessage": MessageLookupByLibrary.simpleMessage(
+            "Es konnte keine Verbindung zum Gerät hergestellt werden! Bitte Überprüfen sie die Verbindung des Gerätes!"),
+        "unavailableTitle":
+            MessageLookupByLibrary.simpleMessage("Nicht Verfügbar"),
         "unknown": MessageLookupByLibrary.simpleMessage("Unbekannt"),
         "weatherDialogDeleteButtonCancel":
             MessageLookupByLibrary.simpleMessage("Abbruch"),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:smarthome/layouts/Dashboard.dart';
+import 'package:smarthome/layouts/dashboard.dart';
 import 'package:smarthome/my_icons_icons.dart';
 import 'package:smarthome/utils/constants.dart';
 import 'package:smarthome/utils/scrolling_text.dart';
@@ -51,7 +51,8 @@ class RoomItem extends StatelessWidget {
                   height: 64,
                   width: 64,
                   child: SvgPicture.asset("assets/${roomItem['icon']}",
-                      color: Colors.white),
+                      colorFilter: const ColorFilter.mode(
+                          Colors.white, BlendMode.srcIn)),
                 ),
                 Container(
                     width: width * 0.425,

@@ -1,43 +1,49 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import 'circle_tween.dart';
+import 'color_picker_wheel.dart';
 import 'pointer.dart';
 
-class LightnessSlider extends StatefulWidget {
-  const LightnessSlider({
+class HuePicker extends StatefulWidget {
+  const HuePicker({
     Key? key,
     required this.hue,
-    required this.lightness,
-    required this.width,
     required this.onChanged,
     required this.onEnded,
+    required this.size,
+    required this.strokeWidth,
     required this.thumbSize,
   }) : super(key: key);
 
   final double hue;
 
-  final double lightness;
-
-  final double width;
-
   final ValueChanged<double> onChanged;
 
   final VoidCallback onEnded;
 
+  final Size size;
+
+  final double strokeWidth;
+
   final double thumbSize;
 
   @override
-  State<StatefulWidget> createState() => _LightnessSliderState();
+  State<StatefulWidget> createState() => _HuePickerState();
 }
 
-class _LightnessSliderState extends State<LightnessSlider>
-    with TickerProviderStateMixin {
+class _HuePickerState extends State<HuePicker> with TickerProviderStateMixin {
   late AnimationController _scaleController;
   Timer? _cancelTimer;
 
   @override
   Widget build(BuildContext context) {
+    final minSize = min(widget.size.width, widget.size.height);
+    final offset = CircleTween(
+      minSize / 2 - widget.thumbSize / 2,
+    ).lerp(widget.hue * pi / 180);
     return GestureDetector(
       onPanDown: _onDown,
       onPanCancel: _onCancel,
@@ -48,40 +54,28 @@ class _LightnessSliderState extends State<LightnessSlider>
       onVerticalDragUpdate: _onUpdate,
       onVerticalDragEnd: _onEnd,
       child: SizedBox(
-        width: widget.width,
-        height: widget.thumbSize,
+        width: widget.size.width,
+        height: widget.size.height,
         child: Stack(
-          alignment: Alignment.centerLeft,
           children: <Widget>[
-            Container(
-              width: double.infinity,
-              height: 12,
-              margin: EdgeInsets.symmetric(
-                horizontal: widget.thumbSize / 3,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(6)),
-                gradient: LinearGradient(
-                  stops: const [0.5, 1],
-                  colors: [
-                    HSLColor.fromAHSL(1, widget.hue, 1, 0.5).toColor(),
-                    HSLColor.fromAHSL(1, widget.hue, 1, 1).toColor(),
-                  ],
+            SizedBox.expand(
+              child: Padding(
+                padding: EdgeInsets.all(
+                  widget.thumbSize / 2 - widget.strokeWidth,
+                ),
+                child: CustomPaint(
+                  painter: CirclePickerPainter(widget.strokeWidth),
                 ),
               ),
             ),
             Positioned(
-              left: widget.lightness * (widget.width - widget.thumbSize),
+              left: offset.dx,
+              top: offset.dy,
               child: ScaleTransition(
                 scale: _scaleController,
                 child: Pointer(
                   size: widget.thumbSize,
-                  color: HSLColor.fromAHSL(
-                    1,
-                    widget.hue,
-                    1,
-                    widget.lightness / 2 + 0.5,
-                  ).toColor(),
+                  color: HSLColor.fromAHSL(1, widget.hue, 1, 0.5).toColor(),
                 ),
               ),
             ),
@@ -94,6 +88,7 @@ class _LightnessSliderState extends State<LightnessSlider>
   @override
   void initState() {
     super.initState();
+
     _scaleController = AnimationController(
       vsync: this,
       value: 1,
@@ -105,17 +100,17 @@ class _LightnessSliderState extends State<LightnessSlider>
 
   void _onDown(DragDownDetails details) {
     _scaleController.reverse();
-    widget.onChanged(details.localPosition.dx / widget.width);
+    _updatePosition(details.localPosition);
   }
 
   void _onStart(DragStartDetails details) {
     _cancelTimer?.cancel();
     _cancelTimer = null;
-    widget.onChanged(details.localPosition.dx / widget.width);
+    _updatePosition(details.localPosition);
   }
 
   void _onUpdate(DragUpdateDetails details) {
-    widget.onChanged(details.localPosition.dx / widget.width);
+    _updatePosition(details.localPosition);
   }
 
   void _onEnd(DragEndDetails details) {
@@ -132,5 +127,13 @@ class _LightnessSliderState extends State<LightnessSlider>
         widget.onEnded();
       },
     );
+  }
+
+  void _updatePosition(Offset position) {
+    final radians = atan2(
+      position.dy - widget.size.height / 2,
+      position.dx - widget.size.width / 2,
+    );
+    widget.onChanged(radians % (2 * pi) * 180 / pi);
   }
 }

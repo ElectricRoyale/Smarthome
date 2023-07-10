@@ -1,11 +1,12 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smarthome/layouts/unavailable_dialog.dart';
 
-import '../../utils/Home_Assistant_Connection.dart';
 import '../../utils/constants.dart';
 import '../../utils/energy_usage_statistics.dart';
 import '../../utils/globals.dart';
+import '../../utils/home_assistant_connection.dart';
 
 class Shutter extends StatefulWidget {
   const Shutter({Key? key}) : super(key: key);
@@ -20,6 +21,17 @@ class ShutterState extends State<Shutter> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (deviceItem == null || deviceItem!.state == 'unavailable') {
+        showDialog(
+          context: context,
+          builder: (context) => UnavailableDialog(
+            () => Navigator.of(context, rootNavigator: true)
+                .popUntil((route) => route.settings.name == 'overviewpage'),
+          ),
+        );
+      }
+    });
     onUpdate = () => refresh();
   }
 
@@ -32,11 +44,6 @@ class ShutterState extends State<Shutter> {
                   : 3
               : 2;
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
@@ -151,7 +158,9 @@ class ShutterState extends State<Shutter> {
                                   max: 100.0,
                                   min: 0,
                                   value: 100 -
-                                      deviceItem!.attributes!.currentPosition!
+                                      (deviceItem?.attributes
+                                                  ?.currentPosition ??
+                                              100.0)
                                           .toDouble(),
                                   onChanged: (double value) => setState(() {
                                     deviceItem!.attributes!.currentPosition =
@@ -168,7 +177,7 @@ class ShutterState extends State<Shutter> {
                         ),
                         Center(
                           child: Text(
-                            '${deviceItem!.attributes!.currentPosition}%',
+                            '${deviceItem?.attributes?.currentPosition ?? 100}%',
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
@@ -187,7 +196,7 @@ class ShutterState extends State<Shutter> {
               color: Colors.white,
             ),
             EnergyUsageStatistics(
-              data: deviceItem!,
+              data: deviceItem,
               padding: const EdgeInsets.only(top: 25),
             ),
           ],
@@ -215,20 +224,11 @@ class GradientRectangularSliderTrackShape extends SliderTrackShape
     bool isDiscrete = false,
     bool isEnabled = false,
   }) {
-    assert(context != null);
-    assert(offset != null);
-    assert(parentBox != null);
-    assert(sliderTheme != null);
     assert(sliderTheme.disabledActiveTrackColor != null);
     assert(sliderTheme.disabledInactiveTrackColor != null);
     assert(sliderTheme.activeTrackColor != null);
     assert(sliderTheme.inactiveTrackColor != null);
     assert(sliderTheme.thumbShape != null);
-    assert(enableAnimation != null);
-    assert(textDirection != null);
-    assert(thumbCenter != null);
-    assert(isEnabled != null);
-    assert(isDiscrete != null);
     // If the slider [SliderThemeData.trackHeight] is less than or equal to 0,
     // then it makes no difference whether the track is painted or not,
     // therefore the painting can be a no-op.

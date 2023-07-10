@@ -54,6 +54,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "biometricScreenHeading":
             MessageLookupByLibrary.simpleMessage("The app is looked!"),
         "camera": MessageLookupByLibrary.simpleMessage("Camera"),
+        "changeServerAddress":
+            MessageLookupByLibrary.simpleMessage("Change Server address"),
         "connectionerrorMessage": MessageLookupByLibrary.simpleMessage(
             "No internet connection! Please check your wifi, for connecting to server!"),
         "connectionerrorTitle":
@@ -149,6 +151,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "titleSettings": MessageLookupByLibrary.simpleMessage("Settings"),
         "tue": MessageLookupByLibrary.simpleMessage("Tue"),
         "unavailable": MessageLookupByLibrary.simpleMessage("Unavailable"),
+        "unavailableMessage": MessageLookupByLibrary.simpleMessage(
+            "No connection to the unit could be established! Please check the connection of the unit!"),
+        "unavailableTitle": MessageLookupByLibrary.simpleMessage("Unavailable"),
         "unknown": MessageLookupByLibrary.simpleMessage("Unknown"),
         "weatherDialogDeleteButtonCancel":
             MessageLookupByLibrary.simpleMessage("Cancel"),

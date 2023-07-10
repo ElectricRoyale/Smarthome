@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part 'weatherLocations.g.dart';
+part 'weather_locations.g.dart';
 
 @HiveType(typeId: 1)
 class WeatherLocations extends HiveObject {

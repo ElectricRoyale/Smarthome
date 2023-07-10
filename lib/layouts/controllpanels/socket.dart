@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../utils/Home_Assistant_Connection.dart';
 import '../../utils/constants.dart';
 import '../../utils/energy_usage_statistics.dart';
 import '../../utils/globals.dart';
+import '../../utils/home_assistant_connection.dart';
+import '../unavailable_dialog.dart';
 
 class Socket extends StatefulWidget {
   const Socket({Key? key}) : super(key: key);
@@ -19,6 +20,17 @@ class SocketState extends State<Socket> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (deviceItem == null || deviceItem!.state == 'unavailable') {
+        showDialog(
+          context: context,
+          builder: (context) => UnavailableDialog(
+            () => Navigator.of(context, rootNavigator: true)
+                .popUntil((route) => route.settings.name == 'overviewpage'),
+          ),
+        );
+      }
+    });
     onUpdate = () => refresh();
   }
 

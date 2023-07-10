@@ -13,6 +13,7 @@ class DeviceData {
   String energy = 'Unavailable';
   String? icon;
   List<EnergySensorData> energyUsageData = [];
+  DeviceData? secondZone;
 
   DeviceData(
       {this.entityId,
@@ -41,6 +42,7 @@ class DeviceData {
     lastChanged = deviceData.lastChanged;
     lastUpdated = deviceData.lastUpdated;
     context = deviceData.context;
+    secondZone = deviceData.secondZone ?? secondZone;
   }
 
   Map<String, dynamic> toJson() {

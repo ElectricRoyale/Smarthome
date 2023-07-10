@@ -7,7 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:smarthome/layouts/statistics.dart';
 
 import '../generated/l10n.dart';
-import 'Network.dart';
+import 'network.dart';
 
 Map pageParams(BuildContext context, int index) {
   List pages = [
@@ -35,14 +35,10 @@ enum CustomAppBarIcons {
   appBarWithoutIcons,
 }
 
-class CustomAppBar extends StatefulWidget with PreferredSizeWidget {
-  @override
-  final Size preferredSize;
+class CustomAppBar extends StatefulWidget {
   final GlobalKey<NetworkLayout> network;
 
-  CustomAppBar({Key? key, required this.network})
-      : preferredSize = const Size.fromHeight(70.0),
-        super(key: key);
+  const CustomAppBar({Key? key, required this.network}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => CustomAppBarLayout();

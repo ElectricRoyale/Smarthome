@@ -1,16 +1,17 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:smarthome/layouts/RoomItem.dart';
-import 'package:smarthome/utils/DashboardData.dart';
-import 'package:smarthome/utils/weatherData.dart';
-import 'package:smarthome/utils/widget_functions.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../generated/l10n.dart';
+import '../layouts/room_item.dart';
 import '../my_icons_icons.dart';
-import 'CarouselSliderItems/Spotify_controll.dart';
-import 'CarouselSliderItems/deviceGrid.dart';
+import '../utils/dashboard_data.dart';
+import '../utils/weather_data.dart';
+import '../utils/widget_functions.dart';
+import 'CarouselSliderItems/device_grid.dart';
 import 'CarouselSliderItems/logbook.dart';
 import 'CarouselSliderItems/media.dart';
+import 'CarouselSliderItems/spotify_control.dart';
 import 'CarouselSliderItems/weather.dart';
 
 class Dashboard extends StatefulWidget {
@@ -21,11 +22,11 @@ class Dashboard extends StatefulWidget {
 }
 
 class Layout extends State<Dashboard> {
-  LogbookLayout logbook = LogbookLayout();
-  MediaLayout media = MediaLayout();
-  DeviceGrid deviceGrid = DeviceGrid();
-  WeatherLayout weather = WeatherLayout();
-  SpotifyControllLayout spotifyControll = SpotifyControllLayout();
+  LogbookLayout logbook = const LogbookLayout();
+  MediaLayout media = const MediaLayout();
+  DeviceGrid deviceGrid = const DeviceGrid();
+  WeatherLayout weather = const WeatherLayout();
+  SpotifyControllLayout spotifyControll = const SpotifyControllLayout();
 
   final List rooms = [
     {'name': 'add'}
@@ -58,10 +59,22 @@ class Layout extends State<Dashboard> {
   void initState() {
     setData();
     super.initState();
-    Future.delayed(const Duration(hours: 1), () async {
-      await DashboardData().init(context);
-      await WeatherData().init(context);
-      setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      List<String> dayNames = [
+        S.of(context).sun,
+        S.of(context).mon,
+        S.of(context).tue,
+        S.of(context).wed,
+        S.of(context).thu,
+        S.of(context).fri,
+        S.of(context).sat,
+      ];
+      Future.delayed(const Duration(hours: 1), () async {
+        await DashboardData()
+            .init(S.of(context).devicegridUsage, S.of(context).logbook);
+        await WeatherData().init(dayNames);
+        setState(() {});
+      });
     });
   }
 
@@ -117,15 +130,21 @@ class Layout extends State<Dashboard> {
                 ]),
           ),
           addVerticalSpace(6),
-          buildIndicator(),
+          buildIndicator([
+            logbook,
+            media,
+            deviceGrid,
+            weather,
+            if (DashboardData().getSpotify != null) spotifyControll,
+          ].length),
         ]);
       }),
     );
   }
 
-  Widget buildIndicator() => AnimatedSmoothIndicator(
+  Widget buildIndicator(int count) => AnimatedSmoothIndicator(
         activeIndex: activeIndex,
-        count: 5,
+        count: count,
         effect: const ScrollingDotsEffect(
             dotHeight: 5, dotWidth: 5, activeDotColor: Colors.white),
         onDotClicked: (index) {

@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:hive/hive.dart';
-import 'package:smarthome/utils/DashboardData.dart';
+import 'package:smarthome/utils/dashboard_data.dart';
 import 'package:smarthome/utils/globals.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../Model/UserData.dart';
+import '../Model/user_data.dart';
 
 class HomeAssistantConnection {
   static final HomeAssistantConnection _instance =

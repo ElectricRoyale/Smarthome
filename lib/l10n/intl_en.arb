@@ -41,6 +41,10 @@
   "connectionerrorTitle": "Connection Error",
   "connectionerrorMessage": "No internet connection! Please check your wifi, for connecting to server!",
 
+  "@_unabvailable": {},
+  "unavailableTitle": "Unavailable",
+  "unavailableMessage": "No connection to the unit could be established! Please check the connection of the unit!",
+
   "@_device_grid": {},
   "devicegridAppliances": "Appliances",
   "devicegridAllDevices": "ALL DEVICES",
@@ -108,5 +112,6 @@
   "retry": "Retry",
   "loading": "Loading...",
   "logbook": " changed state to ",
-  "noDevicesAvailable": "No devices available"
+  "noDevicesAvailable": "No devices available",
+  "changeServerAddress": "Change Server address"
 }

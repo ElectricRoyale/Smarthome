@@ -17,7 +17,7 @@
   "loginFieldErrorEmpty": "Dieses Feld darf nicht leer sein!",
   "loginPasswordForgot": "Passwort vergessen?",
   "loginDontHaveAccount": "Sie haben noch keinen Benutzer?",
-  "loginSignUp": "Anmelden",
+  "loginSignUp": "Registrieren",
 
   "@_register": {},
   "registerFieldHintName": "Vorname, Nachname",
@@ -41,10 +41,14 @@
   "connectionerrorTitle": "Verbindungsfehler",
   "connectionerrorMessage": "Keine Internetverbindung! Bitte Überprüfen Sie ihre Verbindung, um sich mit dem Server verbinden zu können!",
 
+  "@_unabvailable": {},
+  "unavailableTitle": "Nicht Verfügbar",
+  "unavailableMessage": "Es konnte keine Verbindung zum Gerät hergestellt werden! Bitte Überprüfen sie die Verbindung des Gerätes!",
+
   "@_device_grid": {},
   "devicegridAppliances": "Geräte",
   "devicegridAllDevices": "ALLE GERÄTE",
-  "devicegridUsage": " kWh VERBRAUCHT",
+  "devicegridUsage": " kWh GENUTZT",
 
   "@_weather": {},
   "weatherDialogDeleteTitle": "Löschen?",
@@ -108,5 +112,6 @@
   "retry": "Erneut",
   "loading": "Laden...",
   "logbook": " zustand geändert zu ",
-  "noDevicesAvailable": "Es sind keine Geräte Vorhanden"
+  "noDevicesAvailable": "Es sind keine Geräte Vorhanden",
+  "changeServerAddress": "Server Adresse ändern"
 }

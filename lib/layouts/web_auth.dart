@@ -7,11 +7,8 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebAuth extends StatelessWidget {
-  const WebAuth(
-      {Key? key,
-      required this.authorizationEndpoint,
-      required this.clientId,
-      required this.tokenEndpoint})
+  const WebAuth(this.authorizationEndpoint, this.clientId, this.tokenEndpoint,
+      {Key? key})
       : super(key: key);
 
   final Uri authorizationEndpoint, tokenEndpoint;
@@ -25,7 +22,6 @@ class WebAuth extends StatelessWidget {
           ..setNavigationDelegate(
             NavigationDelegate(
               onPageStarted: (String url) async {
-                print(Uri.parse(url).queryParameters);
                 Map<String, dynamic> body = {
                   "grant_type": "authorization_code",
                   "code": Uri.parse(url).queryParameters['code']!,
@@ -39,19 +35,19 @@ class WebAuth extends StatelessWidget {
                     encoding: Encoding.getByName("utf-8"));
 
                 String host = Hive.box('Settings').get('host');
-                final _channel = WebSocketChannel.connect(Uri.parse(
+                final channel = WebSocketChannel.connect(Uri.parse(
                     'ws://${host.substring(host.indexOf('://') + 3)}/api/websocket'));
 
-                _channel.sink.add(
+                channel.sink.add(
                     '{"type": "auth", "access_token": "${jsonDecode(result.body)['access_token']}"}');
-                _channel.stream.listen((data) {
+                channel.stream.listen((data) {
                   Map<String, dynamic> dataMap = jsonDecode(data.toString());
                   if (dataMap['id'] == 1) {
-                    _channel.sink.close();
+                    channel.sink.close();
                     Navigator.pop(context, dataMap['result']);
                   }
                 });
-                _channel.sink.add(
+                channel.sink.add(
                     '{"id": 1, "type": "auth/long_lived_access_token", "client_name": "GPS Logger", "lifespan": 3652}');
               },
             ),

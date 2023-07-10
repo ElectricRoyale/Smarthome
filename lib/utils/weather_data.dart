@@ -5,11 +5,10 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive/hive.dart';
 import 'package:simple_shadow/simple_shadow.dart';
-import 'package:smarthome/Model/weatherLocations.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:weather/weather.dart';
 
-import '../generated/l10n.dart';
+import '../Model/weather_locations.dart';
 
 class WeatherData {
   final WeatherFactory weather =
@@ -38,18 +37,8 @@ class WeatherData {
   Box<WeatherLocations> weatherLocations =
       Hive.box<WeatherLocations>('WeatherLocations');
 
-  Future<void> init(BuildContext context, {Weather? w}) async {
+  Future<void> init(List<String> dayNames, {Weather? w}) async {
     forecasts.clear();
-
-    List<String> dayNames = [
-      S.of(context).sun,
-      S.of(context).mon,
-      S.of(context).tue,
-      S.of(context).wed,
-      S.of(context).thu,
-      S.of(context).fri,
-      S.of(context).sat,
-    ];
 
     String cityName = (weatherLocations.get('WeatherLocation') != null
         ? weatherLocations.get('WeatherLocation')!.weatherLocation

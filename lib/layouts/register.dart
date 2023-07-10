@@ -12,14 +12,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive/hive.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:smarthome/layouts/web_auth.dart';
-import 'package:smarthome/utils/MySQLHelper.dart';
 import 'package:sprintf/sprintf.dart';
 
 import '../generated/l10n.dart';
-import '../utils/LoadingScreen.dart';
+import '../layouts/web_auth.dart';
 import '../utils/constants.dart';
-import 'Login.dart';
+import '../utils/loading_screen.dart';
+import '../utils/my_sql_helper.dart';
+import 'login.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -82,6 +82,8 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
       'http://${RegExp(r'(?<host>\d+\.\d+\.\d+\.\d+:\d+)').firstMatch(Hive.box('Settings').get('host'))!.namedGroup('host')!}';
   final tokenEndpoint =
       Uri.parse("${Hive.box('Settings').get('host')}/auth/token");
+  final registrationEndpoint = Uri.parse(
+      "${Hive.box('Settings').get('host')}/api/mobile_app/registrations");
 
   Future<void> initConnectivity() async {
     ConnectivityResult result = ConnectivityResult.none;
@@ -634,7 +636,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                       _confirmPasswordController
                                           .text.isNotEmpty);
                               confirmPasswordErrorText =
-                                  _passwordController.text ==
+                                  _passwordController.text !=
                                           _confirmPasswordController.text
                                       ? delegate.registerFieldErrorPassword
                                       : delegate.registerFieldErrorEmpty;
@@ -660,14 +662,13 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                             String? token = await Navigator.of(context).push(
                                 MaterialPageRoute<String>(
                                     builder: (BuildContext context) {
-                              return WebAuth(
-                                  authorizationEndpoint: authorizationEndpoint,
-                                  clientId: clientId,
-                                  tokenEndpoint: tokenEndpoint);
+                              return WebAuth(authorizationEndpoint, clientId,
+                                  tokenEndpoint);
                             }));
                             String result = await MySQLHelper().register(
                               _nameController.text,
                               _passwordController.text,
+                              registrationEndpoint,
                               token!,
                             );
                             if (result == 'successful') {

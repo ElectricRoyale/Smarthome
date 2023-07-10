@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:smarthome/utils/DashboardData.dart';
-import 'package:smarthome/utils/weatherData.dart';
+import 'package:smarthome/utils/dashboard_data.dart';
+import 'package:smarthome/utils/weather_data.dart';
 
 //import 'package:flutter_local_auth_invisible/flutter_local_auth_invisible.dart';
 
@@ -17,6 +17,9 @@ class BiometricAuthentication extends StatefulWidget {
 
 class _BiometricAuthenticationState extends State<BiometricAuthentication> {
   LocalAuthentication auth = LocalAuthentication();
+
+  List<String> dayNames = [];
+  String localizedReason = '';
 
   @override
   Widget build(BuildContext context) {
@@ -95,18 +98,34 @@ class _BiometricAuthenticationState extends State<BiometricAuthentication> {
   @override
   void initState() {
     super.initState();
-    biometricLogin();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      localizedReason = S.of(context).biometricLocalizedReason;
+      dayNames = [
+        S.of(context).sun,
+        S.of(context).mon,
+        S.of(context).tue,
+        S.of(context).wed,
+        S.of(context).thu,
+        S.of(context).fri,
+        S.of(context).sat,
+      ];
+      biometricLogin();
+    });
+  }
+
+  void close() {
+    Navigator.pop(context);
   }
 
   void biometricLogin() async {
     if (await auth.isDeviceSupported() && await auth.canCheckBiometrics) {
       if (await auth.authenticate(
-          localizedReason: S.of(context).biometricLocalizedReason,
+          localizedReason: localizedReason,
           options: const AuthenticationOptions(
               stickyAuth: true, biometricOnly: true, useErrorDialogs: false))) {
         DashboardData().reconnect();
-        WeatherData().init(context);
-        Navigator.pop(context);
+        WeatherData().init(dayNames);
+        close();
       }
     }
   }

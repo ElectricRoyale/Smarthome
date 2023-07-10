@@ -7,12 +7,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_scanner/lan_scanner.dart';
 import 'package:network_info_plus/network_info_plus.dart';
-import 'package:smarthome/layouts/customAppBar.dart';
 import 'package:speed_test_dart/speed_test_dart.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:wifi_info_plugin_plus/wifi_info_plugin_plus.dart';
 
 import '../generated/l10n.dart';
+import '../layouts/custom_app_bar.dart';
 
 class Network extends StatefulWidget {
   const Network({Key? key}) : super(key: key);
@@ -282,36 +282,54 @@ class NetworkLayout extends State<Network> {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              separatorBuilder: (context, index) => const Divider(
-                color: Colors.white,
-                indent: 10,
-                endIndent: 10,
-                thickness: 1.1,
-              ),
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(top: 20, bottom: 80),
-              itemCount: devices.length,
-              itemBuilder: (context, index) => Container(
-                margin: const EdgeInsets.only(left: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${devices.elementAt(index)['name']}',
-                      style: TextStyle(
-                          color: devices.elementAt(index)['name'] !=
-                                  delegate.unknown
-                              ? Colors.white
-                              : const Color.fromARGB(255, 240, 0, 0),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                    Text(
-                      '${devices.elementAt(index)['ip']}',
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ],
+            child: ShaderMask(
+              shaderCallback: (Rect rect) => const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.grey,
+                  Colors.transparent,
+                  Colors.transparent,
+                  Colors.grey,
+                ],
+                stops: [
+                  0.0,
+                  0.035,
+                  0.9,
+                  1.0
+                ], // 10% purple, 80% transparent, 10% purple
+              ).createShader(rect),
+              blendMode: BlendMode.dstOut,
+              child: ListView.separated(
+                separatorBuilder: (context, index) => const Divider(
+                  color: Colors.white,
+                  indent: 10,
+                  endIndent: 10,
+                  thickness: 1.1,
+                ),
+                padding: const EdgeInsets.only(top: 20, bottom: 80),
+                itemCount: devices.length,
+                itemBuilder: (context, index) => Container(
+                  margin: const EdgeInsets.only(left: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${devices.elementAt(index)['name']}',
+                        style: TextStyle(
+                            color: devices.elementAt(index)['name'] !=
+                                    delegate.unknown
+                                ? Colors.white
+                                : const Color.fromARGB(255, 240, 0, 0),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
+                      ),
+                      Text(
+                        '${devices.elementAt(index)['ip']}',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
