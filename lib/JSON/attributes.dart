@@ -12,15 +12,8 @@ class Attributes {
   int? brightness;
   String? effect;
   List? effectList;
-  String? repeat;
-  bool? shuffle;
   bool? isVolumeMuted;
-  double? volumeLevel;
-  String? mediaPlaylist;
-  String? mediaTitle;
-  String? mediaArtist;
-  double? mediaPosition;
-  double? mediaDuration;
+  double volumeLevel = 0;
   List? sourceList;
   List? soundModeList;
 
@@ -38,15 +31,8 @@ class Attributes {
       this.brightness,
       this.effect,
       this.effectList,
-      this.repeat,
-      this.shuffle,
       this.isVolumeMuted,
-      this.volumeLevel,
-      this.mediaPlaylist,
-      this.mediaTitle,
-      this.mediaArtist,
-      this.mediaPosition,
-      this.mediaDuration,
+      this.volumeLevel = 0,
       this.sourceList,
       this.soundModeList});
 
@@ -64,15 +50,8 @@ class Attributes {
     brightness = json['brightness'];
     effect = json['effect'];
     effectList = json['effect_list'];
-    repeat = json['repeat'];
-    shuffle = json['shuffle'];
     isVolumeMuted = json['is_volume_muted'];
-    volumeLevel = json['volume_level'];
-    mediaPlaylist = json['media_playlist'];
-    mediaTitle = json['media_title'];
-    mediaArtist = json['media_artist'];
-    mediaPosition = json['media_position'];
-    mediaDuration = json['media_duration'];
+    volumeLevel = json['volume_level'] ?? 0;
     sourceList = json['source_list'];
     soundModeList = json['sound_mode_list'];
   }
@@ -91,15 +70,8 @@ class Attributes {
     brightness = attributes.brightness ?? brightness;
     effect = attributes.effect;
     effectList = attributes.effectList;
-    repeat = attributes.repeat;
-    shuffle = attributes.shuffle;
     isVolumeMuted = attributes.isVolumeMuted;
     volumeLevel = attributes.volumeLevel;
-    mediaPlaylist = attributes.mediaPlaylist;
-    mediaTitle = attributes.mediaTitle;
-    mediaArtist = attributes.mediaArtist;
-    mediaPosition = attributes.mediaPosition;
-    mediaDuration = attributes.mediaDuration;
     sourceList = attributes.sourceList;
     soundModeList = attributes.soundModeList;
   }
@@ -119,15 +91,8 @@ class Attributes {
     data['brightness'] = brightness;
     data['effect'] = effect;
     data['effect_list'] = effectList;
-    data['repeat'] = repeat;
-    data['shuffle'] = shuffle;
     data['is_volume_muted'] = isVolumeMuted;
     data['volume_level'] = volumeLevel;
-    data['media_playlist'] = mediaPlaylist;
-    data['media_title'] = mediaTitle;
-    data['media_artist'] = mediaArtist;
-    data['media_position'] = mediaPosition;
-    data['media_duration'] = mediaDuration;
     data['source_list'] = sourceList;
     data['sound_mode_list'] = soundModeList;
     return data;

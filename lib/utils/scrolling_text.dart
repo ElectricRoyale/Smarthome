@@ -1,5 +1,3 @@
-library marquee;
-
 import 'dart:async';
 
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
@@ -7,7 +5,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 class IntegralCurve extends Curve {
-  /// Delta for integrating.
   static double delta = 0.01;
 
   const IntegralCurve._(this.original, this.integral, this._values);
@@ -55,12 +52,12 @@ class IntegralCurve extends Curve {
 class ScrollingText extends StatefulWidget {
   ScrollingText(
     this.text, {
-    Key? key,
+    super.key,
     this.style,
     this.textScaleFactor,
     this.textDirection = TextDirection.ltr,
     this.scrollAxis = Axis.horizontal,
-    this.crossAxisAlignment = CrossAxisAlignment.center,
+    this.crossAxisAlignment,
     this.blankSpace = 0.0,
     this.velocity = 50.0,
     this.startAfter = Duration.zero,
@@ -71,19 +68,17 @@ class ScrollingText extends StatefulWidget {
     this.numberOfRounds,
     this.startPadding = 0.0,
     this.accelerationDuration = Duration.zero,
+    this.margin = EdgeInsets.zero,
     Curve accelerationCurve = Curves.decelerate,
     this.decelerationDuration = Duration.zero,
     Curve decelerationCurve = Curves.decelerate,
     this.onDone,
-    this.maxWidth = 0.0,
-    this.startPointOffset = 0,
   })  : assert(!blankSpace.isNaN),
         assert(blankSpace >= 0, "The blankSpace needs to be positive or zero."),
         assert(blankSpace.isFinite),
         assert(!velocity.isNaN),
         assert(velocity != 0.0, "The velocity cannot be zero."),
         assert(velocity.isFinite),
-        assert(maxWidth >= 0, "The blankSpace needs to be positive or zero."),
         assert(
           pauseAfterRound >= Duration.zero,
           "The pauseAfterRound cannot be negative as time travel isn't "
@@ -111,16 +106,14 @@ class ScrollingText extends StatefulWidget {
           "isn't invented yet.",
         ),
         accelerationCurve = IntegralCurve(accelerationCurve),
-        decelerationCurve = IntegralCurve(decelerationCurve),
-        super(key: key);
+        decelerationCurve = IntegralCurve(decelerationCurve);
 
   final String text;
   final TextStyle? style;
-  final double maxWidth;
   final double? textScaleFactor;
   final TextDirection textDirection;
   final Axis scrollAxis;
-  final CrossAxisAlignment crossAxisAlignment;
+  final CrossAxisAlignment? crossAxisAlignment;
   final double blankSpace;
   final double velocity;
   final Duration startAfter;
@@ -135,7 +128,7 @@ class ScrollingText extends StatefulWidget {
   final Duration decelerationDuration;
   final IntegralCurve decelerationCurve;
   final VoidCallback? onDone;
-  final int startPointOffset;
+  final EdgeInsets margin;
 
   @override
   State<StatefulWidget> createState() => _ScrollingTextState();
@@ -145,8 +138,6 @@ class _ScrollingTextState extends State<ScrollingText>
     with SingleTickerProviderStateMixin {
   /// The controller for the scrolling behavior.
   final ScrollController _controller = ScrollController();
-
-  late double maxWidth;
 
   // The scroll positions at various scrolling phases.
   late double _startPosition; // At the start, before accelerating.
@@ -177,7 +168,6 @@ class _ScrollingTextState extends State<ScrollingText>
   @override
   void initState() {
     super.initState();
-    maxWidth = widget.maxWidth;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!_running) {
         _running = true;
@@ -226,8 +216,7 @@ class _ScrollingTextState extends State<ScrollingText>
             (widget.velocity > 0 ? 1 : -1);
 
     // Calculate scroll positions at various scrolling phases.
-    _startPosition =
-        2 * totalLength - widget.startPadding + widget.startPointOffset;
+    _startPosition = 2 * totalLength - widget.startPadding;
     _accelerationTarget = _startPosition + accelerationLength;
     _linearTarget = _accelerationTarget + linearLength;
     _decelerationTarget = _linearTarget + decelerationLength;
@@ -337,6 +326,23 @@ class _ScrollingTextState extends State<ScrollingText>
     return boxes.last.right;
   }
 
+  double _getTextHeight(BuildContext context) {
+    final span = TextSpan(text: widget.text, style: widget.style);
+
+    const constraints = BoxConstraints(maxWidth: double.infinity);
+
+    final richTextWidget = Text.rich(span).build(context) as RichText;
+    final renderObject = richTextWidget.createRenderObject(context);
+    renderObject.layout(constraints);
+
+    final boxes = renderObject.getBoxesForSelection(TextSelection(
+      baseOffset: 0,
+      extentOffset: TextSpan(text: widget.text).toPlainText().length,
+    ));
+
+    return boxes.last.bottom;
+  }
+
   @override
   Widget build(BuildContext context) {
     _initialize(context);
@@ -359,6 +365,9 @@ class _ScrollingTextState extends State<ScrollingText>
       case CrossAxisAlignment.baseline:
         alignment = null;
         break;
+      default:
+        alignment = null;
+        break;
     }
 
     Widget marquee = ListView.builder(
@@ -377,12 +386,27 @@ class _ScrollingTextState extends State<ScrollingText>
       },
     );
 
-    return _getTextWidth(context) >= maxWidth
-        ? kIsWeb
-            ? marquee
-            : _wrapWithFadingEdgeScrollView(marquee)
-        : Text(widget.text,
-            style: widget.style, textScaleFactor: widget.textScaleFactor);
+    return Container(
+      width: double.maxFinite,
+      height: _getTextHeight(context),
+      margin: widget.margin,
+      child: LayoutBuilder(
+        builder: (context, constraints) => constraints.maxWidth <
+                (_getTextWidth(context) + widget.margin.horizontal)
+            ? kIsWeb
+                ? marquee
+                : _wrapWithFadingEdgeScrollView(marquee)
+            : alignment == null
+                ? Text(widget.text,
+                    style: widget.style,
+                    textScaleFactor: widget.textScaleFactor)
+                : Align(
+                    alignment: alignment,
+                    child: Text(widget.text,
+                        style: widget.style,
+                        textScaleFactor: widget.textScaleFactor)),
+      ),
+    );
   }
 
   /// Builds the blank space between children.
@@ -397,7 +421,7 @@ class _ScrollingTextState extends State<ScrollingText>
     return FadingEdgeScrollView.fromScrollView(
       gradientFractionOnStart:
           !showFading ? 0.0 : widget.fadingEdgeStartFraction,
-      gradientFractionOnEnd: !showFading ? 0.0 : widget.fadingEdgeEndFraction,
+      gradientFractionOnEnd: widget.fadingEdgeEndFraction,
       child: child as ScrollView,
     );
   }

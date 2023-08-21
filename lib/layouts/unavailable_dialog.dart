@@ -25,19 +25,19 @@ class UnavailableDialog extends StatelessWidget {
           ),
           elevation: 0,
           backgroundColor: Colors.transparent,
-          child: Stack(children: [
-            Align(
-                child: Padding(
-                    padding: const EdgeInsets.only(bottom: 240),
-                    child: SvgPicture.asset(
-                      'assets/error.svg',
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
-                    ))),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Padding(
+                padding: const EdgeInsets.only(bottom: 240),
+                child: SvgPicture.asset(
+                  'assets/error.svg',
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.cover,
+                )),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   delegate.unavailableTitle,

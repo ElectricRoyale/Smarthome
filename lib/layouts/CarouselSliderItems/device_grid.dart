@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:simple_shadow/simple_shadow.dart';
@@ -30,6 +31,7 @@ class DeviceGridState extends State<DeviceGrid> {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     final delegate = S.of(context);
     return Column(
       children: [
@@ -38,7 +40,7 @@ class DeviceGridState extends State<DeviceGrid> {
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: const EdgeInsets.only(left: 20.0),
+                padding: EdgeInsets.only(left: screenSize.width * 0.048611),
                 child: Text(delegate.devicegridAppliances,
                     style: const TextStyle(
                       color: Colors.white,
@@ -57,19 +59,21 @@ class DeviceGridState extends State<DeviceGrid> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(right: 5),
-                  child:
-                      Icon(Icons.add, color: Colors.white, size: 29, shadows: [
-                    Shadow(
-                      offset: Offset(0.0, 2.5),
-                      blurRadius: 3.0,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    )
-                  ]),
+                Padding(
+                  padding: EdgeInsets.only(right: screenSize.width * 0.0121527),
+                  child: const Icon(CupertinoIcons.add,
+                      color: Colors.white,
+                      size: 28,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(0.0, 2.5),
+                          blurRadius: 3.0,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        )
+                      ]),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 30),
+                  padding: EdgeInsets.only(right: screenSize.width * 0.072916),
                   child: InkWell(
                     onTap: () => Navigator.push(
                       context,
@@ -85,7 +89,7 @@ class DeviceGridState extends State<DeviceGrid> {
                       opacity: 1,
                       offset: const Offset(0, 2.0),
                       child: const Icon(
-                        Icons.grid_view_rounded,
+                        CupertinoIcons.square_grid_2x2_fill,
                         color: Colors.white,
                         size: 29,
                       ),
@@ -98,18 +102,18 @@ class DeviceGridState extends State<DeviceGrid> {
         ),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.only(top: 25, left: 20, right: 20),
+            padding: EdgeInsets.only(
+                top: screenSize.height * 0.027,
+                left: screenSize.width * 0.048611,
+                right: screenSize.width * 0.048611),
             child: GridView.builder(
-              // Create a grid with 2 columns. If you change the scrollDirection to
-              // horizontal, this produces 2 rows.
               itemCount: 9,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
+                crossAxisSpacing: screenSize.width * 0.0243055,
+                mainAxisSpacing: screenSize.height * 0.0109375,
               ),
-              // Generate 100 widgets that display their index in the List.
               itemBuilder: (BuildContext context, int index) => Container(
                 decoration: BoxDecoration(
                   color: const Color(0x12ffffff),
@@ -130,25 +134,28 @@ class DeviceGridState extends State<DeviceGrid> {
                   child: Column(
                     children: [
                       Padding(
-                        padding:
-                            const EdgeInsets.only(top: 10, left: 10, right: 10),
+                        padding: EdgeInsets.only(
+                            top: screenSize.height * 0.0109,
+                            left: screenSize.width * 0.0243055,
+                            right: screenSize.width * 0.0243055),
                         child: SimpleShadow(
                           opacity: 0.6,
                           offset: const Offset(0, 2),
                           child: SvgPicture.asset(
                             'assets/${appliances(context, index)['icon']}',
-                            height: 64,
-                            width: 64,
+                            height: screenSize.width * 0.15555,
+                            width: screenSize.width * 0.15555,
                             fit: BoxFit.scaleDown,
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 7),
+                        padding:
+                            EdgeInsets.only(top: screenSize.height * 0.00765),
                         child: Text(
                           appliances(context, index)['name'],
+                          textScaleFactor: 0.83,
                           style: const TextStyle(
-                            fontSize: 12,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             shadows: [
@@ -161,14 +168,13 @@ class DeviceGridState extends State<DeviceGrid> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 1),
-                        child: Text(
-                          DashboardData().getEnergyList.elementAt(index) +
-                              delegate.devicegridUsage,
-                          style: const TextStyle(
-                              fontSize: 12, color: Color(0xff919191)),
-                        ),
+                      Text(
+                        DashboardData().getEnergyList.elementAt(index) +
+                            delegate.devicegridUsage,
+                        textScaleFactor: 0.83,
+                        style: const TextStyle(
+                            color: Color(0xff919191),
+                            height: double.minPositive),
                       ),
                     ],
                   ),

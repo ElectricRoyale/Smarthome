@@ -3,7 +3,6 @@ import 'package:smarthome/utils/constants.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 
 import '../../utils/globals.dart';
-import '../unavailable_dialog.dart';
 
 class Irrigation extends StatefulWidget {
   const Irrigation({Key? key}) : super(key: key);
@@ -19,15 +18,7 @@ class IrrigationState extends State<Irrigation> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (deviceItem == null || deviceItem!.state == 'unavailable') {
-        showDialog(
-          context: context,
-          builder: (context) => UnavailableDialog(
-            () => Navigator.of(context, rootNavigator: true)
-                .popUntil((route) => route.settings.name == 'overviewpage'),
-          ),
-        );
-      }
+      checkAvailability(context);
     });
   }
 

@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -32,6 +33,7 @@ class Layout extends State<Dashboard> {
     {'name': 'add'}
   ];
 
+  CarouselController carouselController = CarouselController();
   int activeIndex = 2;
 
   void addItem() {
@@ -40,7 +42,7 @@ class Layout extends State<Dashboard> {
         'icon': 'bed.svg',
         'name': 'Bedroom',
         'appliances': [
-          itemContainer(Icons.lightbulb_outline_rounded, 24),
+          itemContainer(CupertinoIcons.lightbulb, 24),
           itemContainer(MyIcons.airConditioner, 23),
         ],
         'energyConsumption': '40 KW USED'
@@ -111,8 +113,9 @@ class Layout extends State<Dashboard> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 40.0),
+            padding: EdgeInsets.only(top: constraints.maxHeight * 0.049028764),
             child: CarouselSlider(
+                carouselController: carouselController,
                 options: CarouselOptions(
                     height: constraints.maxHeight * 0.55,
                     enableInfiniteScroll: false,
@@ -126,29 +129,21 @@ class Layout extends State<Dashboard> {
                   media,
                   deviceGrid,
                   weather,
-                  if (DashboardData().getSpotify != null) spotifyControll,
+                  spotifyControll,
                 ]),
           ),
-          addVerticalSpace(6),
-          buildIndicator([
-            logbook,
-            media,
-            deviceGrid,
-            weather,
-            if (DashboardData().getSpotify != null) spotifyControll,
-          ].length),
+          addVerticalSpace(constraints.maxHeight * 0.005),
+          buildIndicator(),
         ]);
       }),
     );
   }
 
-  Widget buildIndicator(int count) => AnimatedSmoothIndicator(
+  Widget buildIndicator() => AnimatedSmoothIndicator(
         activeIndex: activeIndex,
-        count: count,
+        count: 5,
         effect: const ScrollingDotsEffect(
-            dotHeight: 5, dotWidth: 5, activeDotColor: Colors.white),
-        onDotClicked: (index) {
-          setState(() => activeIndex = index);
-        },
+            dotHeight: 6, dotWidth: 6, activeDotColor: Colors.white),
+        onDotClicked: (index) => carouselController.animateToPage(index),
       );
 }

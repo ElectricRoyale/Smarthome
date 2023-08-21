@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:delayed_display/delayed_display.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:smarthome/layouts/register.dart';
 import 'package:smarthome/utils/connection_manager.dart';
+import 'package:smarthome/utils/spotify_helper.dart';
 
 import '../generated/l10n.dart';
 import '../layouts/mainlayout.dart';
@@ -127,6 +129,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       if (await MySQLHelper().login(name, password)) {
         await DashboardData().init(usageUnit, logbookChange);
         await WeatherData().init(dayNames);
+        await SpotifyHelper().init();
         errorDialog.dispose();
         if (!mounted) return;
         Navigator.pop(loadingDialog);
@@ -308,8 +311,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                 suffixIcon: IconButton(
                                     icon: Icon(
                                       _isObscure
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
+                                          ? CupertinoIcons.eye
+                                          : CupertinoIcons.eye_slash,
                                       color: Colors.white,
                                       size: 25,
                                     ),

@@ -27,6 +27,7 @@ class OverViewPageState extends State<OverViewPage> {
   void initState() {
     super.initState();
     deviceData.addAll(DashboardData().categoryMap[widget.groupName]!);
+    onUpdate = () => setState(() {});
   }
 
   @override
@@ -76,18 +77,22 @@ class OverViewPageState extends State<OverViewPage> {
               onTap: () {
                 deviceItem = deviceData.elementAt(index);
                 Navigator.pushNamed(
-                    context,
-                    deviceData.elementAt(index).entityId!.substring(
-                        0, deviceData.elementAt(index).entityId!.indexOf('.')));
+                        context,
+                        deviceData.elementAt(index).entityId!.substring(0,
+                            deviceData.elementAt(index).entityId!.indexOf('.')))
+                    .then((value) {
+                  onUpdate = () => setState(() {});
+                  setState(() {});
+                });
               },
               child: Container(
-                height: 200,
-                width: 200,
                 decoration: BoxDecoration(
                   color: const Color(0x12ffffff),
                   borderRadius: BorderRadius.circular(15),
                 ),
+                clipBehavior: Clip.hardEdge,
                 child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
@@ -103,38 +108,35 @@ class OverViewPageState extends State<OverViewPage> {
                             colorFilter: deviceData.elementAt(index).state ==
                                     'unavailable'
                                 ? const ColorFilter.mode(
-                                    Colors.grey, BlendMode.saturation)
+                                    Color.fromARGB(255, 80, 80, 80),
+                                    BlendMode.srcIn)
                                 : null,
                           ),
                         ),
                       ),
-                      Container(
-                        width: double.maxFinite,
-                        height: 18,
+                      ScrollingText(
+                        velocity: 30,
+                        deviceData.elementAt(index).attributes!.friendlyName!,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0.0, 2.5),
+                              blurRadius: 3.0,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            )
+                          ],
+                        ),
+                        fadingEdgeStartFraction: 0.1,
+                        fadingEdgeEndFraction: 0.1,
+                        startAfter: const Duration(seconds: 3),
+                        pauseAfterRound: const Duration(seconds: 3),
+                        blankSpace: 100,
                         margin:
                             const EdgeInsets.only(top: 3, left: 10, right: 10),
-                        child: ScrollingText(
-                          velocity: 30,
-                          startPointOffset: 3,
-                          deviceData.elementAt(index).attributes!.friendlyName!,
-                          maxWidth: 170,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.none,
-                            shadows: [
-                              Shadow(
-                                offset: Offset(0.0, 2.5),
-                                blurRadius: 3.0,
-                                color: Color.fromARGB(255, 0, 0, 0),
-                              )
-                            ],
-                          ),
-                          startAfter: const Duration(seconds: 3),
-                          pauseAfterRound: const Duration(seconds: 3),
-                          blankSpace: 100,
-                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 10.0),

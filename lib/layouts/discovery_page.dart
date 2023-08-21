@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:bonsoir/bonsoir.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -31,7 +32,10 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
   void startDiscovery() async {
     discovery = BonsoirDiscovery(type: '_home-assistant._tcp');
     await discovery.ready;
-    discovery.eventStream!.listen((event) {
+    discovery.eventStream!.listen((event) async {
+      if (event.type == BonsoirDiscoveryEventType.discoveryServiceFound) {
+        await event.service!.resolve(discovery.serviceResolver);
+      }
       if (event.type == BonsoirDiscoveryEventType.discoveryServiceResolved) {
         setState(() {
           discoveryList.add(event.service!);
@@ -44,6 +48,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
   @override
   Widget build(BuildContext context) {
     final delegate = S.of(context);
+    Size screenSize = MediaQuery.sizeOf(context);
     return Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -58,9 +63,13 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: 80.0, bottom: 20),
+                padding: EdgeInsets.only(
+                    top: screenSize.height * 0.0875,
+                    bottom: screenSize.height * 0.021875),
                 child: SimpleShadow(
                   offset: const Offset(0, 2),
                   child: Icon(
@@ -71,7 +80,8 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                padding:
+                    EdgeInsets.symmetric(vertical: screenSize.height * 0.0175),
                 child: Text(
                   delegate.discoverySelectServer,
                   style: const TextStyle(
@@ -88,15 +98,17 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                   ),
                 ),
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.only(bottom: 16.0, left: 130, right: 130),
-                child: SimpleShadow(
-                  offset: const Offset(0, 2),
-                  child: const ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: LinearProgressIndicator(
-                      backgroundColor: Color.fromARGB(255, 36, 38, 51),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: screenSize.height * 0.0175),
+                  child: SimpleShadow(
+                    offset: const Offset(0, 2),
+                    child: const ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: LinearProgressIndicator(
+                        backgroundColor: Color.fromARGB(255, 36, 38, 51),
+                      ),
                     ),
                   ),
                 ),
@@ -110,7 +122,9 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                     thickness: 1.1,
                   ),
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(top: 20, bottom: 80),
+                  padding: EdgeInsets.only(
+                      top: screenSize.height * 0.021875,
+                      bottom: screenSize.height * 0.0875),
                   itemCount: discoveryList.length,
                   itemBuilder: (context, index) => discoveryItem(
                       discoveryList.elementAt(index).name,
@@ -127,7 +141,9 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 26.0, top: 8.0),
+                padding: EdgeInsets.only(
+                    bottom: screenSize.height * 0.0284375,
+                    top: screenSize.height * 0.00875),
                 child: TextButton(
                     onPressed: () {
                       showDialog(
@@ -137,7 +153,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                     },
                     child: Text(
                       delegate.discoveryEnterManual,
-                      style: const TextStyle(fontSize: 15.0),
+                      textScaleFactor: 0.9,
                     )),
               ),
             ],
@@ -146,39 +162,43 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
   }
 
   Widget discoveryItem(String name, String host) {
-    return InkWell(
-      onTap: () {
-        discovery.stop();
-        Hive.box('Settings').put('host', host);
-        Navigator.pop(context);
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 15),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
-                Text(
-                  host,
-                  style: const TextStyle(
-                      color: Colors.white, fontSize: 15, height: 1.6),
-                ),
-              ],
-            ),
-            const Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: Colors.white,
-            )
-          ],
+    return LayoutBuilder(
+      builder: (context, constrains) => InkWell(
+        onTap: () {
+          discovery.stop();
+          Hive.box('Settings').put('host', host);
+          Navigator.pop(context);
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(
+              horizontal: MediaQuery.sizeOf(context).width * 0.03645833),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
+                  ),
+                  Text(
+                    host,
+                    textScaleFactor: 1.05,
+                    style: const TextStyle(
+                        color: Colors.white, height: double.minPositive),
+                  ),
+                ],
+              ),
+              const Icon(
+                CupertinoIcons.forward,
+                color: Colors.white,
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -265,7 +285,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                               Navigator.pop(context);
                             },
                             icon: const Icon(
-                              Icons.add,
+                              CupertinoIcons.add,
                               color: Colors.white,
                             )))
                   ],

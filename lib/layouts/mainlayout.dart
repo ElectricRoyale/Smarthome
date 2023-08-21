@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:smarthome/layouts/custom_app_bar.dart';
@@ -45,6 +47,7 @@ class MyHomePageState extends State<MyHomePage>
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
     return Builder(builder: (context) {
       return Container(
         decoration: const BoxDecoration(
@@ -64,7 +67,7 @@ class MyHomePageState extends State<MyHomePage>
             resizeToAvoidBottomInset: false,
             backgroundColor: Colors.transparent,
             appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(70.0),
+                preferredSize: Size.fromHeight(screenSize.height * 0.076),
                 child: CustomAppBar(key: customAppBar, network: network)),
             extendBody: true,
             body: SafeArea(
@@ -88,87 +91,81 @@ class MyHomePageState extends State<MyHomePage>
   Widget _bottomNavigationBar() {
     final delegate = S.of(context);
     return Container(
-      padding: const EdgeInsets.only(top: 12),
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.transparent,
-            Colors.black,
-          ],
-          tileMode: TileMode.decal,
-        ),
-      ),
-      child: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: onItemTap,
-        showUnselectedLabels: true,
-        backgroundColor: Colors.transparent,
-        type: BottomNavigationBarType.fixed,
-        elevation: 0,
-        unselectedItemColor: Colors.white,
-        selectedItemColor: Colors.white,
-        selectedIconTheme: const IconThemeData(color: COLOR_ACCENT),
-        selectedLabelStyle: const TextStyle(
-          shadows: [
-            Shadow(
-              offset: Offset(0.0, 1.25),
-              blurRadius: 3.0,
-              color: Color.fromARGB(255, 200, 200, 200),
-            )
-          ],
-        ),
-        unselectedLabelStyle: const TextStyle(
-          shadows: [
-            Shadow(
-              offset: Offset(0.0, 1.25),
-              blurRadius: 3.0,
-              color: Color.fromARGB(255, 200, 200, 200),
-            )
-          ],
-        ),
-        items: <BottomNavigationBarItem>[
-          const BottomNavigationBarItem(
-            icon: Icon(
-              Icons.dashboard_rounded,
-              shadows: [
-                Shadow(
-                  offset: Offset(0.0, 2.5),
-                  blurRadius: 3.0,
-                  color: Color.fromARGB(255, 0, 0, 0),
-                )
-              ],
-            ),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(
-              Icons.wifi_tethering,
-              shadows: [
-                Shadow(
-                  offset: Offset(0.0, 2.5),
-                  blurRadius: 3.0,
-                  color: Color.fromARGB(255, 0, 0, 0),
-                )
-              ],
-            ),
-            label: delegate.titleNetwork,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(
-              Icons.settings,
-              shadows: [
-                Shadow(
-                  offset: Offset(0.0, 2.5),
-                  blurRadius: 3.0,
-                  color: Color.fromARGB(255, 0, 0, 0),
-                )
-              ],
-            ),
-            label: delegate.titleSettings,
-          ),
+        borderRadius: BorderRadius.only(
+            topRight: Radius.circular(30), topLeft: Radius.circular(30)),
+        boxShadow: [
+          BoxShadow(color: Colors.black38, spreadRadius: 1.25, blurRadius: 3),
         ],
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0x2bffffff),
+                Colors.transparent,
+              ],
+              tileMode: TileMode.decal,
+            ),
+          ),
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: onItemTap,
+            showUnselectedLabels: true,
+            backgroundColor: Colors.transparent,
+            type: BottomNavigationBarType.fixed,
+            elevation: 0,
+            unselectedItemColor: Colors.white,
+            selectedItemColor: Colors.white,
+            selectedIconTheme: const IconThemeData(color: COLOR_ACCENT),
+            items: <BottomNavigationBarItem>[
+              const BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.dashboard_rounded,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0.0, 2.5),
+                      blurRadius: 3.0,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    )
+                  ],
+                ),
+                label: 'Dashboard',
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(
+                  Icons.wifi_tethering,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0.0, 2.5),
+                      blurRadius: 3.0,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    )
+                  ],
+                ),
+                label: delegate.titleNetwork,
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(
+                  Icons.settings,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0.0, 2.5),
+                      blurRadius: 3.0,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    )
+                  ],
+                ),
+                label: delegate.titleSettings,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

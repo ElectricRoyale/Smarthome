@@ -1,6 +1,6 @@
 # smarthome
 
-Dashboard for Speech Recognition
+Dashboard app for Home Assisstant
 
 ## Getting Started
 

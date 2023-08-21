@@ -8,7 +8,6 @@ import '../../utils/energy_usage_statistics.dart';
 import '../../utils/globals.dart';
 import '../../utils/home_assistant_connection.dart';
 import '../../utils/widget_functions.dart';
-import '../unavailable_dialog.dart';
 
 class Light extends StatefulWidget {
   const Light({Key? key}) : super(key: key);
@@ -18,7 +17,7 @@ class Light extends StatefulWidget {
 }
 
 class LightState extends State<Light> {
-  bool toogle = deviceItem!.state == 'on';
+  bool toggle = deviceItem!.state == 'on';
 
   Widget get _dropdownValue =>
       dropdownItems[deviceItem!.attributes!.effect ?? 'none']!;
@@ -35,22 +34,15 @@ class LightState extends State<Light> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (deviceItem == null || deviceItem!.state == 'unavailable') {
-        showDialog(
-          context: context,
-          builder: (context) => UnavailableDialog(
-            () => Navigator.of(context, rootNavigator: true)
-                .popUntil((route) => route.settings.name == 'overviewpage'),
-          ),
-        );
-      }
+      checkAvailability(context);
     });
     onUpdate = () => _refresh();
   }
 
   void _refresh() {
+    checkAvailability(context);
     setState(() {
-      toogle = deviceItem!.state == 'on';
+      toggle = deviceItem!.state == 'on';
       _controller.color = Color.fromARGB(
           255,
           (deviceItem!.attributes?.rgbColor?.elementAt(0) ?? 255),
@@ -143,23 +135,16 @@ class LightState extends State<Light> {
                             color.blue
                           ];
                         },
-                        brightness: ValueNotifier(
-                            (((deviceItem!.attributes!.brightness != null
-                                                ? deviceItem!.attributes!
-                                                        .brightness! /
-                                                    2.55
-                                                : 1) -
-                                            1) *
-                                        2.32 +
-                                    9)
-                                .roundToDouble()),
+                        brightness:
+                            (deviceItem?.attributes?.brightness ?? 0 / 255)
+                                .toDouble(),
                         child: ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              toogle = !toogle;
+                              toggle = !toggle;
                             });
                             HomeAssistantConnection().send([
-                              toogle
+                              toggle
                                   ? '{"id": ${idNumber++}, "type": "call_service", "domain": "light", "service": "turn_on", "target": {"entity_id": "${deviceItem!.entityId}"}}'
                                   : '{"id": ${idNumber++}, "type": "call_service", "domain": "light", "service": "turn_off", "target": {"entity_id": "${deviceItem!.entityId}"}}'
                             ]);
@@ -171,7 +156,7 @@ class LightState extends State<Light> {
                               foregroundColor:
                                   const Color(0x25ffffff) // <-- Button color
                               ),
-                          child: toogle
+                          child: toggle
                               ? SvgPicture.asset(
                                   'assets/light.svg',
                                   width: 60,

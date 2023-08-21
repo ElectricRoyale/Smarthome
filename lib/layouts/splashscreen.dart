@@ -53,8 +53,8 @@ class _SplashScreenState extends State<SplashScreen> {
       onConnectionFailed();
       return;
     }
-    bool isEmpty = await MySQLHelper().isEmpty();
 
+    bool isEmpty = await MySQLHelper().isEmpty();
     if (!mounted) return;
     Navigator.of(context).pushReplacement(PageRouteBuilder(
         transitionDuration: Duration.zero,
@@ -78,20 +78,15 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                   elevation: 0,
                   backgroundColor: Colors.transparent,
-                  child: Stack(children: [
-                    Align(
-                        child: Padding(
-                            padding: const EdgeInsets.only(bottom: 240),
-                            child: SvgPicture.asset(
-                              'assets/error.svg',
-                              width: 120,
-                              height: 120,
-                              fit: BoxFit.cover,
-                            ))),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                  child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        SvgPicture.asset(
+                          'assets/error.svg',
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.cover,
+                        ),
                         Text(
                           delegate.connectionerrorTitle,
                           style: const TextStyle(
@@ -107,23 +102,36 @@ class _SplashScreenState extends State<SplashScreen> {
                         ),
                         TextButton(
                             onPressed: () {
+                              _closeConnectionErrorDialog();
                               connection();
-                              Navigator.pop(context);
                             },
+                            style: TextButton.styleFrom(
+                                // padding: EdgeInsets.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                minimumSize: const Size(
+                                    double.minPositive, double.minPositive)),
                             child: Text(delegate.retry)),
                         TextButton(
                             onPressed: () {
+                              _closeConnectionErrorDialog();
                               Hive.box('Settings').delete('host');
                               connection();
-                              Navigator.pop(context);
                             },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              minimumSize: const Size(
+                                  double.minPositive, double.minPositive),
+                            ),
                             child: Text(delegate.changeServerAddress)),
-                      ],
-                    ),
-                  ]),
+                      ]),
                 ),
               ),
             ));
+  }
+
+  void _closeConnectionErrorDialog() {
+    Navigator.pop(context);
   }
 
   @override

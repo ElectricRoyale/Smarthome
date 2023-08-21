@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:delayed_display/delayed_display.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -395,7 +396,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                               ]),
                               hintStyle: const TextStyle(color: Colors.white),
                               prefixIcon: const Icon(
-                                Icons.calendar_month,
+                                CupertinoIcons.calendar,
                                 color: Colors.white,
                                 size: 30,
                               ),
@@ -532,8 +533,8 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                               suffixIcon: IconButton(
                                   icon: Icon(
                                     _isObscure
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
+                                        ? CupertinoIcons.eye
+                                        : CupertinoIcons.eye_slash,
                                     color: Colors.white,
                                     size: 25,
                                   ),

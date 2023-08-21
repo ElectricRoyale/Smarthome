@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smarthome/utils/constants.dart';
+import 'package:smarthome/utils/globals.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
-
-import '../../utils/globals.dart';
-import '../unavailable_dialog.dart';
 
 class HeatingSystem extends StatefulWidget {
   const HeatingSystem({Key? key}) : super(key: key);
@@ -19,15 +17,7 @@ class HeatingSystemState extends State<HeatingSystem> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (deviceItem == null || deviceItem!.state == 'unavailable') {
-        showDialog(
-          context: context,
-          builder: (context) => UnavailableDialog(
-            () => Navigator.of(context, rootNavigator: true)
-                .popUntil((route) => route.settings.name == 'overviewpage'),
-          ),
-        );
-      }
+      checkAvailability(context);
     });
   }
 

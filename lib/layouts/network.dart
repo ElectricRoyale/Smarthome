@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:developer';
 
 import 'package:dart_ping/dart_ping.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_scanner/lan_scanner.dart';
 import 'package:network_info_plus/network_info_plus.dart';
@@ -24,6 +23,7 @@ class Network extends StatefulWidget {
 class NetworkLayout extends State<Network> {
   List<dynamic> devices = [];
   StreamSubscription<void>? listOfWifiDevices;
+  String subnet = '';
 
   Ping? _ping;
   var networkInfo = NetworkInfo();
@@ -41,9 +41,9 @@ class NetworkLayout extends State<Network> {
 
   Future<void> ping() async {
     _ping = Ping('www.google.com');
-    _ping!.stream.listen((result) {
+    _ping?.stream.listen((result) {
       if (result.response != null) {
-        pingTime = result.response!.time!.inMilliseconds;
+        pingTime = result.response?.time?.inMilliseconds ?? 0;
       }
       setState(() {});
     });
@@ -92,64 +92,57 @@ class NetworkLayout extends State<Network> {
       String subnet = ipToCSubnet(ip!);
       final scanner = LanScanner(debugLogging: true);
 
+      if (subnet != this.subnet) {
+        devices.clear();
+      }
+
       final stream = scanner.icmpScan(
-        subnet,
+        this.subnet = subnet,
         progressCallback: (progress) {
-          if (kDebugMode) {
-            print('progress: $progress');
-          }
+          log('progress: $progress');
         },
       );
 
       listOfWifiDevices = stream.listen((host) async {
-        if (host.isReachable) {
-          await InternetAddress(host.ip).reverse().then((value) {
+        if (host.isReachable ?? false) {
+          await host.internetAddress.reverse().then((value) {
             Map<String, String> deviceData = {
               'name': value.host.substring(0, value.host.indexOf('.')),
-              'ip': host.ip
+              'ip': host.internetAddress.address
             };
-            setState(() {
-              devices.add(deviceData);
-              devices = devices.map((item) => jsonEncode(item)).toList();
-              devices = devices.toSet().toList();
-              devices = devices.map((item) => jsonDecode(item)).toList();
-              devices.sort((s1, s2) {
-                List<String> ips1 = s1['ip']!.split(".");
-                String updatedIp1 = sprintf(
-                    "%3s.%3s.%3s.%3s", [ips1[0], ips1[1], ips1[2], ips1[3]]);
-                List<String> ips2 = s2['ip']!.split(".");
-                String updatedIp2 = sprintf(
-                    "%3s.%3s.%3s.%3s", [ips2[0], ips2[1], ips2[2], ips2[3]]);
-                return updatedIp1.compareTo(updatedIp2);
-              });
-            });
+            _updateList(deviceData);
           }).catchError((error) {
             debugPrint(error.toString());
             Map<String, String> deviceData = {
               'name': S.of(context).unknown,
-              'ip': host.ip
+              'ip': host.internetAddress.address
             };
-            setState(() {
-              devices.add(deviceData);
-              devices = devices.map((item) => jsonEncode(item)).toList();
-              devices = devices.toSet().toList();
-              devices = devices.map((item) => jsonDecode(item)).toList();
-              devices.sort((s1, s2) {
-                List<String> ips1 = s1['ip']!.split(".");
-                String updatedIp1 = sprintf(
-                    "%3s.%3s.%3s.%3s", [ips1[0], ips1[1], ips1[2], ips1[3]]);
-                List<String> ips2 = s2['ip']!.split(".");
-                String updatedIp2 = sprintf(
-                    "%3s.%3s.%3s.%3s", [ips2[0], ips2[1], ips2[2], ips2[3]]);
-                return updatedIp1.compareTo(updatedIp2);
-              });
-            });
+            _updateList(deviceData);
           });
         } else {
-          devices.removeWhere((element) => element.containsValue(host.ip));
+          devices.removeWhere(
+              (element) => element.containsValue(host.internetAddress.address));
         }
       })
         ..onDone(() => CustomAppBarLayout.stopAnimation());
+    });
+  }
+
+  void _updateList(Map<String, String> deviceData) {
+    setState(() {
+      devices.add(deviceData);
+      devices = devices.map((item) => jsonEncode(item)).toList();
+      devices = devices.toSet().toList();
+      devices = devices.map((item) => jsonDecode(item)).toList();
+      devices.sort((s1, s2) {
+        List<String> ips1 = s1['ip']!.split(".");
+        String updatedIp1 =
+            sprintf("%3s.%3s.%3s.%3s", [ips1[0], ips1[1], ips1[2], ips1[3]]);
+        List<String> ips2 = s2['ip']!.split(".");
+        String updatedIp2 =
+            sprintf("%3s.%3s.%3s.%3s", [ips2[0], ips2[1], ips2[2], ips2[3]]);
+        return updatedIp1.compareTo(updatedIp2);
+      });
     });
   }
 
@@ -175,6 +168,7 @@ class NetworkLayout extends State<Network> {
                   )
                 ]),
             margin: const EdgeInsets.only(left: 5, right: 5, top: 10),
+            height: MediaQuery.of(context).size.height * 0.13,
             child: IntrinsicHeight(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -183,23 +177,18 @@ class NetworkLayout extends State<Network> {
                   Expanded(
                     flex: 3,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 35, bottom: 8),
-                          child: Text(
-                            'ssid',
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
+                        const Text(
+                          'ssid',
+                          style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 35),
-                          child: Text(
-                            ssid,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18),
-                          ),
+                        Text(
+                          ssid,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18),
                         ),
                       ],
                     ),
@@ -214,34 +203,26 @@ class NetworkLayout extends State<Network> {
                   Expanded(
                     flex: 3,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 21, bottom: 8),
-                          child: Text(
-                            delegate.speed,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 14),
-                          ),
+                        Text(
+                          delegate.speed,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 14),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Text(
-                            '$uploadRate $unitText',
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18),
-                          ),
+                        Text(
+                          '$uploadRate $unitText',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: Text(
-                            '$downloadRate $unitText',
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18),
-                          ),
+                        Text(
+                          '$downloadRate $unitText',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18),
                         ),
                       ],
                     ),
@@ -256,23 +237,18 @@ class NetworkLayout extends State<Network> {
                   Expanded(
                     flex: 3,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 35, bottom: 8),
-                          child: Text(
-                            'Ping',
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
+                        const Text(
+                          'Ping',
+                          style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 35),
-                          child: Text(
-                            '$pingTime',
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18),
-                          ),
+                        Text(
+                          '$pingTime',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18),
                         ),
                       ],
                     ),
@@ -292,12 +268,7 @@ class NetworkLayout extends State<Network> {
                   Colors.transparent,
                   Colors.grey,
                 ],
-                stops: [
-                  0.0,
-                  0.035,
-                  0.9,
-                  1.0
-                ], // 10% purple, 80% transparent, 10% purple
+                stops: [0.0, 0.035, 0.87, 1.0],
               ).createShader(rect),
               blendMode: BlendMode.dstOut,
               child: ListView.separated(
@@ -340,11 +311,6 @@ class NetworkLayout extends State<Network> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     _ping!.stop();
     listOfWifiDevices!.cancel();
@@ -364,7 +330,7 @@ class NetworkLayout extends State<Network> {
 
   void stop(bool error) {
     if (_ping != null) _ping!.stop();
-    if (listOfWifiDevices != null) listOfWifiDevices!.cancel();
+
     CustomAppBarLayout.stopAnimation();
     if (error) {
       setState(() {

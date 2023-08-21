@@ -1,6 +1,9 @@
 library variables.globals;
 
+import 'package:flutter/material.dart';
+
 import '../JSON/device_data.dart';
+import '../layouts/unavailable_dialog.dart';
 
 bool mustAuthenticate = true;
 int idNumber = 1;
@@ -21,7 +24,6 @@ void refresh() {
   mediaRefresh.call();
   deviceGridRefresh.call();
   weatherRefresh.call();
-  spotifyControllRefresh.call();
 }
 
 class EnergyData {
@@ -29,4 +31,20 @@ class EnergyData {
   final DateTime time;
 
   EnergyData(this.time, {this.energy});
+}
+
+void checkAvailability(BuildContext context) {
+  if (deviceItem == null || deviceItem!.state == 'unavailable') {
+    if (ModalRoute.of(context)!.isCurrent) {
+      showDialog(
+        context: context,
+        builder: (context) => UnavailableDialog(
+          () => Navigator.of(context, rootNavigator: true)
+              .popUntil((route) => route.settings.name == 'overviewpage'),
+        ),
+      );
+    }
+  } else if (!ModalRoute.of(context)!.isCurrent) {
+    Navigator.of(context).pop();
+  }
 }

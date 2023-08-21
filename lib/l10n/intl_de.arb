@@ -105,6 +105,10 @@
   "sat": "Sa",
   "sun": "So",
 
+  "@_spotify": {},
+  "emptyQueue": "Es befinden sich keine Lieder in der Warteschlange",
+  "searchPlaceholder": "Was möchten Sie hören?",
+
   "@_others": {},
   "unknown": "Unbekannt",
   "unavailable": "Nicht Verfügbar",

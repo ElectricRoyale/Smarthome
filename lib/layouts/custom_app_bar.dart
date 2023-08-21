@@ -111,12 +111,14 @@ class CustomAppBarLayout extends State<CustomAppBar>
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     switch (pageParams(context, index)['layout']) {
       case CustomAppBarIcons.appBarWithIcons:
         return AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
+          forceMaterialTransparency: true,
           leading: Transform.translate(
               offset: const Offset(15, 8),
               child: RotationTransition(
@@ -125,8 +127,8 @@ class CustomAppBarLayout extends State<CustomAppBar>
                   child: IconButton(
                       icon: SvgPicture.asset(
                           '${pageParams(context, index)['icon']}',
-                          height: 30,
-                          width: 30,
+                          height: screenSize.width * 0.07291666,
+                          width: screenSize.width * 0.07291666,
                           fit: BoxFit.scaleDown),
                       onPressed: () {
                         switch (index) {
@@ -154,7 +156,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
                       }))),
           titleSpacing: 0,
           title: Padding(
-            padding: const EdgeInsets.only(top: 20),
+            padding: EdgeInsets.only(top: screenSize.height * 0.021875),
             child: Text('${pageParams(context, index)['name']}',
                 style: const TextStyle(
                   color: Colors.white,
@@ -180,8 +182,9 @@ class CustomAppBarLayout extends State<CustomAppBar>
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
+          forceMaterialTransparency: true,
           title: Padding(
-            padding: const EdgeInsets.only(top: 20),
+            padding: EdgeInsets.only(top: screenSize.height * 0.021875),
             child: Text('${pageParams(context, index)['name']}',
                 style: const TextStyle(
                   color: Colors.white,

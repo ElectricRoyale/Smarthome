@@ -17,8 +17,8 @@ class WeatherLocationsAdapter extends TypeAdapter<WeatherLocations> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return WeatherLocations(
-      weatherLocationList: fields[0] as List<String>,
-      weatherLocation: fields[1] as String,
+      weatherLocationList: (fields[0] as List?)?.cast<String>(),
+      weatherLocation: fields[1] as String?,
     );
   }
 

@@ -9,22 +9,22 @@ class UserData extends HiveObject {
   @HiveField(0)
   late Uint8List? profileImage;
 
-  @HiveField(0)
+  @HiveField(1)
   late String name;
 
-  @HiveField(1)
+  @HiveField(2)
   late String token;
 
-  @HiveField(2)
+  @HiveField(3)
   late String email;
 
-  @HiveField(3)
+  @HiveField(4)
   late String birthday;
 
-  @HiveField(4)
+  @HiveField(5)
   late String handyNumber;
 
-  @HiveField(5)
+  @HiveField(6)
   late String address;
 
   UserData(

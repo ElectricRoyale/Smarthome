@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smarthome/utils/widget_functions.dart';
 
@@ -25,8 +26,8 @@ class LoadingDialog extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+              const CupertinoActivityIndicator(
+                  color: CupertinoColors.white, radius: 23),
               addHorizontalSpace(30),
               DefaultTextStyle(
                   style: const TextStyle(

@@ -47,11 +47,12 @@ class MyApp extends StatelessWidget {
         overlays: [SystemUiOverlay.top]);
     return MaterialApp(
       theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSwatch(
-            brightness: Brightness.dark,
-            accentColor: Colors.white,
-          )),
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSwatch(
+          brightness: Brightness.dark,
+          accentColor: Colors.white,
+        ),
+      ),
       routes: {
         'biometricAuthentication': (BuildContext ctx) =>
             const BiometricAuthentication(),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -29,7 +30,6 @@ class DashboardData {
 
   final Map<String, List<DeviceData>> _categoryMap = {};
 
-  DeviceData? _spotify, _spotifySubstitute;
   final List<String> _energyList = List.filled(9, '0.0');
 
   List<LogbookItem> _logbook = [];
@@ -283,13 +283,6 @@ class DashboardData {
     }
     _logbook.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
-    try {
-      _spotify = devices.firstWhere(
-          (element) => element.entityId!.contains('media_player.spotify'));
-      _spotifySubstitute = devices.firstWhere(
-          (element) => element.entityId!.contains('update.spotify'));
-    } catch (_) {}
-
     _isInitialized = Future.value(true);
   }
 
@@ -302,7 +295,7 @@ class DashboardData {
               .indexWhere((element) => element.entityId == deviceData.entityId))
           .update(deviceData);
       refresh();
-      if (!deviceData.entityId!.contains('sensor.')) onUpdate!.call();
+      onUpdate?.call();
     } catch (_) {}
   }
 
@@ -325,7 +318,7 @@ class DashboardData {
       IconData icon;
       switch (device.attributes!.deviceClass) {
         case 'light':
-          icon = Icons.lightbulb_outlined;
+          icon = CupertinoIcons.lightbulb;
           break;
         case 'socket':
           icon = MdiIcons.powerSocketDe;
@@ -339,13 +332,13 @@ class DashboardData {
         case 'media_player':
           switch (device.attributes!.icon) {
             case 'mdi:television':
-              icon = Icons.tv_rounded;
+              icon = CupertinoIcons.tv;
               break;
             case 'mdi:audio-video':
-              icon = Icons.radio_outlined;
+              icon = CupertinoIcons.hifispeaker;
               break;
             default:
-              icon = Icons.tv_rounded;
+              icon = CupertinoIcons.tv;
               break;
           }
           break;
@@ -365,7 +358,7 @@ class DashboardData {
           icon = Icons.error_outline;
           break;
       }
-      items.add(itemContainer(icon, 24));
+      items.add(itemContainer(icon, 23));
     }
     return items;
   }
@@ -389,33 +382,11 @@ class DashboardData {
     return energy;
   }
 
-  List<DeviceData> get getIrrigations => _irrigation;
-
-  List<DeviceData> get getWashingMachines => _washingMachines;
-
-  List<DeviceData> get getKitchenTools => _kitchenTools;
-
-  List<DeviceData> get getHeatingSystems => _heatingSystems;
-
-  List<DeviceData> get getVideoDevices => _videoDevices;
-
-  List<DeviceData> get getAirConditioners => _airConditioners;
-
-  List<DeviceData> get getShutters => _shutters;
-
-  List<DeviceData> get getSockets => _sockets;
-
-  List<DeviceData> get getLights => _lights;
-
   List<String> get getEnergyList => _energyList;
 
   List<DeviceData> get getAllDevices => _allDevices;
 
   Map<String, List<DeviceData>> get categoryMap => _categoryMap;
-
-  DeviceData? get getSpotify => _spotify;
-
-  DeviceData? get getSpotifySubstitute => _spotifySubstitute;
 
   List get getRooms => _roomList;
 

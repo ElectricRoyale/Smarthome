@@ -820,6 +820,26 @@ class S {
     );
   }
 
+  /// `There are no songs in the queue`
+  String get emptyQueue {
+    return Intl.message(
+      'There are no songs in the queue',
+      name: 'emptyQueue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What do you want to listen to?`
+  String get searchPlaceholder {
+    return Intl.message(
+      'What do you want to listen to?',
+      name: 'searchPlaceholder',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Unknown`
   String get unknown {
     return Intl.message(

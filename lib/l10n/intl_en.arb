@@ -105,6 +105,10 @@
   "sat": "Sat",
   "sun": "Sun",
 
+  "@_spotify": {},
+  "emptyQueue": "There are no songs in the queue",
+  "searchPlaceholder": "What do you want to listen to?",
+
   "@_others": {},
   "unknown": "Unknown",
   "unavailable": "Unavailable",

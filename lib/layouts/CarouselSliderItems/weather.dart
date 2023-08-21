@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
@@ -67,28 +68,30 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     return Container(
-      margin: const EdgeInsets.all(5),
+      margin: EdgeInsets.all(screenSize.width * 0.01215),
+      padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.01),
       decoration: BoxDecoration(
           color: const Color(0x12ffffff),
           borderRadius: BorderRadius.circular(20.0)),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 20.0, bottom: 20, right: 10),
+            padding: EdgeInsets.only(
+                left: screenSize.width * 0.0486111,
+                right: screenSize.width * 0.0243055),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
-                    width: 235,
-                    height: 30,
+                    width: screenSize.width * 0.5711805,
+                    height: screenSize.height * 0.0328125,
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton(
                         style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold),
+                            color: Colors.white, fontWeight: FontWeight.bold),
                         isExpanded: true,
                         isDense: true,
                         icon: const Visibility(
@@ -121,9 +124,9 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                                       callback: refresh,
                                     ));
                           },
+                          iconSize: 30,
                           icon: const Icon(
-                            Icons.add,
-                            size: 30,
+                            CupertinoIcons.add,
                             color: Colors.white,
                             shadows: [
                               Shadow(
@@ -138,9 +141,10 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                             await WeatherData().init(dayNames);
                             setState(() {});
                           },
+                          alignment: Alignment.center,
+                          iconSize: 30,
                           icon: const Icon(
-                            Icons.refresh,
-                            size: 30,
+                            CupertinoIcons.refresh,
                             color: Colors.white,
                             shadows: [
                               Shadow(
@@ -158,27 +162,28 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
             clipBehavior: Clip.none,
             children: [
               Positioned(
-                left: 10,
-                bottom: -10,
-                top: -11,
+                left: screenSize.width * 0.0243055,
+                bottom: -screenSize.height * 0.0109375,
+                top: -screenSize.height * 0.01203125,
                 child: SizedBox(
-                  height: 176,
-                  width: 120,
+                  height: screenSize.height * 0.1925,
+                  width: screenSize.width * 0.2916666,
                   child: Column(
                     children: [
                       TextField(
                         controller: temperatureWarmController,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: -6, vertical: 12),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: -screenSize.width * 0.0145833,
+                              vertical: screenSize.height * 0.013125),
                           icon: SimpleShadow(
                             offset: const Offset(0, 2),
                             opacity: 0.6,
                             child: SvgPicture.asset(
                               "assets/thermometer_warm.svg",
-                              width: 34,
-                              height: 34,
+                              width: screenSize.width * 0.0826388,
+                              height: screenSize.width * 0.0826388,
                             ),
                           ),
                           border: InputBorder.none,
@@ -200,15 +205,16 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                         controller: temperatureColdController,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: -6, vertical: 12),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: -screenSize.width * 0.0145833,
+                              vertical: screenSize.height * 0.013125),
                           icon: SimpleShadow(
                             offset: const Offset(0, 2),
                             opacity: 0.6,
                             child: SvgPicture.asset(
                               "assets/thermometer_cold.svg",
-                              width: 34,
-                              height: 34,
+                              width: screenSize.width * 0.0826388,
+                              height: screenSize.width * 0.0826388,
                             ),
                           ),
                           border: InputBorder.none,
@@ -230,15 +236,16 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                         controller: sunriseController,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: -10, vertical: 12),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: -screenSize.width * 0.0243055,
+                              vertical: screenSize.height * 0.013125),
                           icon: SimpleShadow(
                             offset: const Offset(0, 2),
                             opacity: 0.6,
                             child: SvgPicture.asset(
                               "assets/sunrise.svg",
-                              width: 38,
-                              height: 38,
+                              width: screenSize.width * 0.0923611,
+                              height: screenSize.width * 0.0923611,
                             ),
                           ),
                           border: InputBorder.none,
@@ -260,15 +267,16 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                         controller: sunsetController,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: -10, vertical: 12),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: -screenSize.width * 0.0243055,
+                              vertical: screenSize.height * 0.013125),
                           icon: SimpleShadow(
                             offset: const Offset(0, 2),
                             opacity: 0.6,
                             child: SvgPicture.asset(
                               "assets/sunset.svg",
-                              width: 38,
-                              height: 38,
+                              width: screenSize.width * 0.0923611,
+                              height: screenSize.width * 0.0923611,
                             ),
                           ),
                           isDense: true,
@@ -303,9 +311,9 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                       ),
                     ),
                     Text(WeatherData().temperature,
+                        textScaleFactor: 2.3,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 32,
                           fontWeight: FontWeight.bold,
                           shadows: [
                             Shadow(
@@ -319,29 +327,31 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                 ),
               ),
               Positioned(
-                right: 10,
-                bottom: -10,
-                top: -11,
+                right: screenSize.width * 0.0243055,
+                bottom: -screenSize.height * 0.0109375,
+                top: -screenSize.height * 0.01203125,
                 child: SizedBox(
-                  height: 176,
-                  width: 120,
+                  height: screenSize.height * 0.1925,
+                  width: screenSize.width * 0.2916666,
                   child: Wrap(
                     children: [
                       TextField(
                         controller: hygrometerController,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 2, vertical: 12),
-                          suffixIconConstraints:
-                              const BoxConstraints(minHeight: 36, minWidth: 24),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: screenSize.width * 0.0243055,
+                              vertical: screenSize.height * 0.013125),
+                          suffixIconConstraints: BoxConstraints(
+                              minHeight: screenSize.width * 0.0826388,
+                              minWidth: screenSize.width * 0.0826388),
                           suffixIcon: SimpleShadow(
                             offset: const Offset(0, 2),
                             opacity: 0.6,
                             child: SvgPicture.asset(
                               "assets/hygrometer.svg",
-                              width: 34,
-                              height: 34,
+                              width: screenSize.width * 0.0826388,
+                              height: screenSize.width * 0.0826388,
                             ),
                           ),
                           border: InputBorder.none,
@@ -364,17 +374,19 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                         controller: humidityController,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 1, vertical: 12),
-                          suffixIconConstraints:
-                              const BoxConstraints(minHeight: 36, minWidth: 36),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: screenSize.width * 0.00243055,
+                              vertical: screenSize.height * 0.013125),
+                          suffixIconConstraints: BoxConstraints(
+                              minHeight: screenSize.width * 0.0826388,
+                              minWidth: screenSize.width * 0.0826388),
                           suffixIcon: SimpleShadow(
                             offset: const Offset(0, 2),
                             opacity: 0.6,
                             child: SvgPicture.asset(
                               "assets/humidity.svg",
-                              width: 36,
-                              height: 36,
+                              width: screenSize.width * 0.0826388,
+                              height: screenSize.width * 0.0826388,
                             ),
                           ),
                           border: InputBorder.none,
@@ -397,17 +409,19 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                         controller: fellTemperatureController,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 1, vertical: 12),
-                          suffixIconConstraints:
-                              const BoxConstraints(minHeight: 36, minWidth: 36),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: screenSize.width * 0.00243055,
+                              vertical: screenSize.height * 0.013125),
+                          suffixIconConstraints: BoxConstraints(
+                              minHeight: screenSize.width * 0.0826388,
+                              minWidth: screenSize.width * 0.0826388),
                           suffixIcon: SimpleShadow(
                             offset: const Offset(0, 2),
                             opacity: 0.6,
                             child: SvgPicture.asset(
                               "assets/feeling_temperature.svg",
-                              width: 36,
-                              height: 36,
+                              width: screenSize.width * 0.0826388,
+                              height: screenSize.width * 0.0826388,
                             ),
                           ),
                           border: InputBorder.none,
@@ -430,17 +444,19 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
                         controller: windController,
                         readOnly: true,
                         decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 2, vertical: 12),
-                          suffixIconConstraints:
-                              const BoxConstraints(minHeight: 36, minWidth: 36),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: screenSize.width * 0.0243055,
+                              vertical: screenSize.height * 0.013125),
+                          suffixIconConstraints: BoxConstraints(
+                              minHeight: screenSize.width * 0.0826388,
+                              minWidth: screenSize.width * 0.0826388),
                           suffixIcon: SimpleShadow(
                             offset: const Offset(0, 2),
                             opacity: 0.6,
                             child: SvgPicture.asset(
                               "assets/wind.svg",
-                              width: 36,
-                              height: 36,
+                              width: screenSize.width * 0.0826388,
+                              height: screenSize.width * 0.0826388,
                             ),
                           ),
                           isDense: true,
@@ -465,12 +481,9 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10, top: 30),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: WeatherData().forecasts,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: WeatherData().forecasts,
           ),
         ],
       ),
@@ -512,9 +525,10 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
           },
           //secondaryBackground: rightDeleteIcon,
           child: SizedBox(
-              width: 230,
+              width: MediaQuery.sizeOf(context).width * 0.55902777,
               child: Text(
                 element,
+                textScaleFactor: 2.0,
                 style: const TextStyle(
                   shadows: [
                     Shadow(
@@ -540,14 +554,18 @@ class WeatherLayoutDesign extends State<WeatherLayout> {
           return AlertDialog(
             title: Text(
               delegate.weatherDialogDeleteTitle,
+              textScaleFactor: 1.3,
               style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             content: Text(
               delegate.weatherDialogDeleteMessage,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              textScaleFactor: 1.1,
+              style: const TextStyle(
+                color: Colors.white,
+              ),
             ),
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(28.0))),

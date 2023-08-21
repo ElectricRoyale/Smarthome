@@ -1,7 +1,7 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:smarthome/layouts/unavailable_dialog.dart';
 
 import '../../utils/constants.dart';
 import '../../utils/energy_usage_statistics.dart';
@@ -22,20 +22,13 @@ class ShutterState extends State<Shutter> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (deviceItem == null || deviceItem!.state == 'unavailable') {
-        showDialog(
-          context: context,
-          builder: (context) => UnavailableDialog(
-            () => Navigator.of(context, rootNavigator: true)
-                .popUntil((route) => route.settings.name == 'overviewpage'),
-          ),
-        );
-      }
+      checkAvailability(context);
     });
     onUpdate = () => refresh();
   }
 
   void refresh() {
+    checkAvailability(context);
     setState(() {
       selected =
           deviceItem!.state == 'opening' || deviceItem!.state == 'closing'
@@ -65,36 +58,41 @@ class ShutterState extends State<Shutter> {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 50.0, bottom: 20),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    RotatedBox(
+              child: Flex(direction: Axis.horizontal, children: [
+                const Expanded(flex: 2, child: SizedBox()),
+                Expanded(
+                  flex: 2,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.1,
+                    child: RotatedBox(
                       quarterTurns: 1,
                       child: AnimatedToggleSwitch<int>.size(
                         current: selected,
                         values: const [1, 2, 3],
                         iconOpacity: 1,
                         indicatorSize: const Size.fromWidth(100),
-                        height: 65,
+                        height: 60,
                         iconAnimationType: AnimationType.onHover,
                         indicatorAnimationType: AnimationType.onHover,
                         iconBuilder: (value, size) {
                           IconData data = Icons.error;
                           switch (value) {
                             case 1:
-                              data = Icons.arrow_back;
+                              data = CupertinoIcons.back;
                               break;
                             case 2:
-                              data = Icons.stop;
+                              data = CupertinoIcons.stop_fill;
                               break;
                             case 3:
-                              data = Icons.arrow_forward;
+                              data = CupertinoIcons.forward;
                               break;
                           }
-                          return Icon(
-                            data,
-                            size: 40,
-                            color: Colors.white,
+                          return Center(
+                            child: Icon(
+                              data,
+                              size: 40,
+                              color: Colors.white,
+                            ),
                           );
                         },
                         borderWidth: 0.0,
@@ -124,69 +122,74 @@ class ShutterState extends State<Shutter> {
                         },
                       ),
                     ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.25,
-                      child: Stack(alignment: Alignment.center, children: [
-                        SvgPicture.asset(
-                          'assets/window.svg',
-                          width: MediaQuery.of(context).size.width * 0.2,
-                          height: MediaQuery.of(context).size.height * 0.2,
-                          fit: BoxFit.scaleDown,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 50.0, left: 2.0, right: 2.0, bottom: 30.0),
-                          child: Container(
-                            decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.vertical(
-                                    bottom: Radius.circular(12))),
-                            clipBehavior: Clip.hardEdge,
-                            child: RotatedBox(
-                              quarterTurns: 1,
-                              child: SliderTheme(
-                                data: SliderTheme.of(context).copyWith(
-                                  trackHeight: 120,
-                                  thumbShape: SliderComponentShape.noOverlay,
-                                  overlayShape: SliderComponentShape.noOverlay,
-                                  inactiveTrackColor: Colors.transparent,
-                                  valueIndicatorShape:
-                                      SliderComponentShape.noOverlay,
-                                  trackShape:
-                                      const GradientRectangularSliderTrackShape(),
-                                ),
-                                child: Slider(
-                                  max: 100.0,
-                                  min: 0,
-                                  value: 100 -
-                                      (deviceItem?.attributes
-                                                  ?.currentPosition ??
-                                              100.0)
-                                          .toDouble(),
-                                  onChanged: (double value) => setState(() {
-                                    deviceItem!.attributes!.currentPosition =
-                                        100 - value.round();
-                                  }),
-                                  onChangeEnd: (double value) =>
-                                      HomeAssistantConnection().send([
-                                    '{"id": ${idNumber++}, "type": "call_service", "domain" : "cover", "service": "set_cover_position", "service_data" : {"position" : "${100 - value.round()}"}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
-                                  ]),
-                                ),
+                  ),
+                ),
+                const Expanded(flex: 2, child: SizedBox()),
+                Expanded(
+                  flex: 6,
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.25,
+                    child: Stack(alignment: Alignment.center, children: [
+                      SvgPicture.asset(
+                        'assets/window.svg',
+                        width: MediaQuery.of(context).size.width * 0.2,
+                        height: MediaQuery.of(context).size.height * 0.2,
+                        fit: BoxFit.scaleDown,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 50.0, left: 2.0, right: 2.0, bottom: 30.0),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              borderRadius: BorderRadius.vertical(
+                                  bottom: Radius.circular(12))),
+                          clipBehavior: Clip.hardEdge,
+                          child: RotatedBox(
+                            quarterTurns: 1,
+                            child: SliderTheme(
+                              data: SliderTheme.of(context).copyWith(
+                                trackHeight: 120,
+                                thumbShape: SliderComponentShape.noOverlay,
+                                overlayShape: SliderComponentShape.noOverlay,
+                                inactiveTrackColor: Colors.transparent,
+                                valueIndicatorShape:
+                                    SliderComponentShape.noOverlay,
+                                trackShape:
+                                    const GradientRectangularSliderTrackShape(),
+                              ),
+                              child: Slider(
+                                max: 100.0,
+                                min: 0,
+                                value: 100 -
+                                    (deviceItem?.attributes?.currentPosition ??
+                                            100.0)
+                                        .toDouble(),
+                                onChanged: (double value) => setState(() {
+                                  deviceItem!.attributes!.currentPosition =
+                                      100 - value.round();
+                                }),
+                                onChangeEnd: (double value) =>
+                                    HomeAssistantConnection().send([
+                                  '{"id": ${idNumber++}, "type": "call_service", "domain" : "cover", "service": "set_cover_position", "service_data" : {"position" : "${100 - value.round()}"}, "target" : {"entity_id": "${deviceItem!.entityId}"}}'
+                                ]),
                               ),
                             ),
                           ),
                         ),
-                        Center(
-                          child: Text(
-                            '${deviceItem?.attributes?.currentPosition ?? 100}%',
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold),
-                          ),
+                      ),
+                      Center(
+                        child: Text(
+                          '${deviceItem?.attributes?.currentPosition ?? 100}%',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold),
                         ),
-                      ]),
-                    ),
-                  ]),
+                      ),
+                    ]),
+                  ),
+                ),
+              ]),
             ),
             const Divider(
               height: 20,

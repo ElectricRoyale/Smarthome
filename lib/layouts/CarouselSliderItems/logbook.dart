@@ -75,8 +75,9 @@ class LogbookLayoutDesign extends State<LogbookLayout> {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     return Container(
-      margin: const EdgeInsets.all(5),
+      margin: EdgeInsets.all(screenSize.width * 0.01215),
       decoration: BoxDecoration(
           color: const Color(0x12ffffff),
           borderRadius: BorderRadius.circular(20.0)),
@@ -105,13 +106,14 @@ class LogbookLayoutDesign extends State<LogbookLayout> {
           blendMode: BlendMode.dstOut,
           child: ListView.separated(
               itemBuilder: (context, index) => logbook.elementAt(index),
-              separatorBuilder: (context, index) => const Divider(
+              separatorBuilder: (context, index) => Divider(
                     color: Colors.white,
-                    indent: 10,
-                    endIndent: 10,
+                    indent: screenSize.width * 0.0243055,
+                    endIndent: screenSize.width * 0.0243055,
                     thickness: 1.1,
                   ),
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding:
+                  EdgeInsets.symmetric(vertical: screenSize.height * 0.01093),
               itemCount: logbook.length),
         ),
       ),

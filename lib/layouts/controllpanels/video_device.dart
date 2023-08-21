@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../JSON/device_data.dart';
@@ -8,7 +9,6 @@ import '../../utils/energy_usage_statistics.dart';
 import '../../utils/globals.dart';
 import '../../utils/home_assistant_connection.dart';
 import '../../utils/widget_functions.dart';
-import '../unavailable_dialog.dart';
 
 class VideoDevice extends StatefulWidget {
   const VideoDevice({Key? key}) : super(key: key);
@@ -21,30 +21,22 @@ class VideoDeviceState extends State<VideoDevice> {
   bool toggle =
       deviceItem!.state != 'off' && deviceItem!.state != 'unavailable';
   List<Widget> zoneControlList = [];
-  bool test = true;
-  double volumeLevel = deviceItem!.attributes!.volumeLevel ?? 0;
+  double volumeLevel = deviceItem!.attributes!.volumeLevel;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (deviceItem == null || deviceItem!.state == 'unavailable') {
-        showDialog(
-          context: context,
-          builder: (context) => UnavailableDialog(
-            () => Navigator.of(context, rootNavigator: true)
-                .popUntil((route) => route.settings.name == 'overviewpage'),
-          ),
-        );
-      }
+      checkAvailability(context);
     });
     onUpdate = () => refresh();
   }
 
   void refresh() {
+    checkAvailability(context);
     setState(() {
       toggle = deviceItem!.state != 'off' && deviceItem!.state != 'unavailable';
-      volumeLevel = deviceItem!.attributes!.volumeLevel ?? 0;
+      volumeLevel = deviceItem!.attributes!.volumeLevel;
     });
   }
 
@@ -111,10 +103,10 @@ class VideoDeviceState extends State<VideoDevice> {
                     '{"id": ${idNumber++}, "type": "call_service", "domain": "media_player", "service": "volume_mute", "target": {"entity_id": "${deviceItem!.entityId}"}, "service_data" : {"is_volume_muted":"${deviceItem!.attributes!.isVolumeMuted}"}}'
                   ]),
                   child: deviceItem!.attributes!.isVolumeMuted ?? false
-                      ? const Icon(Icons.volume_off_rounded,
+                      ? const Icon(CupertinoIcons.volume_off,
                           color: Colors.white)
                       : const Icon(
-                          Icons.volume_up_rounded,
+                          CupertinoIcons.speaker_2_fill,
                           color: Colors.white,
                         ),
                 ),
@@ -323,10 +315,10 @@ class VideoDeviceState extends State<VideoDevice> {
                       '{"id": ${idNumber++}, "type": "call_service", "domain": "media_player", "service": "volume_mute", "target": {"entity_id": "${deviceItem!.secondZone!.entityId}"}, "service_data" : {"is_volume_muted":"${!(deviceItem!.secondZone!.attributes!.isVolumeMuted!)}"}}'
                   ]),
                   child: deviceItem!.attributes!.isVolumeMuted ?? false
-                      ? const Icon(Icons.volume_off_rounded,
+                      ? const Icon(CupertinoIcons.volume_off,
                           color: Colors.white)
                       : const Icon(
-                          Icons.volume_up_rounded,
+                          CupertinoIcons.speaker_2_fill,
                           color: Colors.white,
                         ),
                 ),
@@ -410,22 +402,29 @@ class VideoDeviceState extends State<VideoDevice> {
                     child: Slider(
                       max: 1.0,
                       min: 0,
-                      divisions: 20,
+                      divisions: 100,
                       value: volumeLevel,
                       onChanged: (double value) => setState(() {
-                        if (deviceItem!.state != 'off' &&
-                            deviceItem!.state != 'unavailable' &&
-                            deviceItem!.attributes!.volumeLevel! >=
-                                volumeLevel) {
+                        double dif = value - volumeLevel;
+                        if (deviceItem!.attributes!.volumeLevel ==
+                            volumeLevel) {
                           deviceItem!.attributes!.volumeLevel = value;
+                        } else if (deviceItem!.attributes!.volumeLevel <=
+                                value &&
+                            deviceItem!.attributes!.volumeLevel > 0) {
+                          deviceItem!.attributes!.volumeLevel += dif;
                         }
-                        if (deviceItem!.secondZone != null &&
-                            deviceItem!.secondZone!.state != 'off' &&
-                            deviceItem!.secondZone!.state != 'unavailable' &&
-                            deviceItem!.secondZone!.attributes!.volumeLevel! >=
-                                volumeLevel) {
+                        if (deviceItem!.secondZone!.attributes!.volumeLevel ==
+                            volumeLevel) {
                           deviceItem!.secondZone!.attributes!.volumeLevel =
                               value;
+                        } else if (deviceItem!
+                                    .secondZone!.attributes!.volumeLevel <=
+                                value &&
+                            deviceItem!.secondZone!.attributes!.volumeLevel >
+                                0) {
+                          deviceItem!.secondZone!.attributes!.volumeLevel +=
+                              dif;
                         }
                         volumeLevel = value;
                       }),
@@ -483,7 +482,8 @@ class VideoDeviceState extends State<VideoDevice> {
         style: TextStyle(color: Colors.white, fontSize: 16),
       ),
       addVerticalSpace(5),
-      zoneControl(deviceItem!, deviceItem!.secondZone != null),
+      zoneControl(
+          deviceItem!, deviceItem!.secondZone, deviceItem!.secondZone != null),
     ];
     if (deviceItem!.secondZone != null) {
       zoneControlList.addAll([
@@ -493,7 +493,7 @@ class VideoDeviceState extends State<VideoDevice> {
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
         addVerticalSpace(5),
-        zoneControl(deviceItem!.secondZone!, true),
+        zoneControl(deviceItem!.secondZone!, deviceItem, true),
       ]);
     }
     return Column(
@@ -502,7 +502,8 @@ class VideoDeviceState extends State<VideoDevice> {
     );
   }
 
-  Widget zoneControl(DeviceData deviceData, bool volumeController) {
+  Widget zoneControl(DeviceData deviceData, DeviceData? comparativeData,
+      bool volumeController) {
     return Row(mainAxisSize: MainAxisSize.min, children: [
       Column(
         mainAxisSize: MainAxisSize.min,
@@ -642,20 +643,12 @@ class VideoDeviceState extends State<VideoDevice> {
               child: Slider(
                 max: 1.0,
                 min: 0,
-                divisions: 20,
-                value: deviceData.attributes!.volumeLevel ?? 0,
+                divisions: 100,
+                value: deviceData.attributes!.volumeLevel,
                 onChanged: (double value) => setState(() {
-                  if (deviceItem!.attributes!.volumeLevel ==
-                      deviceData.attributes!.volumeLevel) {
-                    if (deviceData.attributes!.volumeLevel! >=
-                        deviceItem!.secondZone!.attributes!.volumeLevel!) {
-                      volumeLevel = value;
-                    }
-                  } else {
-                    if (deviceData.attributes!.volumeLevel! >=
-                        deviceItem!.attributes!.volumeLevel!) {
-                      volumeLevel = value;
-                    }
+                  if (deviceData.attributes!.volumeLevel >=
+                      comparativeData!.attributes!.volumeLevel) {
+                    volumeLevel = value;
                   }
                   deviceData.attributes!.volumeLevel = value;
                 }),

@@ -8,21 +8,24 @@ Widget addHorizontalSpace(double width) => SizedBox(
       width: width,
     );
 
-Container itemContainer(IconData icon, double size) {
-  return Container(
-    decoration: const BoxDecoration(
-      gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [Color(0x1effffff), Color(0x4affffff)]),
-      shape: BoxShape.circle,
-    ),
-    padding: const EdgeInsets.all(3),
-    margin: const EdgeInsets.only(right: 4),
-    child: Icon(
-      icon,
-      color: Colors.white,
-      size: size,
+LayoutBuilder itemContainer(IconData icon, double size) {
+  return LayoutBuilder(
+    builder: (context, constraints) => Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [Color(0x1effffff), Color(0x4affffff)]),
+        shape: BoxShape.circle,
+      ),
+      padding: EdgeInsets.all(MediaQuery.sizeOf(context).width * 0.01215277),
+      margin:
+          EdgeInsets.only(right: MediaQuery.sizeOf(context).width * 0.0097222),
+      child: Icon(
+        icon,
+        color: Colors.white,
+        size: size,
+      ),
     ),
   );
 }

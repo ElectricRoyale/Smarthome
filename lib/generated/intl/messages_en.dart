@@ -71,6 +71,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Enter address manually"),
         "discoverySelectServer": MessageLookupByLibrary.simpleMessage(
             "Select your Home Assistant Server"),
+        "emptyQueue": MessageLookupByLibrary.simpleMessage(
+            "There are no songs in the queue"),
         "energystatisticsAxisLableLine":
             MessageLookupByLibrary.simpleMessage("Energy Consumption"),
         "energystatisticsAxisLableX":
@@ -140,6 +142,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Password"),
         "retry": MessageLookupByLibrary.simpleMessage("Retry"),
         "sat": MessageLookupByLibrary.simpleMessage("Sat"),
+        "searchPlaceholder": MessageLookupByLibrary.simpleMessage(
+            "What do you want to listen to?"),
         "speed": MessageLookupByLibrary.simpleMessage("speed"),
         "sun": MessageLookupByLibrary.simpleMessage("Sun"),
         "thu": MessageLookupByLibrary.simpleMessage("Thu"),
