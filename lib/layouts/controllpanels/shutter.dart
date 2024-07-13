@@ -1,13 +1,15 @@
+
+
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:smarthome/utils/widget_functions.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../../utils/constants.dart';
 import '../../utils/energy_usage_statistics.dart';
 import '../../utils/globals.dart';
 import '../../utils/home_assistant_connection.dart';
+import '../../utils/widget_functions.dart';
 
 class Shutter extends StatefulWidget {
   const Shutter({Key? key}) : super(key: key);

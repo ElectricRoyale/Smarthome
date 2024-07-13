@@ -104,7 +104,7 @@ class NetworkLayout extends State<Network> {
       );
 
       listOfWifiDevices = stream.listen((host) async {
-        if (host.isReachable ?? false) {
+        /*if (host.isReachable ?? false) {
           await host.internetAddress.reverse().then((value) {
             Map<String, String> deviceData = {
               'name': value.host.substring(0, value.host.indexOf('.')),
@@ -122,7 +122,7 @@ class NetworkLayout extends State<Network> {
         } else {
           devices.removeWhere(
               (element) => element.containsValue(host.internetAddress.address));
-        }
+        }*/
       })
         ..onDone(() => CustomAppBarLayout.stopAnimation());
     });
