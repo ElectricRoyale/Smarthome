@@ -45,7 +45,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "appliancesShutter": MessageLookupByLibrary.simpleMessage("ROLLLÄDEN"),
         "appliancesSocket": MessageLookupByLibrary.simpleMessage("STECKDOSEN"),
         "appliancesVideoDevices":
-            MessageLookupByLibrary.simpleMessage("VIDEO GERÄTE"),
+            MessageLookupByLibrary.simpleMessage("MULTIMEDIA"),
         "appliancesWashingMachine":
             MessageLookupByLibrary.simpleMessage("WASCHMASCHINE"),
         "biometricLocalizedReason":
@@ -103,6 +103,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "mon": MessageLookupByLibrary.simpleMessage("Mo"),
         "noDevicesAvailable": MessageLookupByLibrary.simpleMessage(
             "Es sind keine Geräte Vorhanden"),
+        "playingFromPlaylist":
+            MessageLookupByLibrary.simpleMessage("SPIELT VON PLAYLIST"),
         "registerAlreadyHaveAccount": MessageLookupByLibrary.simpleMessage(
             "Ich habe bereits einen Benutzer"),
         "registerErrorFailed":

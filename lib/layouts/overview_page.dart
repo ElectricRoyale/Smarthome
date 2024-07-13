@@ -6,13 +6,14 @@ import 'package:smarthome/utils/globals.dart';
 import '../JSON/device_data.dart';
 import '../generated/l10n.dart';
 import '../utils/constants.dart';
-import '../utils/dashboard_data.dart';
 import '../utils/scrolling_text.dart';
 
 class OverViewPage extends StatefulWidget {
   final String name, groupName;
+  final List<DeviceData> deviceData;
 
-  const OverViewPage({Key? key, required this.name, required this.groupName})
+  const OverViewPage(this.deviceData,
+      {Key? key, required this.name, required this.groupName})
       : super(key: key);
 
   @override
@@ -20,19 +21,18 @@ class OverViewPage extends StatefulWidget {
 }
 
 class OverViewPageState extends State<OverViewPage> {
-  List<DeviceData> deviceData = [];
   double opacity = 0.0;
 
   @override
   void initState() {
     super.initState();
-    deviceData.addAll(DashboardData().categoryMap[widget.groupName]!);
     onUpdate = () => setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    if (deviceData.isNotEmpty) {
+    Size screenSize = MediaQuery.sizeOf(context);
+    if (widget.deviceData.isNotEmpty) {
       return Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -48,13 +48,13 @@ class OverViewPageState extends State<OverViewPage> {
           appBar: AppBar(
             title: Text(
               widget.name,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 shadows: [
                   Shadow(
-                    offset: Offset(0.0, 2.5),
+                    offset: Offset(0.0, screenSize.height * 0.0027),
                     blurRadius: 3.0,
-                    color: Color.fromARGB(255, 0, 0, 0),
+                    color: const Color.fromARGB(255, 0, 0, 0),
                   )
                 ],
               ),
@@ -66,20 +66,24 @@ class OverViewPageState extends State<OverViewPage> {
           backgroundColor: Colors.transparent,
           body: GridView.builder(
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: MediaQuery.of(context).size.width / 2,
+                maxCrossAxisExtent: screenSize.width / 2,
                 childAspectRatio: 3.25 / 2,
                 crossAxisSpacing: 15,
                 mainAxisSpacing: 15),
             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 20),
-            itemCount: deviceData.length,
+            itemCount: widget.deviceData.length,
             itemBuilder: (ctx, index) => InkWell(
               borderRadius: BorderRadius.circular(15),
               onTap: () {
-                deviceItem = deviceData.elementAt(index);
+                deviceItem = widget.deviceData.elementAt(index);
                 Navigator.pushNamed(
                         context,
-                        deviceData.elementAt(index).entityId!.substring(0,
-                            deviceData.elementAt(index).entityId!.indexOf('.')))
+                        widget.deviceData.elementAt(index).entityId!.substring(
+                            0,
+                            widget.deviceData
+                                .elementAt(index)
+                                .entityId!
+                                .indexOf('.')))
                     .then((value) {
                   onUpdate = () => setState(() {});
                   setState(() {});
@@ -96,37 +100,41 @@ class OverViewPageState extends State<OverViewPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(10.0),
+                        padding: EdgeInsets.all(screenSize.width * 0.0243),
                         child: SimpleShadow(
                           opacity: 0.6,
-                          offset: const Offset(0, 2),
+                          offset: Offset(0, screenSize.height * 0.0021875),
                           child: SvgPicture.asset(
-                            'assets/${deviceData.elementAt(index).icon}',
+                            'assets/${widget.deviceData.elementAt(index).icon}',
                             fit: BoxFit.scaleDown,
-                            height: 50,
-                            width: 50,
-                            colorFilter: deviceData.elementAt(index).state ==
-                                    'unavailable'
-                                ? const ColorFilter.mode(
-                                    Color.fromARGB(255, 80, 80, 80),
-                                    BlendMode.srcIn)
-                                : null,
+                            height: screenSize.width * 0.1215,
+                            width: screenSize.width * 0.1215,
+                            colorFilter:
+                                widget.deviceData.elementAt(index).state ==
+                                        'unavailable'
+                                    ? const ColorFilter.mode(
+                                        Color.fromARGB(255, 80, 80, 80),
+                                        BlendMode.srcIn)
+                                    : null,
                           ),
                         ),
                       ),
                       ScrollingText(
                         velocity: 30,
-                        deviceData.elementAt(index).attributes!.friendlyName!,
-                        style: const TextStyle(
+                        widget.deviceData
+                            .elementAt(index)
+                            .attributes!
+                            .friendlyName!,
+                        textScaleFactor: 1.09,
+                        style: TextStyle(
                           color: Colors.white,
-                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.none,
                           shadows: [
                             Shadow(
-                              offset: Offset(0.0, 2.5),
+                              offset: Offset(0.0, screenSize.height * 0.0027),
                               blurRadius: 3.0,
-                              color: Color.fromARGB(255, 0, 0, 0),
+                              color: const Color.fromARGB(255, 0, 0, 0),
                             )
                           ],
                         ),
@@ -135,29 +143,34 @@ class OverViewPageState extends State<OverViewPage> {
                         startAfter: const Duration(seconds: 3),
                         pauseAfterRound: const Duration(seconds: 3),
                         blankSpace: 100,
-                        margin:
-                            const EdgeInsets.only(top: 3, left: 10, right: 10),
+                        margin: EdgeInsets.only(
+                            top: screenSize.height * 0.00328,
+                            left: screenSize.width * 0.0243,
+                            right: screenSize.width * 0.0243),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
+                        padding:
+                            EdgeInsets.only(left: screenSize.width * 0.0243),
                         child: Text(
-                          deviceData.elementAt(index).state != 'unavailable'
-                              ? double.tryParse(
-                                          deviceData.elementAt(index).energy) !=
+                          widget.deviceData.elementAt(index).state !=
+                                  'unavailable'
+                              ? double.tryParse(widget.deviceData
+                                          .elementAt(index)
+                                          .energy) !=
                                       null
-                                  ? double.parse(deviceData
+                                  ? double.parse(widget.deviceData
                                               .elementAt(index)
                                               .energy)
                                           .toStringAsPrecision(2) +
                                       S.of(context).devicegridUsage
                                   : ''
                               : S.of(context).unavailable,
+                          textScaleFactor: 0.85,
                           style: TextStyle(
-                              color: deviceData.elementAt(index).state !=
+                              color: widget.deviceData.elementAt(index).state !=
                                       'unavailable'
                                   ? Colors.grey
                                   : Colors.red,
-                              fontSize: 12,
                               decoration: TextDecoration.none),
                           maxLines: 1,
                         ),
@@ -208,9 +221,9 @@ class OverViewPageState extends State<OverViewPage> {
             child: Text(
               S.of(context).noDevicesAvailable,
               textAlign: TextAlign.center,
+              textScaleFactor: 1.15,
               style: const TextStyle(
                   color: Color.fromARGB(55, 255, 255, 255),
-                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                   decoration: TextDecoration.none),
             ),

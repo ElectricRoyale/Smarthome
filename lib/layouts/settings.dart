@@ -38,6 +38,7 @@ class Settingslayout extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: ShaderMask(

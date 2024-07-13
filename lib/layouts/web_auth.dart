@@ -16,6 +16,7 @@ class WebAuth extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     return WebViewWidget(
         controller: WebViewController()
           ..setJavaScriptMode(JavaScriptMode.unrestricted)

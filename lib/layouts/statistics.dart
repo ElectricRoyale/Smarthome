@@ -7,6 +7,7 @@ class Statistics extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(

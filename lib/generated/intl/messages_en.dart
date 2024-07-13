@@ -46,7 +46,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("ROLLER SHUTTER"),
         "appliancesSocket": MessageLookupByLibrary.simpleMessage("SOCKET"),
         "appliancesVideoDevices":
-            MessageLookupByLibrary.simpleMessage("VIDEO DEVICES"),
+            MessageLookupByLibrary.simpleMessage("MULTIMEDIA"),
         "appliancesWashingMachine":
             MessageLookupByLibrary.simpleMessage("WASHING MACHINE"),
         "biometricLocalizedReason":
@@ -104,6 +104,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "mon": MessageLookupByLibrary.simpleMessage("Mon"),
         "noDevicesAvailable":
             MessageLookupByLibrary.simpleMessage("No devices available"),
+        "playingFromPlaylist":
+            MessageLookupByLibrary.simpleMessage("PLAYING FROM PLAYLIST"),
         "registerAlreadyHaveAccount":
             MessageLookupByLibrary.simpleMessage("Have already an Account"),
         "registerErrorFailed":

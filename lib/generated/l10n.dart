@@ -660,10 +660,10 @@ class S {
     );
   }
 
-  /// `VIDEO DEVICES`
+  /// `MULTIMEDIA`
   String get appliancesVideoDevices {
     return Intl.message(
-      'VIDEO DEVICES',
+      'MULTIMEDIA',
       name: 'appliancesVideoDevices',
       desc: '',
       args: [],
@@ -915,6 +915,16 @@ class S {
     return Intl.message(
       'Change Server address',
       name: 'changeServerAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `PLAYING FROM PLAYLIST`
+  String get playingFromPlaylist {
+    return Intl.message(
+      'PLAYING FROM PLAYLIST',
+      name: 'playingFromPlaylist',
       desc: '',
       args: [],
     );

@@ -231,7 +231,8 @@ class DashboardData {
         'icon': '${value['picture']}',
         'name': '${value['name']}',
         'appliances': roomDeviceIcons(value["area_id"]),
-        'energyConsumption': energy.toStringAsPrecision(2) + usageUnit
+        'energyConsumption': energy.toStringAsPrecision(2) + usageUnit,
+        'appliancesList': _roomDevicesMap[value["area_id"]]
       });
     }
     _allDevices.sort((a, b) => a.attributes!.friendlyName!

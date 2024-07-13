@@ -157,6 +157,7 @@ class _ScrollingTextState extends State<ScrollingText>
   bool _running = false;
   bool _isOnPause = false;
   int _roundCounter = 0;
+  bool _alreadyShowFading = false;
 
   bool get isDone => widget.numberOfRounds == null
       ? false
@@ -174,6 +175,9 @@ class _ScrollingTextState extends State<ScrollingText>
         if (_controller.hasClients) {
           _controller.jumpTo(_startPosition);
           await Future<void>.delayed(widget.startAfter);
+          setState(() {
+            _alreadyShowFading = true;
+          });
           Future.doWhile(_scroll);
         }
       }
@@ -202,7 +206,7 @@ class _ScrollingTextState extends State<ScrollingText>
   /// Calculates all necessary values for animating, then starts the animation.
   void _initialize(BuildContext context) {
     // Calculate lengths (amount of pixels that each phase needs).
-    final totalLength = _getTextWidth(context) + widget.blankSpace;
+    final totalLength = _getTextSize(context).width + widget.blankSpace;
     final accelerationLength = widget.accelerationCurve.integral *
         widget.velocity *
         _accelerationDuration.inMilliseconds /
@@ -308,39 +312,19 @@ class _ScrollingTextState extends State<ScrollingText>
     }
   }
 
-  /// Returns the width of the text.
-  double _getTextWidth(BuildContext context) {
+  Size _getTextSize(BuildContext context) {
     final span = TextSpan(text: widget.text, style: widget.style);
 
-    const constraints = BoxConstraints(maxWidth: double.infinity);
+    TextPainter textPainter = TextPainter(
+      text: span,
+      textScaleFactor: widget.textScaleFactor ?? 1,
+      textDirection: widget.textDirection,
+      maxLines: 1,
+    );
 
-    final richTextWidget = Text.rich(span).build(context) as RichText;
-    final renderObject = richTextWidget.createRenderObject(context);
-    renderObject.layout(constraints);
+    textPainter.layout(maxWidth: double.infinity);
 
-    final boxes = renderObject.getBoxesForSelection(TextSelection(
-      baseOffset: 0,
-      extentOffset: TextSpan(text: widget.text).toPlainText().length,
-    ));
-
-    return boxes.last.right;
-  }
-
-  double _getTextHeight(BuildContext context) {
-    final span = TextSpan(text: widget.text, style: widget.style);
-
-    const constraints = BoxConstraints(maxWidth: double.infinity);
-
-    final richTextWidget = Text.rich(span).build(context) as RichText;
-    final renderObject = richTextWidget.createRenderObject(context);
-    renderObject.layout(constraints);
-
-    final boxes = renderObject.getBoxesForSelection(TextSelection(
-      baseOffset: 0,
-      extentOffset: TextSpan(text: widget.text).toPlainText().length,
-    ));
-
-    return boxes.last.bottom;
+    return textPainter.size;
   }
 
   @override
@@ -388,11 +372,11 @@ class _ScrollingTextState extends State<ScrollingText>
 
     return Container(
       width: double.maxFinite,
-      height: _getTextHeight(context),
+      height: _getTextSize(context).height * 1.2,
       margin: widget.margin,
       child: LayoutBuilder(
         builder: (context, constraints) => constraints.maxWidth <
-                (_getTextWidth(context) + widget.margin.horizontal)
+                (_getTextSize(context).width + widget.margin.horizontal)
             ? kIsWeb
                 ? marquee
                 : _wrapWithFadingEdgeScrollView(marquee)
@@ -419,8 +403,11 @@ class _ScrollingTextState extends State<ScrollingText>
 
   Widget _wrapWithFadingEdgeScrollView(Widget child) {
     return FadingEdgeScrollView.fromScrollView(
-      gradientFractionOnStart:
-          !showFading ? 0.0 : widget.fadingEdgeStartFraction,
+      gradientFractionOnStart: _alreadyShowFading
+          ? !showFading
+              ? 0.0
+              : widget.fadingEdgeStartFraction
+          : 0.0,
       gradientFractionOnEnd: widget.fadingEdgeEndFraction,
       child: child as ScrollView,
     );

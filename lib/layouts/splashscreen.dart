@@ -65,6 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void onConnectionFailed() {
     final delegate = S.of(context);
+    Size screenSize = MediaQuery.sizeOf(context);
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -83,8 +84,8 @@ class _SplashScreenState extends State<SplashScreen> {
                       children: [
                         SvgPicture.asset(
                           'assets/error.svg',
-                          width: 120,
-                          height: 120,
+                          width: screenSize.width * 0.2916666,
+                          height: screenSize.width * 0.2916666,
                           fit: BoxFit.cover,
                         ),
                         Text(
@@ -136,6 +137,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     return Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

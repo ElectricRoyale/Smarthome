@@ -178,6 +178,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final delegate = S.of(context);
+    Size screenSize = MediaQuery.sizeOf(context);
     return Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -199,18 +200,19 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                 DelayedDisplay(
                     delay: const Duration(),
                     child: Padding(
-                        padding: const EdgeInsets.only(top: 130),
+                        padding:
+                            EdgeInsets.only(top: screenSize.height * 0.1422),
                         child: Text(
                           delegate.titleLogin,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w900,
                             fontSize: 36,
                             shadows: [
                               Shadow(
-                                offset: Offset(0.0, 2.5),
+                                offset: Offset(0.0, screenSize.height * 0.0027),
                                 blurRadius: 3.0,
-                                color: Color.fromARGB(255, 0, 0, 0),
+                                color: const Color.fromARGB(255, 0, 0, 0),
                               )
                             ],
                           ),
@@ -218,8 +220,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                 DelayedDisplay(
                     delay: const Duration(milliseconds: 1000),
                     child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 130, left: 28, right: 28),
+                        padding: EdgeInsets.only(
+                            top: screenSize.height * 0.1422,
+                            left: screenSize.width * 0.068,
+                            right: screenSize.width * 0.068),
                         child: Focus(
                           child: TextField(
                             controller: nameController,
@@ -271,8 +275,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                 DelayedDisplay(
                     delay: const Duration(milliseconds: 1200),
                     child: Padding(
-                        padding:
-                            const EdgeInsets.only(top: 60, left: 28, right: 28),
+                        padding: EdgeInsets.only(
+                            top: screenSize.height * 0.065625,
+                            left: screenSize.width * 0.068,
+                            right: screenSize.width * 0.068),
                         child: Focus(
                           child: TextFormField(
                             controller: passwordController,
@@ -339,7 +345,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                 DelayedDisplay(
                     delay: const Duration(milliseconds: 1250),
                     child: Padding(
-                      padding: const EdgeInsets.only(right: 43, top: 5),
+                      padding: EdgeInsets.only(
+                          right: screenSize.width * 0.1045,
+                          top: screenSize.height * 0.00546875),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -355,8 +363,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                 DelayedDisplay(
                   delay: const Duration(milliseconds: 1750),
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(top: 161, left: 28, right: 28),
+                    padding: EdgeInsets.only(
+                        top: screenSize.height * 0.17609,
+                        left: screenSize.width * 0.068,
+                        right: screenSize.width * 0.068),
                     child: GestureDetector(
                         onTap: () =>
                             login(nameController.text, passwordController.text),

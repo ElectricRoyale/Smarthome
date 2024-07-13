@@ -11,6 +11,7 @@ class UnavailableDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     final delegate = S.of(context);
     return WillPopScope(
       onWillPop: () async {
@@ -26,14 +27,12 @@ class UnavailableDialog extends StatelessWidget {
           elevation: 0,
           backgroundColor: Colors.transparent,
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Padding(
-                padding: const EdgeInsets.only(bottom: 240),
-                child: SvgPicture.asset(
-                  'assets/error.svg',
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.cover,
-                )),
+            SvgPicture.asset(
+              'assets/error.svg',
+              width: 120,
+              height: 120,
+              fit: BoxFit.cover,
+            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,

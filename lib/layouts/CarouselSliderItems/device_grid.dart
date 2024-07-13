@@ -42,15 +42,15 @@ class DeviceGridState extends State<DeviceGrid> {
               child: Padding(
                 padding: EdgeInsets.only(left: screenSize.width * 0.048611),
                 child: Text(delegate.devicegridAppliances,
-                    style: const TextStyle(
+                    textScaleFactor: 1.71,
+                    style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 24,
                       shadows: [
                         Shadow(
-                          offset: Offset(0.0, 2.5),
+                          offset: Offset(0.0, screenSize.height * 0.0027),
                           blurRadius: 3.0,
-                          color: Color.fromARGB(255, 0, 0, 0),
+                          color: const Color.fromARGB(255, 0, 0, 0),
                         )
                       ],
                     )),
@@ -61,14 +61,14 @@ class DeviceGridState extends State<DeviceGrid> {
               children: [
                 Padding(
                   padding: EdgeInsets.only(right: screenSize.width * 0.0121527),
-                  child: const Icon(CupertinoIcons.add,
+                  child: Icon(CupertinoIcons.add,
                       color: Colors.white,
                       size: 28,
                       shadows: [
                         Shadow(
-                          offset: Offset(0.0, 2.5),
+                          offset: Offset(0.0, screenSize.height * 0.0027),
                           blurRadius: 3.0,
-                          color: Color.fromARGB(255, 0, 0, 0),
+                          color: const Color.fromARGB(255, 0, 0, 0),
                         )
                       ]),
                 ),
@@ -79,6 +79,7 @@ class DeviceGridState extends State<DeviceGrid> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => OverViewPage(
+                          DashboardData().categoryMap['ALL DEVICES']!,
                           name: delegate.devicegridAllDevices,
                           groupName: 'ALL DEVICES',
                         ),
@@ -87,7 +88,7 @@ class DeviceGridState extends State<DeviceGrid> {
                     ),
                     child: SimpleShadow(
                       opacity: 1,
-                      offset: const Offset(0, 2.0),
+                      offset: Offset(0.0, screenSize.height * 0.0021875),
                       child: const Icon(
                         CupertinoIcons.square_grid_2x2_fill,
                         color: Colors.white,
@@ -124,6 +125,8 @@ class DeviceGridState extends State<DeviceGrid> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => OverViewPage(
+                        DashboardData().categoryMap[
+                            (appliances(context, index)['groupName'])!]!,
                         name: (appliances(context, index)['name'])!,
                         groupName: (appliances(context, index)['groupName'])!,
                       ),
@@ -140,7 +143,7 @@ class DeviceGridState extends State<DeviceGrid> {
                             right: screenSize.width * 0.0243055),
                         child: SimpleShadow(
                           opacity: 0.6,
-                          offset: const Offset(0, 2),
+                          offset: Offset(0, screenSize.height * 0.0021875),
                           child: SvgPicture.asset(
                             'assets/${appliances(context, index)['icon']}',
                             height: screenSize.width * 0.15555,
@@ -155,14 +158,15 @@ class DeviceGridState extends State<DeviceGrid> {
                         child: Text(
                           appliances(context, index)['name'],
                           textScaleFactor: 0.83,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             shadows: [
                               Shadow(
-                                offset: Offset(0.0, 2.0),
+                                offset:
+                                    Offset(0.0, screenSize.height * 0.0021875),
                                 blurRadius: 3.0,
-                                color: Color.fromARGB(255, 0, 0, 0),
+                                color: const Color.fromARGB(255, 0, 0, 0),
                               )
                             ],
                           ),

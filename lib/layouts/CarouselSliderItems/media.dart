@@ -64,17 +64,16 @@ class MediaLayoutDesign extends State<MediaLayout> {
                 child: ScrollingText(
                   mediaList.elementAt(index),
                   velocity: 30,
-                  //#Todo: change fontSize to textScaleFactor.
-                  style: const TextStyle(
+                  textScaleFactor: 1.3,
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     decoration: TextDecoration.none,
                     shadows: [
                       Shadow(
-                        offset: Offset(0.0, 2.5),
+                        offset: Offset(0.0, screenSize.height * 0.0027),
                         blurRadius: 3.0,
-                        color: Color.fromARGB(255, 0, 0, 0),
+                        color: const Color.fromARGB(255, 0, 0, 0),
                       )
                     ],
                   ),

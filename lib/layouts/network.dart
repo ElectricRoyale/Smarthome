@@ -148,6 +148,7 @@ class NetworkLayout extends State<Network> {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     final delegate = S.of(context);
     this.context = context;
     return Scaffold(
@@ -167,8 +168,11 @@ class NetworkLayout extends State<Network> {
                     blurStyle: BlurStyle.outer,
                   )
                 ]),
-            margin: const EdgeInsets.only(left: 5, right: 5, top: 10),
-            height: MediaQuery.of(context).size.height * 0.13,
+            margin: EdgeInsets.only(
+                left: screenSize.width * 0.012152778,
+                right: screenSize.width * 0.012152778,
+                top: screenSize.height * 0.0109375),
+            height: screenSize.height * 0.13,
             child: IntrinsicHeight(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -181,14 +185,17 @@ class NetworkLayout extends State<Network> {
                       children: [
                         const Text(
                           'ssid',
-                          style: TextStyle(color: Colors.white, fontSize: 14),
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
                         ),
                         Text(
                           ssid,
+                          textScaleFactor: 1.3,
                           style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -207,22 +214,23 @@ class NetworkLayout extends State<Network> {
                       children: [
                         Text(
                           delegate.speed,
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 14),
+                          style: const TextStyle(color: Colors.white),
                         ),
                         Text(
                           '$uploadRate $unitText',
+                          textScaleFactor: 1.3,
                           style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Text(
                           '$downloadRate $unitText',
+                          textScaleFactor: 1.3,
                           style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -241,14 +249,15 @@ class NetworkLayout extends State<Network> {
                       children: [
                         const Text(
                           'Ping',
-                          style: TextStyle(color: Colors.white, fontSize: 14),
+                          style: TextStyle(color: Colors.white),
                         ),
                         Text(
                           '$pingTime',
+                          textScaleFactor: 1.3,
                           style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -278,22 +287,25 @@ class NetworkLayout extends State<Network> {
                   endIndent: 10,
                   thickness: 1.1,
                 ),
-                padding: const EdgeInsets.only(top: 20, bottom: 80),
+                padding: EdgeInsets.only(
+                    top: screenSize.height * 0.021875,
+                    bottom: screenSize.height * 0.0875),
                 itemCount: devices.length,
                 itemBuilder: (context, index) => Container(
-                  margin: const EdgeInsets.only(left: 15),
+                  margin: EdgeInsets.only(left: screenSize.width * 0.0364583),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         '${devices.elementAt(index)['name']}',
+                        textScaleFactor: 1.16,
                         style: TextStyle(
-                            color: devices.elementAt(index)['name'] !=
-                                    delegate.unknown
-                                ? Colors.white
-                                : const Color.fromARGB(255, 240, 0, 0),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16),
+                          color: devices.elementAt(index)['name'] !=
+                                  delegate.unknown
+                              ? Colors.white
+                              : const Color.fromARGB(255, 240, 0, 0),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Text(
                         '${devices.elementAt(index)['ip']}',

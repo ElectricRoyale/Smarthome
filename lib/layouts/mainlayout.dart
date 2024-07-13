@@ -31,7 +31,7 @@ class MyHomePageState extends State<MyHomePage>
       settingsIsInit = false,
       visible = true;
 
-  AppLifecycleState lastAppState = AppLifecycleState.resumed;
+  bool authenticationNeeded = false;
 
   double widget1Opacity = 0.0;
 
@@ -69,7 +69,6 @@ class MyHomePageState extends State<MyHomePage>
             appBar: PreferredSize(
                 preferredSize: Size.fromHeight(screenSize.height * 0.076),
                 child: CustomAppBar(key: customAppBar, network: network)),
-            extendBody: true,
             body: SafeArea(
               bottom: false,
               child: IndexedStack(
@@ -194,30 +193,45 @@ class MyHomePageState extends State<MyHomePage>
     super.dispose();
   }
 
+  void _onResume() {
+    Navigator.popUntil(context, (route) {
+      if (route.settings.name == 'biometricAuthentication') {
+        return false;
+      }
+      return true;
+    });
+    if (mustAuthenticate) {
+      Navigator.pushNamed(context, 'biometricAuthentication').then((value) =>
+          errorDialog.initialize(context, onChange: (connectionStatus) {
+            if (connectionStatus == ConnectionStatus.connected) {
+              if (_selectedIndex == 1) network.currentState!.resume();
+              customAppBar.currentState!.resumeSignalChecker();
+            } else {
+              customAppBar.currentState!.pingStream.cancel();
+              network.currentState!.stop(true);
+            }
+          }));
+    }
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (lastAppState == AppLifecycleState.paused &&
-        state == AppLifecycleState.resumed) {
-      Navigator.popUntil(context, (route) {
-        if (route.settings.name == 'biometricAuthentication') {
-          return false;
-        }
-        return true;
-      });
-      if (mustAuthenticate) {
-        Navigator.pushNamed(context, 'biometricAuthentication').then((value) =>
-            errorDialog.initialize(context, onChange: (connectionStatus) {
-              if (connectionStatus == ConnectionStatus.connected) {
-                if (_selectedIndex == 1) network.currentState!.resume();
-                customAppBar.currentState!.resumeSignalChecker();
-              } else {
-                customAppBar.currentState!.pingStream.cancel();
-                network.currentState!.stop(true);
-              }
-            }));
-      }
+    switch (state) {
+      case AppLifecycleState.resumed:
+        if (authenticationNeeded) _onResume();
+        authenticationNeeded = false;
+        break;
+      case AppLifecycleState.detached:
+        break;
+      case AppLifecycleState.inactive:
+        break;
+      case AppLifecycleState.hidden:
+        //SystemNavigator.pop();
+        break;
+      case AppLifecycleState.paused:
+        authenticationNeeded = true;
+        break;
     }
-    lastAppState = state;
     super.didChangeAppLifecycleState(state);
   }
 }

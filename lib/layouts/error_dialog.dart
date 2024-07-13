@@ -13,6 +13,7 @@ class ErrorDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     final delegate = S.of(context);
     return WillPopScope(
       onWillPop: () async => false,
@@ -24,16 +25,14 @@ class ErrorDialog extends StatelessWidget {
           ),
           elevation: 0,
           backgroundColor: Colors.transparent,
-          child: Stack(children: [
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Align(
-                child: Padding(
-                    padding: const EdgeInsets.only(bottom: 240),
-                    child: SvgPicture.asset(
-                      'assets/error.svg',
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
-                    ))),
+                child: SvgPicture.asset(
+              'assets/error.svg',
+              width: screenSize.width * 0.2916666,
+              height: screenSize.width * 0.2916666,
+              fit: BoxFit.cover,
+            )),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,

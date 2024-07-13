@@ -84,7 +84,7 @@
   "appliancesSocket": "STECKDOSEN",
   "appliancesShutter": "ROLLLÄDEN",
   "appliancesAirConditioner": "KLIMAANLAGE",
-  "appliancesVideoDevices": "VIDEO GERÄTE",
+  "appliancesVideoDevices": "MULTIMEDIA",
   "appliancesHeatingSystem": "HEIZUNG",
   "appliancesKitchenTools": "KÜCHEN GERÄTE",
   "appliancesWashingMachine": "WASCHMASCHINE",
@@ -117,5 +117,6 @@
   "loading": "Laden...",
   "logbook": " zustand geändert zu ",
   "noDevicesAvailable": "Es sind keine Geräte Vorhanden",
-  "changeServerAddress": "Server Adresse ändern"
+  "changeServerAddress": "Server Adresse ändern",
+  "playingFromPlaylist": "SPIELT VON PLAYLIST"
 }

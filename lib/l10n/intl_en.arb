@@ -84,7 +84,7 @@
   "appliancesSocket": "SOCKET",
   "appliancesShutter": "ROLLER SHUTTER",
   "appliancesAirConditioner": "AIR CONDITIONER",
-  "appliancesVideoDevices": "VIDEO DEVICES",
+  "appliancesVideoDevices": "MULTIMEDIA",
   "appliancesHeatingSystem": "HEATING SYSTEM",
   "appliancesKitchenTools": "KITCHEN TOOLS",
   "appliancesWashingMachine": "WASHING MACHINE",
@@ -117,5 +117,6 @@
   "loading": "Loading...",
   "logbook": " changed state to ",
   "noDevicesAvailable": "No devices available",
-  "changeServerAddress": "Change Server address"
+  "changeServerAddress": "Change Server address",
+  "playingFromPlaylist": "PLAYING FROM PLAYLIST"
 }

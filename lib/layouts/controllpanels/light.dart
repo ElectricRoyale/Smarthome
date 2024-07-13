@@ -53,6 +53,7 @@ class LightState extends State<Light> {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     return Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -173,11 +174,11 @@ class LightState extends State<Light> {
                   ],
                 ),
               ),
-              const Divider(
-                height: 20,
-                thickness: 2,
-                indent: 10,
-                endIndent: 10,
+              Divider(
+                height: screenSize.height * 0.021875,
+                thickness: screenSize.height * 0.0021875,
+                indent: screenSize.width * 0.02431,
+                endIndent: screenSize.width * 0.02431,
                 color: Colors.white,
               ),
               EnergyUsageStatistics(

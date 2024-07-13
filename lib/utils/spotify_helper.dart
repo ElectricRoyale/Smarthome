@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:typed_data';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:palette_generator/palette_generator.dart';
-import 'package:spotify_openapi/spotify_openapi.dart';
+import 'package:spotify/spotify.dart' as spotify;
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
@@ -16,12 +16,33 @@ class SpotifyHelper {
   Uint8List? _trackImage, _previousTrackImage, _nextTrackImage;
   Color? _imageColor;
   bool _favourite = false;
-  List<QueueObjectQueueInner> _queue = [];
+  List<spotify.Track> _queue = [];
   String _accessToken = '';
-  final String _scopes =
-      "user-read-playback-state, user-modify-playback-state, user-read-currently-playing, app-remote-control, streaming, playlist-read-private, playlist-read-collaborative, playlist-modify-private, playlist-modify-public, user-follow-modify, user-follow-read, user-read-playback-position, user-top-read, user-read-recently-played, user-library-modify, user-library-read, user-read-email, user-read-private";
-  PlayHistoryObject? _recentlyPlayedSong;
-  List<SimplifiedPlaylistObject> _playlists = [];
+  final List<String> _scopes = [
+    "ugc-image-upload",
+    "user-read-playback-state",
+    "user-modify-playback-state",
+    "user-read-currently-playing",
+    "app-remote-control",
+    "streaming",
+    "playlist-read-private",
+    "playlist-read-collaborative",
+    "playlist-modify-private",
+    "playlist-modify-public",
+    "user-follow-modify",
+    "user-follow-read",
+    "user-read-playback-position",
+    "user-top-read",
+    "user-read-recently-played",
+    "user-library-modify",
+    "user-library-read",
+    "user-read-email",
+    "user-read-private"
+  ];
+  spotify.PlayHistory? _recentlyPlayedSong;
+  List<spotify.PlaylistSimple> _playlists = [];
+
+  late spotify.SpotifyApi _spotify;
 
   late DateTime _beginning;
 
@@ -35,20 +56,19 @@ class SpotifyHelper {
   SpotifyHelper._internal();
 
   Future<void> init() async {
-    await SpotifySdk.connectToSpotifyRemote(
-        clientId: _clientId, redirectUrl: _redirectUrl);
     _accessToken = await SpotifySdk.getAccessToken(
       clientId: _clientId,
       redirectUrl: _redirectUrl,
-      scope: _scopes,
+      scope: _scopes.join(', '),
     );
     Stream.periodic(
         const Duration(hours: 1),
         (_) async => _accessToken = await SpotifySdk.getAccessToken(
               clientId: _clientId,
               redirectUrl: _redirectUrl,
-              scope: _scopes,
+              scope: _scopes.join(', '),
             ));
+    _spotify = spotify.SpotifyApi.withAccessToken(_accessToken);
     _playerState = await SpotifySdk.getPlayerState();
     _beginning = DateTime.now().subtract(const Duration(seconds: 1));
     _progressController = StreamController.broadcast();
@@ -72,32 +92,14 @@ class SpotifyHelper {
     _favourite = (await SpotifySdk.getLibraryState(
             spotifyUri: _playerState!.track!.uri))!
         .isSaved;
-    /*_queue = (await SpotifyOpenapi()
-                .getPlayerApi()
-                .getQueue(headers: {'Authorization': 'Bearer $_accessToken'}))
-            .data
-            ?.queue
-            ?.asList() ??
-        [];
-    _recentlyPlayedSong = (await SpotifyOpenapi()
-            .getPlayerApi()
-            .getRecentlyPlayed(
-                limit: 1, headers: {'Authorization': 'Bearer $_accessToken'}))
-        .data
-        ?.items
-        ?.first;
-     _previousTrackImage = await SpotifySdk.getImage(
-        imageUri:
-            ImageUri((_queue.first.oneOf.value as TrackObject).uri.toString()));
-    _nextTrackImage = await SpotifySdk.getImage(
-        imageUri: ImageUri(_recentlyPlayedSong!.track!.uri!.toString()));
-    _playlists = (await SpotifyOpenapi()
-            .getPlaylistsApi()
-            .getAListOfCurrentUsersPlaylists(
-                headers: {'Authorization': 'Bearer $_accessToken'}))
-        .data!
-        .items
-        .asList();*/
+    _queue = (await _spotify.player.queue()).queue ?? [];
+    /*_recentlyPlayedSong =
+        (await _spotify.me.recentlyPlayed(limit: 1).first()).items?.first;
+    _previousTrackImage =
+        (await get(Uri.parse(_recentlyPlayedSong?.track?.uri ?? ""))).bodyBytes;
+    _nextTrackImage = (await get(Uri.parse(_queue.first. ?? ''))).bodyBytes;*/
+    _playlists = (await _spotify.playlists.me.all()).toList()
+      ..sort((a, b) => a.name!.compareTo(b.name!));
     _updating();
   }
 
@@ -126,32 +128,16 @@ class SpotifyHelper {
               .image))
           .dominantColor
           ?.color;
-      /*_queue = (await SpotifyOpenapi()
-                  .getPlayerApi()
-                  .getQueue(headers: {'Authorization': 'Bearer $_accessToken'}))
-              .data
-              ?.queue
-              ?.asList() ??
-          [];
-      _recentlyPlayedSong = (await SpotifyOpenapi()
-              .getPlayerApi()
-              .getRecentlyPlayed(
-                  limit: 1, headers: {'Authorization': 'Bearer $_accessToken'}))
-          .data
-          ?.items
-          ?.first;
-      _previousTrackImage = await SpotifySdk.getImage(
+      _queue = (await _spotify.player.queue()).queue ?? [];
+      /*_previousTrackImage = await SpotifySdk.getImage(
           imageUri: ImageUri(
-              (_queue.first.oneOf.value as TrackObject).uri.toString()));
+              _queue.first.uri ?? ''));
       _nextTrackImage = await SpotifySdk.getImage(
-          imageUri: ImageUri(_recentlyPlayedSong!.track!.uri!.toString()));
-      _playlists = (await SpotifyOpenapi()
-              .getPlaylistsApi()
-              .getAListOfCurrentUsersPlaylists(
-                  headers: {'Authorization': 'Bearer $_accessToken'}))
-          .data!
-          .items
-          .asList();*/
+          imageUri: ImageUri(_recentlyPlayedSong!.track!.uri!));*/
+      _recentlyPlayedSong =
+          (await _spotify.me.recentlyPlayed(limit: 1).first()).items?.first;
+      _playlists = (await _spotify.playlists.me.all()).toList()
+        ..sort((a, b) => a.name!.compareTo(b.name!));
       spotifyControllRefresh.call();
     });
   }
@@ -161,6 +147,9 @@ class SpotifyHelper {
       newIndex -= 1;
     }
   }
+
+  Future<spotify.Pages<spotify.Track>> getPlaylistTracks(playlistId) async =>
+      _spotify.playlists.getTracksByPlaylistId(playlistId);
 
   PlayerState get playerState => _playerState!;
 
@@ -176,9 +165,9 @@ class SpotifyHelper {
 
   bool get favorite => _favourite;
 
-  List<QueueObjectQueueInner> get queue => _queue;
+  List<spotify.Track> get queue => _queue;
 
-  PlayHistoryObject? get recentlyPlayedSong => _recentlyPlayedSong;
+  spotify.PlayHistory? get recentlyPlayedSong => _recentlyPlayedSong;
 
-  List<SimplifiedPlaylistObject> get playlists => _playlists;
+  List<spotify.PlaylistSimple> get playlists => _playlists;
 }

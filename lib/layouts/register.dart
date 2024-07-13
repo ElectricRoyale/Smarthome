@@ -148,6 +148,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final delegate = S.of(context);
+    Size screenSize = MediaQuery.sizeOf(context);
     return Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -167,7 +168,8 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
               children: [
                 DelayedDisplay(
                     child: Padding(
-                        padding: const EdgeInsets.only(top: 130),
+                        padding:
+                            EdgeInsets.only(top: screenSize.height * 0.1421875),
                         child: Text(
                           delegate.titleRegister,
                           style: const TextStyle(
@@ -178,8 +180,10 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                 DelayedDisplay(
                     delay: const Duration(milliseconds: 1000),
                     child: Padding(
-                        padding:
-                            const EdgeInsets.only(top: 30, left: 28, right: 28),
+                        padding: EdgeInsets.only(
+                            top: screenSize.height * 0.0328125,
+                            left: screenSize.width * 0.0680555,
+                            right: screenSize.width * 0.0680555),
                         child: MaterialButton(
                           onPressed: () {
                             showModalBottomSheet(
@@ -192,10 +196,11 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                           top: Radius.circular(26)),
                                       color: Color(0xff292828),
                                     ),
-                                    height: 130,
+                                    height: screenSize.height * 0.1421875,
                                     clipBehavior: Clip.hardEdge,
                                     child: Padding(
-                                      padding: const EdgeInsets.only(top: 10),
+                                      padding: EdgeInsets.only(
+                                          top: screenSize.height * 0.0109375),
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceAround,
@@ -215,8 +220,10 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                               },
                                               icon: SvgPicture.asset(
                                                 "assets/gallery.svg",
-                                                width: 100,
-                                                height: 100,
+                                                width:
+                                                    screenSize.width * 0.243055,
+                                                height:
+                                                    screenSize.width * 0.243055,
                                               ),
                                               iconSize: 70,
                                             ),
@@ -241,8 +248,10 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
                                               },
                                               icon: SvgPicture.asset(
                                                 "assets/camera.svg",
-                                                width: 100,
-                                                height: 100,
+                                                width:
+                                                    screenSize.width * 0.243055,
+                                                height:
+                                                    screenSize.width * 0.243055,
                                               ),
                                               iconSize: 70,
                                             ),

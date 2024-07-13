@@ -12,8 +12,8 @@ class LoadingDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final delegate = S.of(context);
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
         child: Dialog(

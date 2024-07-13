@@ -88,12 +88,12 @@ class Layout extends State<Dashboard> {
       body: LayoutBuilder(builder: (context, constraints) {
         return Column(children: [
           SizedBox(
-            width: constraints.maxHeight,
+            width: constraints.maxWidth,
             child: Stack(
               children: [
                 Container(
                     width: constraints.maxWidth,
-                    height: constraints.maxHeight * 0.25,
+                    height: constraints.maxHeight * 0.27,
                     margin: const EdgeInsets.only(top: 30),
                     child: ListView.builder(
                       itemCount: rooms.length,
@@ -107,7 +107,8 @@ class Layout extends State<Dashboard> {
                       },
                       scrollDirection: Axis.horizontal,
                       physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: constraints.maxWidth * 0.0243),
                     )),
               ],
             ),
@@ -117,7 +118,7 @@ class Layout extends State<Dashboard> {
             child: CarouselSlider(
                 carouselController: carouselController,
                 options: CarouselOptions(
-                    height: constraints.maxHeight * 0.55,
+                    height: constraints.maxHeight * 0.61,
                     enableInfiniteScroll: false,
                     scrollPhysics: const BouncingScrollPhysics(),
                     viewportFraction: 1,
