@@ -17,7 +17,7 @@ class ConnectionManager {
   late BuildContext _context;
   Function(ConnectionStatus)? _onChange;
   bool _retry = false;
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   void initialize(BuildContext context,
       {Function(ConnectionStatus connectionStatus)? onChange}) {
@@ -25,7 +25,7 @@ class ConnectionManager {
     _onChange = onChange;
     _initConnectivity();
     _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+        _connectivity.onConnectivityChanged.listen((result) => _updateConnectionStatus(result.last));
   }
 
   void checkConnection() async {
@@ -51,7 +51,7 @@ class ConnectionManager {
   Future<void> _initConnectivity() async {
     ConnectivityResult result = ConnectivityResult.none;
     try {
-      result = await _connectivity.checkConnectivity();
+      result = (await _connectivity.checkConnectivity()).first;
     } on PlatformException catch (e) {
       if (kDebugMode) {
         print(e.toString());

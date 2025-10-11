@@ -104,7 +104,7 @@ class DeviceGridState extends State<DeviceGrid> {
         Expanded(
           child: Padding(
             padding: EdgeInsets.only(
-                top: screenSize.height * 0.027,
+                top: screenSize.height * 0.02,
                 left: screenSize.width * 0.048611,
                 right: screenSize.width * 0.048611),
             child: GridView.builder(
@@ -158,6 +158,7 @@ class DeviceGridState extends State<DeviceGrid> {
                         child: Text(
                           appliances(context, index)['name'],
                           textScaleFactor: 0.83,
+                          maxLines: 1,
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

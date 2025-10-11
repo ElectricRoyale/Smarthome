@@ -128,16 +128,16 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                   itemCount: discoveryList.length,
                   itemBuilder: (context, index) => discoveryItem(
                       discoveryList.elementAt(index).name,
-                      discoveryList
+                      /*discoveryList
                                   .elementAt(index)
-                                  .attributes!['external_url'] !=
+                                  .attributes['external_url'] !=
                               ''
                           ? discoveryList
                               .elementAt(index)
-                              .attributes!['external_url']!
-                          : discoveryList
+                              .attributes['external_url']!
+                          :*/ discoveryList
                               .elementAt(index)
-                              .attributes!['internal_url']!),
+                              .attributes['internal_url']!),
                 ),
               ),
               Padding(

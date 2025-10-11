@@ -60,6 +60,12 @@ class DashboardData {
     List roomData = jsonDecode(responses.elementAt(2))["result"];
     List roomDevices = jsonDecode(responses.elementAt(3))["result"];
     List deviceData = jsonDecode(responses.elementAt(4))["result"];
+    print(responses.elementAt(2));
+    print(roomData);
+    /*print(responses.elementAt(3));
+    print(roomDevices);
+    print(responses.elementAt(4));
+    print(deviceData);*/
     List<String> sensors = [];
     devices.clear();
     for (var element in deviceData) {
@@ -87,7 +93,9 @@ class DashboardData {
           DeviceData deviceData =
               devices.firstWhere((id) => id.entityId == device["entity_id"]);
           enddevice.add(deviceData);
-        } catch (_) {}
+        } catch (_) {
+          print('failed to add the object');
+        }
       });
       _roomDevicesMap[roomName["area_id"]] = enddevice;
     }
@@ -228,7 +236,8 @@ class DashboardData {
             : '0.0');
       }
       _roomList.add({
-        'icon': '${value['picture']}',
+        'aliases': value['aliases'],
+        'icon': '${value['icon']}',
         'name': '${value['name']}',
         'appliances': roomDeviceIcons(value["area_id"]),
         'energyConsumption': energy.toStringAsPrecision(2) + usageUnit,

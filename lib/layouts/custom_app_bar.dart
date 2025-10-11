@@ -120,7 +120,7 @@ class CustomAppBarLayout extends State<CustomAppBar>
           centerTitle: true,
           forceMaterialTransparency: true,
           leading: Transform.translate(
-              offset: const Offset(15, 8),
+              offset: const Offset(15, 0),
               child: RotationTransition(
                   turns:
                       Tween(begin: 0.0, end: 1.0).animate(_animationController),
@@ -155,25 +155,22 @@ class CustomAppBarLayout extends State<CustomAppBar>
                         }
                       }))),
           titleSpacing: 0,
-          title: Padding(
-            padding: EdgeInsets.only(top: screenSize.height * 0.021875),
-            child: Text('${pageParams(context, index)['name']}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(0.0, 2.5),
-                      blurRadius: 3.0,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    )
-                  ],
-                ),
-                textScaleFactor: 1.3),
-          ),
+          title: Text('${pageParams(context, index)['name']}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                shadows: [
+                  Shadow(
+                    offset: Offset(0.0, 2.5),
+                    blurRadius: 3.0,
+                    color: Color.fromARGB(255, 0, 0, 0),
+                  )
+                ],
+              ),
+              textScaleFactor: 1.3),
           actions: [
             Transform.translate(
-                offset: const Offset(-15, 13),
+                offset: const Offset(-15, 1),
                 child: IconButton(icon: signalStrength, onPressed: () {})),
           ],
         );
@@ -183,22 +180,19 @@ class CustomAppBarLayout extends State<CustomAppBar>
           elevation: 0,
           centerTitle: true,
           forceMaterialTransparency: true,
-          title: Padding(
-            padding: EdgeInsets.only(top: screenSize.height * 0.021875),
-            child: Text('${pageParams(context, index)['name']}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(0.0, 2.5),
-                      blurRadius: 3.0,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    )
-                  ],
-                ),
-                textScaleFactor: 1.3),
-          ),
+          title: Text('${pageParams(context, index)['name']}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                shadows: [
+                  Shadow(
+                    offset: Offset(0.0, 2.5),
+                    blurRadius: 3.0,
+                    color: Color.fromARGB(255, 0, 0, 0),
+                  )
+                ],
+              ),
+              textScaleFactor: 1.3),
         );
       default:
         return AppBar(

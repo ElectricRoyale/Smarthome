@@ -66,7 +66,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
   );
 
   final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   final authorizationEndpoint = Uri.http(
       RegExp(r'(?<host>\d+\.\d+\.\d+\.\d+:\d+)')
@@ -89,7 +89,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
   Future<void> initConnectivity() async {
     ConnectivityResult result = ConnectivityResult.none;
     try {
-      result = await _connectivity.checkConnectivity();
+      result = (await _connectivity.checkConnectivity()).first;
     } on PlatformException catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -132,7 +132,7 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
     super.initState();
     initConnectivity();
     _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+        _connectivity.checkConnectivity().asStream().listen((result) => _updateConnectionStatus(result.last));
   }
 
   @override
@@ -769,25 +769,6 @@ class RegisterState extends State<Register> with TickerProviderStateMixin {
     final delegate = S.of(context);
     final imageFile = await ImageCropper().cropImage(
       sourcePath: pickeImage.path,
-      aspectRatioPresets: Platform.isAndroid
-          ? [
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio16x9
-            ]
-          : [
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio5x3,
-              CropAspectRatioPreset.ratio5x4,
-              CropAspectRatioPreset.ratio7x5,
-              CropAspectRatioPreset.ratio16x9
-            ],
-      cropStyle: CropStyle.circle,
       uiSettings: [
         AndroidUiSettings(
             toolbarTitle: delegate.titleImageCropper,

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:dart_ping/dart_ping.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,6 @@ import 'package:lan_scanner/lan_scanner.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:speed_test_dart/speed_test_dart.dart';
 import 'package:sprintf/sprintf.dart';
-import 'package:wifi_info_plugin_plus/wifi_info_plugin_plus.dart';
 
 import '../generated/l10n.dart';
 import '../layouts/custom_app_bar.dart';
@@ -49,12 +47,33 @@ class NetworkLayout extends State<Network> {
     });
   }
 
-  Future<void> getWifiSpeed() async {
+  /*Future<void> getWifiSpeed() async {
     WifiInfoWrapper? wifiObject;
 
     while (running) {
       wifiObject = await WifiInfoPlugin.wifiDetails;
       downloadRate = wifiObject!.linkSpeed;
+      setState(() {});
+      await Future.delayed(const Duration(seconds: 5));
+    }
+  }*/
+
+  Future<void> downloadSpeedTest() async {
+    var settings = await tester.getSettings();
+    var servers = settings.servers;
+
+    final bestServersList = await tester.getBestServers(
+      servers: servers,
+    );
+
+    while (running) {
+      var downloadSpeed = await tester.testDownloadSpeed(
+          servers: bestServersList,
+          simultaneousDownloads: settings.upload.threadsPerUrl == 0
+              ? 2
+              : settings.upload.threadsPerUrl,
+          retryCount: 3);
+      downloadRate = downloadSpeed.round();
       setState(() {});
       await Future.delayed(const Duration(seconds: 5));
     }
@@ -96,33 +115,35 @@ class NetworkLayout extends State<Network> {
         devices.clear();
       }
 
-      final stream = scanner.icmpScan(
+      final stream = scanner.quickIcmpScanSync(
         this.subnet = subnet,
-        progressCallback: (progress) {
+        /*progressCallback: (progress) {
           log('progress: $progress');
-        },
-      );
+        },*/
+      ).asStream();
 
       listOfWifiDevices = stream.listen((host) async {
-        /*if (host.isReachable ?? false) {
-          await host.internetAddress.reverse().then((value) {
-            Map<String, String> deviceData = {
-              'name': value.host.substring(0, value.host.indexOf('.')),
-              'ip': host.internetAddress.address
-            };
-            _updateList(deviceData);
-          }).catchError((error) {
-            debugPrint(error.toString());
-            Map<String, String> deviceData = {
-              'name': S.of(context).unknown,
-              'ip': host.internetAddress.address
-            };
-            _updateList(deviceData);
-          });
-        } else {
-          devices.removeWhere(
-              (element) => element.containsValue(host.internetAddress.address));
-        }*/
+        host.forEach((hostelement) async {
+          //if (hostelement. ?? false) {
+            await hostelement.internetAddress.reverse().then((value) {
+              Map<String, String> deviceData = {
+                'name': value.host.substring(0, value.host.indexOf('.')),
+                'ip': hostelement.internetAddress.address
+              };
+              _updateList(deviceData);
+            }).catchError((error) {
+              debugPrint(error.toString());
+              Map<String, String> deviceData = {
+                'name': S.of(context).unknown,
+                'ip': hostelement.internetAddress.address
+              };
+              _updateList(deviceData);
+            });
+         /* } else {
+            devices.removeWhere(
+                (element) => element.containsValue(hostelement.internetAddress.address));
+          }*/
+        });
       })
         ..onDone(() => CustomAppBarLayout.stopAnimation());
     });
@@ -336,7 +357,7 @@ class NetworkLayout extends State<Network> {
     addNetworkDevice();
     CustomAppBarLayout.startAnimation();
     running = true;
-    getWifiSpeed();
+    downloadSpeedTest();
     uploadSpeedTest();
   }
 

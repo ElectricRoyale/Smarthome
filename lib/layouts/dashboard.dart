@@ -82,6 +82,7 @@ class Layout extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.sizeOf(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
@@ -93,8 +94,8 @@ class Layout extends State<Dashboard> {
               children: [
                 Container(
                     width: constraints.maxWidth,
-                    height: constraints.maxHeight * 0.27,
-                    margin: const EdgeInsets.only(top: 30),
+                    height: constraints.maxHeight * 0.28,
+                    margin: EdgeInsets.only(top: screenSize.height * 0.018),
                     child: ListView.builder(
                       itemCount: rooms.length,
                       itemBuilder: (BuildContext context, int index) {
@@ -114,11 +115,11 @@ class Layout extends State<Dashboard> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: constraints.maxHeight * 0.049028764),
+            padding: EdgeInsets.only(top: constraints.maxHeight * 0.038),
             child: CarouselSlider(
                 carouselController: carouselController,
                 options: CarouselOptions(
-                    height: constraints.maxHeight * 0.61,
+                    height: constraints.maxHeight * 0.63,
                     enableInfiniteScroll: false,
                     scrollPhysics: const BouncingScrollPhysics(),
                     viewportFraction: 1,

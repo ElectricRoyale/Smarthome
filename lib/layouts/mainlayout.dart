@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:smarthome/layouts/custom_app_bar.dart';
@@ -67,7 +68,7 @@ class MyHomePageState extends State<MyHomePage>
             resizeToAvoidBottomInset: false,
             backgroundColor: Colors.transparent,
             appBar: PreferredSize(
-                preferredSize: Size.fromHeight(screenSize.height * 0.076),
+                preferredSize: Size.fromHeight(screenSize.height * 0.065),
                 child: CustomAppBar(key: customAppBar, network: network)),
             body: SafeArea(
               bottom: false,
@@ -89,10 +90,11 @@ class MyHomePageState extends State<MyHomePage>
 
   Widget _bottomNavigationBar() {
     final delegate = S.of(context);
+    Size screenSize = MediaQuery.sizeOf(context);
     return Container(
+      height: screenSize.height * 0.1,
       decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
-            topRight: Radius.circular(30), topLeft: Radius.circular(30)),
+        borderRadius: BorderRadius.all(Radius.circular(50)),
         boxShadow: [
           BoxShadow(color: Colors.black38, spreadRadius: 1.25, blurRadius: 3),
         ],
@@ -112,57 +114,62 @@ class MyHomePageState extends State<MyHomePage>
               tileMode: TileMode.decal,
             ),
           ),
-          child: BottomNavigationBar(
-            currentIndex: _selectedIndex,
-            onTap: onItemTap,
-            showUnselectedLabels: true,
-            backgroundColor: Colors.transparent,
-            type: BottomNavigationBarType.fixed,
-            elevation: 0,
-            unselectedItemColor: Colors.white,
-            selectedItemColor: Colors.white,
-            selectedIconTheme: const IconThemeData(color: COLOR_ACCENT),
-            items: <BottomNavigationBarItem>[
-              const BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.dashboard_rounded,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(0.0, 2.5),
-                      blurRadius: 3.0,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    )
-                  ],
+          clipBehavior: Clip.hardEdge,
+          child: DefaultTabController(
+            length: 3,
+            initialIndex: _selectedIndex,
+            child: TabBar(
+              onTap: onItemTap,
+              splashFactory: InkSplash.splashFactory,
+              dividerColor: Colors.transparent,
+              indicator: BoxDecoration(),
+              labelColor: Colors.white,
+              splashBorderRadius: BorderRadius.circular(50),
+              tabs: <Tab>[
+                Tab(
+                  icon: Icon(
+                    Icons.dashboard_rounded,
+                    color: _selectedIndex == 0 ? COLOR_ACCENT : Colors.white,
+                    shadows: const [
+                      Shadow(
+                        offset: Offset(0.0, 2.5),
+                        blurRadius: 3.0,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      )
+                    ],
+                  ),
+                  text: 'Dashboard',
                 ),
-                label: 'Dashboard',
-              ),
-              BottomNavigationBarItem(
-                icon: const Icon(
-                  Icons.wifi_tethering,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(0.0, 2.5),
-                      blurRadius: 3.0,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    )
-                  ],
+                Tab(
+                  icon: Icon(
+                    Icons.wifi_tethering,
+                    color: _selectedIndex == 1 ? COLOR_ACCENT : Colors.white,
+                    shadows: const [
+                      Shadow(
+                        offset: Offset(0.0, 2.5),
+                        blurRadius: 3.0,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      )
+                    ],
+                  ),
+                  text: delegate.titleNetwork,
                 ),
-                label: delegate.titleNetwork,
-              ),
-              BottomNavigationBarItem(
-                icon: const Icon(
-                  Icons.settings,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(0.0, 2.5),
-                      blurRadius: 3.0,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    )
-                  ],
+                Tab(
+                  icon:  Icon(
+                    Icons.settings,
+                    color: _selectedIndex == 2 ? COLOR_ACCENT : Colors.white,
+                    shadows: const[
+                      Shadow(
+                        offset: Offset(0.0, 2.5),
+                        blurRadius: 3.0,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      )
+                    ],
+                  ),
+                  text: delegate.titleSettings,
                 ),
-                label: delegate.titleSettings,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

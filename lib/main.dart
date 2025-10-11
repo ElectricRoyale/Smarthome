@@ -1,3 +1,4 @@
+import 'package:dart_ping_ios/dart_ping_ios.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -17,6 +18,8 @@ import 'layouts/controllpanels/washing_machine.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  DartPingIOS.register();
+
   runApp(const MyApp());
 }
 

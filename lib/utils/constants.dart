@@ -12,33 +12,37 @@ const COLOR_BLACK = Colors.black;
 const COLOR_WHITE = Colors.white;
 
 const Map<String, List<List<Color>>> BackgroundRoomMap = {
-  'bed.svg': [
+  'bedroom': [
     [
       Color(0xff3A64FA),
       Color(0xff000667),
     ],
     [Color(0xff00C385), Color(0xff44FF00)]
   ],
-  'garden_icon.svg': [
+  'garden': [
     [Color(0xff00ff00), Color(0xff227902)],
     [
       Color(0xff3A64FA),
       Color(0xff000667),
     ],
   ],
-  'kitchen.svg': [
+  'kitchen': [
     [Color(0xff8c0202), Color(0xffe76500)],
     [Color(0xffb7b7b7), Color(0xff363636)]
   ],
-  'bathroom.svg': [
+  'bathroom': [
     [Color(0xffd394ff), Color(0xff8500ff)],
     [Color(0xff00ff00), Color(0xff008800)]
   ],
-  'livingroom.svg': [
+  'livingroom': [
     [Color(0xffffff00), Color(0xffff5000)],
     [Color(0xff00eaff), Color(0xff59ff88)]
   ],
-  'cellar.svg': [
+  'cellar': [
+    [Color(0xff8d8d8d), Color(0xff363636)],
+    [Color(0xffffe619), Color(0xffffa005)]
+  ],
+  'roof': [
     [Color(0xff8d8d8d), Color(0xff363636)],
     [Color(0xffffe619), Color(0xffffa005)]
   ]

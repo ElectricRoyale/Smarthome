@@ -26,6 +26,8 @@ class WeatherData {
 
   final List<Widget> _forecasts = [];
 
+  late LocationPermission permission;
+
   Future<bool>? _isInitialized;
 
   static final WeatherData _instance = WeatherData._internal();
@@ -96,6 +98,13 @@ class WeatherData {
   }
 
   Future<String> locationName() async {
+    permission = await Geolocator.checkPermission();
+    if(permission == LocationPermission.denied){
+      permission = await Geolocator.requestPermission();
+      if(permission == LocationPermission.denied){
+        return 'Location Permission Denied';
+      }
+    }
     Position position = await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.best)
         .timeout(const Duration(seconds: 5));

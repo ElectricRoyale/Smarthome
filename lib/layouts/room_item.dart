@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:material_design_icons_flutter/icon_map.dart';
 import 'package:smarthome/layouts/dashboard.dart';
 import 'package:smarthome/my_icons_icons.dart';
 import 'package:smarthome/utils/constants.dart';
@@ -52,7 +52,7 @@ class RoomItem extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: BackgroundRoomMap[roomItem['icon']]!.first,
+                          colors: BackgroundRoomMap[(roomItem['aliases'] as List).first]!.first,
                         ),
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: const [
@@ -67,9 +67,7 @@ class RoomItem extends StatelessWidget {
                         top: height * 0.02692, left: width * 0.0486),
                     height: width * 0.1555,
                     width: width * 0.1555,
-                    child: SvgPicture.asset("assets/${roomItem['icon']}",
-                        colorFilter: const ColorFilter.mode(
-                            Colors.white, BlendMode.srcIn)),
+                    child: Icon(iconMap[convertToCamelCase(roomItem['icon'])], size: 48,),
                   ),
                   Container(
                       width: width * 0.425,
@@ -110,7 +108,7 @@ class RoomItem extends StatelessWidget {
                               gradient: LinearGradient(
                                   begin: Alignment.centerLeft,
                                   end: Alignment.centerRight,
-                                  colors: BackgroundRoomMap[roomItem['icon']]!
+                                  colors: BackgroundRoomMap[(roomItem['aliases'] as List).first]!
                                       .last),
                               shape: BoxShape.circle,
                             ),
@@ -188,4 +186,19 @@ class RoomItem extends StatelessWidget {
       );
     }
   }
+}
+
+String convertToCamelCase(String text) {
+  // Check and remove the 'mdi:' prefix if present
+  String cleanText = text.startsWith('mdi:') ? text.substring(4) : text;
+
+  // Split the string by '-' and iterate over the parts
+  return cleanText.split('-').asMap().map((index, part) {
+    // For each part after the first, capitalize the first letter
+    if (index > 0) {
+      return MapEntry(index, part[0].toUpperCase() + part.substring(1));
+    }
+    // Keep the first part as is
+    return MapEntry(index, part);
+  }).values.join(); // Join the parts back together
 }

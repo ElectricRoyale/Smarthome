@@ -129,7 +129,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       if (await MySQLHelper().login(name, password)) {
         await DashboardData().init(usageUnit, logbookChange);
         await WeatherData().init(dayNames);
-        await SpotifyHelper().init();
+        //await SpotifyHelper().init();
         errorDialog.dispose();
         if (!mounted) return;
         Navigator.pop(loadingDialog);

@@ -44,6 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> connection() async {
     if (!mounted) return;
+    //Hive.box('Settings').delete('host');
     if (Hive.box('Settings').get('host') == null) {
       await Navigator.of(context).push(MaterialPageRoute(
           builder: (BuildContext context) => const DiscoveryPage()));
